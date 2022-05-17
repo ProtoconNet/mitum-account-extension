@@ -1,4 +1,4 @@
-module github.com/protoconNet/mitum-account-extension
+module github.com/ProtoconNet/mitum-account-extension
 
 go 1.16
 

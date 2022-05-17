@@ -8,8 +8,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/ProtoconNet/mitum-account-extension/extension"
 	"github.com/pkg/errors"
-	"github.com/protoconNet/mitum-account-extension/extension"
 	"gopkg.in/yaml.v3"
 
 	"github.com/spikeekips/mitum/base"
