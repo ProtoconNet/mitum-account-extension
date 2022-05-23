@@ -1,9 +1,12 @@
 package extension // nolint: dupl, revive
 
 import (
+	"regexp"
+
 	"github.com/spikeekips/mitum/base"
 	"github.com/spikeekips/mitum/util"
 	"github.com/spikeekips/mitum/util/hint"
+	"github.com/spikeekips/mitum/util/isvalid"
 	"github.com/spikeekips/mitum/util/valuehash"
 )
 
@@ -82,4 +85,31 @@ func (cs ContractAccount) Equal(b ContractAccount) bool {
 	}
 
 	return true
+}
+
+var (
+	MinLengthContractID = 3
+	MaxLengthContractID = 10
+	ReValidContractID   = regexp.MustCompile(`^[A-Z0-9][A-Z0-9_\.\!\$\*\@]*[A-Z0-9]$`)
+)
+
+type ContractID string
+
+func (cid ContractID) Bytes() []byte {
+	return []byte(cid)
+}
+
+func (cid ContractID) String() string {
+	return string(cid)
+}
+
+func (cid ContractID) IsValid([]byte) error {
+	if l := len(cid); l < MinLengthContractID || l > MaxLengthContractID {
+		return isvalid.InvalidError.Errorf(
+			"invalid length of currency id, %d <= %d <= %d", MinLengthContractID, l, MaxLengthContractID)
+	} else if !ReValidContractID.Match([]byte(cid)) {
+		return isvalid.InvalidError.Errorf("wrong currency id, %q", cid)
+	}
+
+	return nil
 }
