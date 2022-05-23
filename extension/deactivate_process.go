@@ -29,7 +29,7 @@ type DeactivateProcessor struct {
 	cs  state.State          // contract account status state
 	sb  currency.AmountState // sender amount state
 	fee currency.Big
-	as  ContractAccountStatus // contract account status value
+	as  ContractAccount // contract account status value
 }
 
 func NewDeactivateProcessor(cp *currency.CurrencyPool) currency.GetNewProcessor {
@@ -46,7 +46,7 @@ func NewDeactivateProcessor(cp *currency.CurrencyPool) currency.GetNewProcessor 
 		opp.cs = nil
 		opp.sb = currency.AmountState{}
 		opp.fee = currency.ZeroBig
-		opp.as = ContractAccountStatus{}
+		opp.as = ContractAccount{}
 
 		return opp, nil
 	}
@@ -81,12 +81,12 @@ func (opp *DeactivateProcessor) PreProcess(
 
 	// check not existence of contract account status state
 	// check sender matched with contract account owner
-	st, err = existsState(StateKeyContractAccountStatus(fact.target), "contract account status", getState)
+	st, err = existsState(StateKeyContractAccount(fact.target), "contract account status", getState)
 	if err != nil {
 		return nil, err
 	}
 
-	v, err := StateContractAccountStatusValue(st)
+	v, err := StateContractAccountValue(st)
 	if err != nil {
 		return nil, err
 	}
@@ -144,7 +144,7 @@ func (opp *DeactivateProcessor) Process(
 
 	opp.sb = opp.sb.Sub(opp.fee).AddFee(opp.fee)
 	v := opp.as.SetIsActive(false)
-	st, err := SetStateContractAccountStatusValue(opp.cs, v)
+	st, err := SetStateContractAccountValue(opp.cs, v)
 	if err != nil {
 		return operation.NewBaseReasonErrorFromError(err)
 	}

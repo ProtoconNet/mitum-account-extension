@@ -11,7 +11,7 @@ type ContractAccountStatusJSONPacker struct {
 	OW base.Address `json:"owner"`
 }
 
-func (cs ContractAccountStatus) MarshalJSON() ([]byte, error) {
+func (cs ContractAccount) MarshalJSON() ([]byte, error) {
 	return jsonenc.Marshal(ContractAccountStatusJSONPacker{
 		HintedHead: jsonenc.NewHintedHead(cs.Hint()),
 		IA:         cs.isActive,
@@ -24,7 +24,7 @@ type ContractAccountStatusJSONUnpacker struct {
 	OW base.AddressDecoder `json:"owner"`
 }
 
-func (cs *ContractAccountStatus) UnpackJSON(b []byte, enc *jsonenc.Encoder) error {
+func (cs *ContractAccount) UnpackJSON(b []byte, enc *jsonenc.Encoder) error {
 	var cuj ContractAccountStatusJSONUnpacker
 	if err := enc.Unmarshal(b, &cuj); err != nil {
 		return err

@@ -6,7 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (cs ContractAccountStatus) MarshalBSON() ([]byte, error) {
+func (cs ContractAccount) MarshalBSON() ([]byte, error) {
 	return bsonenc.Marshal(bsonenc.MergeBSONM(
 		bsonenc.NewHintedDoc(cs.Hint()),
 		bson.M{
@@ -21,7 +21,7 @@ type ContractAccountStatusBSONUnpacker struct {
 	OW base.AddressDecoder `bson:"owner"`
 }
 
-func (cs *ContractAccountStatus) UnpackBSON(b []byte, enc *bsonenc.Encoder) error {
+func (cs *ContractAccount) UnpackBSON(b []byte, enc *bsonenc.Encoder) error {
 	var cub ContractAccountStatusBSONUnpacker
 	if err := bsonenc.Unmarshal(b, &cub); err != nil {
 		return err

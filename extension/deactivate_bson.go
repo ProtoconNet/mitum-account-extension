@@ -21,7 +21,7 @@ func (fact DeactivateFact) MarshalBSON() ([]byte, error) {
 			}))
 }
 
-type KeyUpdaterFactBSONUnpacker struct {
+type DeactivateFactBSONUnpacker struct {
 	H  valuehash.Bytes     `bson:"hash"`
 	TK []byte              `bson:"token"`
 	SD base.AddressDecoder `bson:"sender"`
@@ -30,7 +30,7 @@ type KeyUpdaterFactBSONUnpacker struct {
 }
 
 func (fact *DeactivateFact) UnpackBSON(b []byte, enc *bsonenc.Encoder) error {
-	var ufact KeyUpdaterFactBSONUnpacker
+	var ufact DeactivateFactBSONUnpacker
 	if err := bson.Unmarshal(b, &ufact); err != nil {
 		return err
 	}

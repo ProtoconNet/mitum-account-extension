@@ -36,7 +36,7 @@ type WithdrawsItemProcessor struct {
 	h        valuehash.Hash
 	sender   base.Address
 	item     WithdrawsItem
-	required map[currency.CurrencyID][2]currency.Big
+	required map[currency.CurrencyID][2]currency.Big      // required amount
 	tb       map[currency.CurrencyID]currency.AmountState // all currency amount state of target account
 }
 
@@ -49,22 +49,23 @@ func (opp *WithdrawsItemProcessor) PreProcess(
 		return err
 	}
 
-	// check not existence of contract account status state
-	// check sender matched with contract account owner
-	st, err := existsState(StateKeyContractAccountStatus(opp.item.Target()), "contract account status", getState)
+	// check existence of dA status state
+	// check sender matched with dA owner
+	st, err := existsState(StateKeyContractAccount(opp.item.Target()), "decentralized account status", getState)
 	if err != nil {
 		return err
 	}
 
-	v, err := StateContractAccountStatusValue(st)
+	v, err := StateContractAccountValue(st)
 	if err != nil {
 		return err
 	}
 	if v.owner.Equal(opp.sender) {
-		return errors.Errorf("contract account owner is not matched with %q", opp.sender)
+		return errors.Errorf("decentralized account owner is not matched with %q", opp.sender)
 	}
 
-	// get all currency amount state of target account
+	// calculate required amount state of items
+	// keep required amount state
 	required := make(map[currency.CurrencyID][2]currency.Big)
 	for i := range opp.item.Amounts() {
 		am := opp.item.Amounts()[i]
@@ -100,8 +101,10 @@ func (opp *WithdrawsItemProcessor) PreProcess(
 		}
 	}
 
+	// check amount state of target
+	// check target has enough amount
+	// keep required amount state
 	tb := map[currency.CurrencyID]currency.AmountState{}
-
 	for cid := range required {
 		rq := required[cid]
 
@@ -119,6 +122,7 @@ func (opp *WithdrawsItemProcessor) PreProcess(
 			return operation.NewBaseReasonError(
 				"insufficient balance of sender, %s; %d !> %d", opp.item.Target().String(), am.Big(), rq[0].Add(rq[1]))
 		}
+		// currency.NewAmountState return amount state if st is amount state else return new zero amount state
 		tb[cid] = currency.NewAmountState(st, cid)
 	}
 	opp.required = required
@@ -132,6 +136,7 @@ func (opp *WithdrawsItemProcessor) Process(
 	_ func(valuehash.Hash, ...state.State) error,
 ) ([]state.State, error) {
 	var sts []state.State
+	// from required calculate target amount state
 	for k := range opp.required {
 		rq := opp.required[k]
 		sts = append(sts, opp.tb[k].Sub(rq[0]).AddFee(rq[1]))
@@ -158,7 +163,7 @@ type WithdrawsProcessor struct {
 	Withdraws
 	rb       map[currency.CurrencyID]currency.AmountState
 	tb       []*WithdrawsItemProcessor
-	required map[currency.CurrencyID][2]currency.Big
+	required map[currency.CurrencyID][2]currency.Big // all required amount in items
 }
 
 func NewWithdrawsProcessor(cp *currency.CurrencyPool) currency.GetNewProcessor {
@@ -186,16 +191,20 @@ func (opp *WithdrawsProcessor) PreProcess(
 ) (state.Processor, error) {
 	fact := opp.Fact().(WithdrawsFact)
 
+	// check fact sender(withdrawer) exist
 	if err := checkExistsState(currency.StateKeyAccount(fact.sender), getState); err != nil {
 		return nil, err
 	}
 
+	// calculate all required amount in items
 	if required, err := opp.calculateItemsFee(); err != nil {
 		return nil, operation.NewBaseReasonErrorFromError(err)
 	} else {
 		opp.required = required
 	}
 
+	// prepare fact sender(withdrawer) amount state
+	// keep fact sender(withdrawer) amount state map
 	rb := map[currency.CurrencyID]currency.AmountState{}
 	for cid := range opp.required {
 		if opp.cp != nil {
@@ -213,7 +222,8 @@ func (opp *WithdrawsProcessor) PreProcess(
 	}
 	opp.rb = rb
 
-	// prepare all withdraw item processor and receiver(op sender) state
+	// run preprocess of all withdraw item processor
+	// get all preprocessed withdraw item processor
 	tb := make([]*WithdrawsItemProcessor, len(fact.items))
 	for i := range fact.items {
 		c := withdrawsItemProcessorPool.Get().(*WithdrawsItemProcessor)
@@ -244,8 +254,9 @@ func (opp *WithdrawsProcessor) Process( // nolint:dupl
 ) error {
 	fact := opp.Fact().(WithdrawsFact)
 
-	// append all target account balance state
 	var sts []state.State // nolint:prealloc
+	// run process of all item processor
+	// get target(sender) amount state
 	for i := range opp.tb {
 		s, err := opp.tb[i].Process(getState, setState)
 		if err != nil {
@@ -254,7 +265,7 @@ func (opp *WithdrawsProcessor) Process( // nolint:dupl
 		sts = append(sts, s...)
 	}
 
-	// append receiver account balance state
+	// add required amount to sender(withdrawer) account amount
 	for k := range opp.required {
 		rq := opp.required[k]
 		sts = append(sts, opp.rb[k].Add(rq[0]))

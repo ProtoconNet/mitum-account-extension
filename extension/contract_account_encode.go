@@ -5,7 +5,7 @@ import (
 	"github.com/spikeekips/mitum/util/encoder"
 )
 
-func (cs *ContractAccountStatus) unpack(
+func (cs *ContractAccount) unpack(
 	enc encoder.Encoder,
 	ia bool,
 	ow base.AddressDecoder,

@@ -92,7 +92,7 @@ func (opp *CreateContractAccountsItemProcessor) PreProcess(
 
 	// check not existence of contract account status state
 	// keep contract account status state
-	st, err = notExistsState(StateKeyContractAccountStatus(target), "contract account status", getState)
+	st, err = notExistsState(StateKeyContractAccount(target), "contract account status", getState)
 	if err != nil {
 		return err
 	}
@@ -133,9 +133,9 @@ func (opp *CreateContractAccountsItemProcessor) Process(
 	if err != nil {
 		return nil, err
 	}
-	cas := NewContractAccountStatus(opp.oac.Address(), true)
+	cas := NewContractAccount(opp.oac.Address(), true)
 	// set contract account status value to state
-	ost, err := SetStateContractAccountStatusValue(opp.oas, cas)
+	ost, err := SetStateContractAccountValue(opp.oas, cas)
 	if err != nil {
 		return nil, operation.NewBaseReasonErrorFromError(err)
 	}

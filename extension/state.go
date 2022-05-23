@@ -12,33 +12,32 @@ import (
 )
 
 var (
-	StateKeyContractAccountStatusSuffix = ":contractaccountstatus"
-	StateKeyContractAccountActiveSuffix = ":contractaccountactive"
+	StateKeyContractAccountSuffix       = ":contractaccount"
 	StateKeyContractAccountConfigSuffix = ":contractaccountconfig"
 )
 
-func StateKeyContractAccountStatus(a base.Address) string {
-	return fmt.Sprintf("%s%s", a.String(), StateKeyContractAccountStatusSuffix)
+func StateKeyContractAccount(a base.Address) string {
+	return fmt.Sprintf("%s%s", a.String(), StateKeyContractAccountSuffix)
 }
 
-func IsStateContractAccountStatusKey(key string) bool {
-	return strings.HasSuffix(key, StateKeyContractAccountStatusSuffix)
+func IsStateContractAccountKey(key string) bool {
+	return strings.HasSuffix(key, StateKeyContractAccountSuffix)
 }
 
-func StateContractAccountStatusValue(st state.State) (ContractAccountStatus, error) {
+func StateContractAccountValue(st state.State) (ContractAccount, error) {
 	v := st.Value()
 	if v == nil {
-		return ContractAccountStatus{}, util.NotFoundError.Errorf("contract account status not found in State")
+		return ContractAccount{}, util.NotFoundError.Errorf("contract account status not found in State")
 	}
 
-	s, ok := v.Interface().(ContractAccountStatus)
+	s, ok := v.Interface().(ContractAccount)
 	if !ok {
-		return ContractAccountStatus{}, errors.Errorf("invalid contract account status value found, %T", v.Interface())
+		return ContractAccount{}, errors.Errorf("invalid contract account status value found, %T", v.Interface())
 	}
 	return s, nil
 }
 
-func SetStateContractAccountStatusValue(st state.State, v ContractAccountStatus) (state.State, error) {
+func SetStateContractAccountValue(st state.State, v ContractAccount) (state.State, error) {
 	uv, err := state.NewHintedValue(v)
 	if err != nil {
 		return nil, err
