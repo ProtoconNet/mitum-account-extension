@@ -322,6 +322,8 @@ github.com/spikeekips/mitum v0.0.0-20220408034603-1a0b360e6244 h1:Z/kdojpG7+g9EV
 github.com/spikeekips/mitum v0.0.0-20220408034603-1a0b360e6244/go.mod h1:pyP+AHGWNX6CaW7LL3DCTXcfz6KXrNZRKDVWaaa/+aY=
 github.com/spikeekips/mitum-currency v0.0.0-20220104094610-7b9f71974b4f h1:gufuVLWmOx592kUisqDiUiXGG9hxgkLHEDduBpuE7Es=
 github.com/spikeekips/mitum-currency v0.0.0-20220104094610-7b9f71974b4f/go.mod h1:EZe91ssD/8pHoNV69es0in62PQOIcCV3UzmnOmboykA=
+github.com/spikeekips/mitum-currency v0.0.0-20220408034738-9478186fe086 h1:hARGCoe6rIjjqDbqKjHfDJ/3N0OJcks299rPY6sDXls=
+github.com/spikeekips/mitum-currency v0.0.0-20220408034738-9478186fe086/go.mod h1:YYARgHBctsPLz4BsrtFfNIIjdijBQTNb6vCNuLiC4zM=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/objx v0.1.1/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXfy6kDkUVs=

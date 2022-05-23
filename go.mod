@@ -13,7 +13,7 @@ require (
 	github.com/rainycape/memcache v0.0.0-20150622160815-1031fa0ce2f2
 	github.com/rs/zerolog v1.26.0
 	github.com/spikeekips/mitum v0.0.0-20220408034603-1a0b360e6244
-	github.com/spikeekips/mitum-currency v0.0.0-20220104094610-7b9f71974b4f
+	github.com/spikeekips/mitum-currency v0.0.0-20220408034738-9478186fe086
 	github.com/stretchr/testify v1.7.0
 	github.com/ulule/limiter/v3 v3.9.0
 	go.mongodb.org/mongo-driver v1.8.0
