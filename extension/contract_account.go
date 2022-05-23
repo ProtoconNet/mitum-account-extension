@@ -2,7 +2,6 @@ package extension // nolint: dupl, revive
 
 import (
 	"github.com/spikeekips/mitum/base"
-	"github.com/spikeekips/mitum/base/state"
 	"github.com/spikeekips/mitum/util"
 	"github.com/spikeekips/mitum/util/hint"
 	"github.com/spikeekips/mitum/util/valuehash"
@@ -83,73 +82,4 @@ func (cs ContractAccount) Equal(b ContractAccount) bool {
 	}
 
 	return true
-}
-
-type Config interface {
-	ID() string            // id of state set in contract model
-	ConfigType() hint.Type // config type in contract model
-	Hint() hint.Hint
-	Bytes() []byte
-	Hash() valuehash.Hash
-	GenerateHash() valuehash.Hash
-	IsValid([]byte) error
-	Address() base.Address // contract account address
-	SetStateValue(st state.State) (state.State, error)
-}
-
-var (
-	BaseConfigDataType   = hint.Type("mitum-currency-contract-account-configdata")
-	BaseConfigDataHint   = hint.NewHint(BaseConfigDataType, "v0.0.1")
-	BaseConfigDataHinter = BaseConfigData{BaseHinter: hint.NewBaseHinter(BaseConfigDataHint)}
-)
-
-type BaseConfigData struct {
-	hint.BaseHinter
-	config Config
-}
-
-func NewBaseConfigData(cfg Config) (BaseConfigData, error) {
-	err := cfg.IsValid(nil)
-	if err != nil {
-		return BaseConfigData{}, err
-	}
-	bcfg := BaseConfigData{
-		BaseHinter: hint.NewBaseHinter(BaseConfigDataHint),
-		config:     cfg,
-	}
-	return bcfg, nil
-}
-
-func (cfd BaseConfigData) Config() Config {
-	return cfd.config
-}
-
-func (cfd BaseConfigData) SetConfig(cfg Config) (BaseConfigData, error) {
-	err := cfg.IsValid(nil)
-	if err != nil {
-		return BaseConfigData{}, err
-	}
-
-	cfd.config = cfg
-	return cfd, nil
-}
-
-func (cfd BaseConfigData) Hash() valuehash.Hash {
-	return cfd.GenerateHash()
-}
-
-func (cfd BaseConfigData) GenerateHash() valuehash.Hash {
-	return valuehash.NewSHA256(cfd.Bytes())
-}
-
-func (cfd BaseConfigData) Bytes() []byte {
-	return cfd.config.Bytes()
-}
-
-func (cfd BaseConfigData) IsValid([]byte) error {
-	return cfd.config.IsValid(nil)
-}
-
-func (cfd BaseConfigData) Equal(b BaseConfigData) bool {
-	return cfd.Equal(b)
 }
