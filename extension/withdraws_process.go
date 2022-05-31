@@ -3,6 +3,7 @@ package extension
 import (
 	"sync"
 
+	extensioncurrency "github.com/ProtoconNet/mitum-currency-extension/currency"
 	"github.com/pkg/errors"
 	"github.com/spikeekips/mitum-currency/currency"
 	"github.com/spikeekips/mitum/base"
@@ -32,7 +33,7 @@ func (Withdraws) Process(
 }
 
 type WithdrawsItemProcessor struct {
-	cp       *currency.CurrencyPool
+	cp       *extensioncurrency.CurrencyPool
 	h        valuehash.Hash
 	sender   base.Address
 	item     WithdrawsItem
@@ -60,7 +61,7 @@ func (opp *WithdrawsItemProcessor) PreProcess(
 	if err != nil {
 		return err
 	}
-	if v.owner.Equal(opp.sender) {
+	if !v.owner.Equal(opp.sender) {
 		return errors.Errorf("decentralized account owner is not matched with %q", opp.sender)
 	}
 
@@ -159,14 +160,14 @@ func (opp *WithdrawsItemProcessor) Close() error {
 }
 
 type WithdrawsProcessor struct {
-	cp *currency.CurrencyPool
+	cp *extensioncurrency.CurrencyPool
 	Withdraws
 	rb       map[currency.CurrencyID]currency.AmountState
 	tb       []*WithdrawsItemProcessor
 	required map[currency.CurrencyID][2]currency.Big // all required amount in items
 }
 
-func NewWithdrawsProcessor(cp *currency.CurrencyPool) currency.GetNewProcessor {
+func NewWithdrawsProcessor(cp *extensioncurrency.CurrencyPool) currency.GetNewProcessor {
 	return func(op state.Processor) (state.Processor, error) {
 		i, ok := op.(Withdraws)
 		if !ok {

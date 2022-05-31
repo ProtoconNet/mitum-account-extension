@@ -3,6 +3,7 @@ package extension
 import (
 	"sync"
 
+	extensioncurrency "github.com/ProtoconNet/mitum-currency-extension/currency"
 	"github.com/pkg/errors"
 	"github.com/spikeekips/mitum-currency/currency"
 	"github.com/spikeekips/mitum/base"
@@ -31,7 +32,7 @@ func (CreateContractAccounts) Process(
 }
 
 type CreateContractAccountsItemProcessor struct {
-	cp     *currency.CurrencyPool
+	cp     *extensioncurrency.CurrencyPool
 	h      valuehash.Hash
 	sender base.Address
 	item   CreateContractAccountsItem
@@ -49,7 +50,7 @@ func (opp *CreateContractAccountsItemProcessor) PreProcess(
 		am := opp.item.Amounts()[i]
 
 		// check currency registered
-		var policy currency.CurrencyPolicy
+		var policy extensioncurrency.CurrencyPolicy
 		if opp.cp != nil {
 			i, found := opp.cp.Policy(am.Currency())
 			if !found {
@@ -169,14 +170,14 @@ func (opp *CreateContractAccountsItemProcessor) Close() error {
 }
 
 type CreateContractAccountsProcessor struct {
-	cp *currency.CurrencyPool
+	cp *extensioncurrency.CurrencyPool
 	CreateContractAccounts
 	sb       map[currency.CurrencyID]currency.AmountState
 	ns       []*CreateContractAccountsItemProcessor
 	required map[currency.CurrencyID][2]currency.Big
 }
 
-func NewCreateContractAccountsProcessor(cp *currency.CurrencyPool) currency.GetNewProcessor {
+func NewCreateContractAccountsProcessor(cp *extensioncurrency.CurrencyPool) currency.GetNewProcessor {
 	return func(op state.Processor) (state.Processor, error) {
 		i, ok := op.(CreateContractAccounts)
 		if !ok {
@@ -285,7 +286,7 @@ func (opp *CreateContractAccountsProcessor) calculateItemsFee() (map[currency.Cu
 	return CalculateItemsFee(opp.cp, items)
 }
 
-func CalculateItemsFee(cp *currency.CurrencyPool, items []AmountsItem) (map[currency.CurrencyID][2]currency.Big, error) {
+func CalculateItemsFee(cp *extensioncurrency.CurrencyPool, items []AmountsItem) (map[currency.CurrencyID][2]currency.Big, error) {
 	required := map[currency.CurrencyID][2]currency.Big{}
 
 	for i := range items {

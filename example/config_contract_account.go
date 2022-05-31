@@ -15,7 +15,7 @@ var (
 	ConfigContractAccountFactHinter = ConfigContractAccountFact{BaseHinter: hint.NewBaseHinter(ConfigContractAccountFactHint)}
 	ConfigContractAccountType       = hint.Type("mitum-currency-config-contract-account-operation")
 	ConfigContractAccountHint       = hint.NewHint(ConfigContractAccountType, "v0.0.1")
-	ConfigContractAccountHinter     = ConfigContractAccount{BaseOperation: operationHinter(ConfigContractAccountHint)}
+	ConfigContractAccountHinter     = ConfigContractAccount{BaseOperation: OperationHinter(ConfigContractAccountHint)}
 )
 
 type ConfigContractAccountFact struct {

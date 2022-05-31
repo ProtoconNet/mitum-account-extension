@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ProtoconNet/mitum-account-extension/extension"
+	"github.com/ProtoconNet/mitum-currency-extension/extension"
 	"github.com/pkg/errors"
 	"github.com/spikeekips/mitum-currency/currency"
 	"github.com/spikeekips/mitum/base/block"

@@ -1,3 +1,4 @@
+//go:build mongodb
 // +build mongodb
 
 package digest
@@ -100,7 +101,7 @@ func (t *testCurrency) TestLoad() {
 		t.NoError(mst.NewState(st))
 	}
 
-	cp := currency.NewCurrencyPool()
+	cp := extensioncurrency.NewCurrencyPool()
 
 	t.NoError(LoadCurrenciesFromDatabase(mst, base.NilHeight, func(sta state.State) (bool, error) {
 		t.NoError(cp.Set(sta))

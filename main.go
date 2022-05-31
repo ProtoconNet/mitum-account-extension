@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ProtoconNet/mitum-account-extension/cmds"
+	"github.com/ProtoconNet/mitum-currency-extension/cmds"
 	"github.com/alecthomas/kong"
 	currencycmds "github.com/spikeekips/mitum-currency/cmds"
 	mitumcmds "github.com/spikeekips/mitum/launch/cmds"

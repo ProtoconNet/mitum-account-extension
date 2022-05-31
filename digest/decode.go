@@ -77,7 +77,6 @@ func LoadContractAccountStatus(decoder func(interface{}) error, encs *encoder.En
 	}
 
 	if _, hinter, err := mongodbstorage.LoadDataFromDoc(b, encs); err != nil {
-		fmt.Println(err)
 		return nil, err
 	} else if st, ok := hinter.(state.State); !ok {
 		fmt.Printf("not ContractAccountStatus : %T", hinter)

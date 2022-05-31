@@ -1,10 +1,12 @@
-package extension // nolint: dupl, revive
+package operation // nolint: dupl, revive
 
 import (
 	"fmt"
 	"io"
 	"sync"
 
+	extensioncurrency "github.com/ProtoconNet/mitum-currency-extension/currency"
+	"github.com/ProtoconNet/mitum-currency-extension/extension"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	"github.com/spikeekips/mitum-currency/currency"
@@ -37,7 +39,7 @@ type OperationProcessor struct {
 	sync.RWMutex
 	*logging.Logging
 	processorHintSet     *hint.Hintmap
-	cp                   *currency.CurrencyPool
+	cp                   *extensioncurrency.CurrencyPool
 	pool                 *storage.Statepool
 	fee                  map[currency.CurrencyID]currency.Big
 	amountPool           map[string]currency.AmountState
@@ -46,7 +48,7 @@ type OperationProcessor struct {
 	processorClosers     *sync.Map
 }
 
-func NewOperationProcessor(cp *currency.CurrencyPool) *OperationProcessor {
+func NewOperationProcessor(cp *extensioncurrency.CurrencyPool) *OperationProcessor {
 	return &OperationProcessor{
 		Logging: logging.NewLogging(func(c zerolog.Context) zerolog.Context {
 			return c.Str("module", "mitum-currency-operations-processor")
@@ -142,25 +144,25 @@ func (opr *OperationProcessor) PreProcess(op state.Processor) (state.Processor, 
 
 func (opr *OperationProcessor) Process(op state.Processor) error {
 	switch op.(type) {
-	case *currency.TransfersProcessor,
-		*currency.CreateAccountsProcessor,
-		*currency.KeyUpdaterProcessor,
-		*currency.CurrencyRegisterProcessor,
-		*currency.CurrencyPolicyUpdaterProcessor,
-		*currency.SuffrageInflationProcessor,
-		*CreateContractAccountsProcessor,
-		*DeactivateProcessor,
-		*WithdrawsProcessor:
+	case *extensioncurrency.TransfersProcessor,
+		*extensioncurrency.CreateAccountsProcessor,
+		*extensioncurrency.KeyUpdaterProcessor,
+		*extensioncurrency.CurrencyRegisterProcessor,
+		*extensioncurrency.CurrencyPolicyUpdaterProcessor,
+		*extensioncurrency.SuffrageInflationProcessor,
+		*extension.CreateContractAccountsProcessor,
+		*extension.DeactivateProcessor,
+		*extension.WithdrawsProcessor:
 		return opr.process(op)
 	case currency.Transfers,
 		currency.CreateAccounts,
 		currency.KeyUpdater,
-		currency.CurrencyRegister,
-		currency.CurrencyPolicyUpdater,
-		currency.SuffrageInflation,
-		CreateContractAccounts,
-		Deactivate,
-		Withdraws:
+		extensioncurrency.CurrencyRegister,
+		extensioncurrency.CurrencyPolicyUpdater,
+		extensioncurrency.SuffrageInflation,
+		extension.CreateContractAccounts,
+		extension.Deactivate,
+		extension.Withdraws:
 		pr, err := opr.PreProcess(op)
 		if err != nil {
 			return err
@@ -175,17 +177,17 @@ func (opr *OperationProcessor) process(op state.Processor) error {
 	var sp state.Processor
 
 	switch t := op.(type) {
-	case *currency.TransfersProcessor:
+	case *extensioncurrency.TransfersProcessor:
 		sp = t
-	case *currency.CreateAccountsProcessor:
+	case *extensioncurrency.CreateAccountsProcessor:
 		sp = t
-	case *currency.KeyUpdaterProcessor:
+	case *extensioncurrency.KeyUpdaterProcessor:
 		sp = t
-	case *CreateContractAccountsProcessor:
+	case *extension.CreateContractAccountsProcessor:
 		sp = t
-	case *DeactivateProcessor:
+	case *extension.DeactivateProcessor:
 		sp = t
-	case *WithdrawsProcessor:
+	case *extension.WithdrawsProcessor:
 		sp = t
 	default:
 		return op.Process(opr.pool.Get, opr.pool.Set)
@@ -218,20 +220,20 @@ func (opr *OperationProcessor) checkDuplication(op state.Processor) error { // n
 	case currency.KeyUpdater:
 		did = t.Fact().(currency.KeyUpdaterFact).Target().String()
 		didtype = DuplicationTypeSender
-	case currency.CurrencyRegister:
-		did = t.Fact().(currency.CurrencyRegisterFact).Currency().Currency().String()
+	case extensioncurrency.CurrencyRegister:
+		did = t.Fact().(extensioncurrency.CurrencyRegisterFact).Currency().Currency().String()
 		didtype = DuplicationTypeCurrency
-	case currency.CurrencyPolicyUpdater:
-		did = t.Fact().(currency.CurrencyPolicyUpdaterFact).Currency().String()
+	case extensioncurrency.CurrencyPolicyUpdater:
+		did = t.Fact().(extensioncurrency.CurrencyPolicyUpdaterFact).Currency().String()
 		didtype = DuplicationTypeCurrency
-	case CreateContractAccounts:
-		did = t.Fact().(CreateContractAccountsFact).Sender().String()
+	case extension.CreateContractAccounts:
+		did = t.Fact().(extension.CreateContractAccountsFact).Sender().String()
 		didtype = DuplicationTypeSender
-	case Deactivate:
-		did = t.Fact().(DeactivateFact).Sender().String()
+	case extension.Deactivate:
+		did = t.Fact().(extension.DeactivateFact).Sender().String()
 		didtype = DuplicationTypeSender
-	case Withdraws:
-		did = t.Fact().(WithdrawsFact).Sender().String()
+	case extension.Withdraws:
+		did = t.Fact().(extension.WithdrawsFact).Sender().String()
 		didtype = DuplicationTypeSender
 	default:
 		return nil
@@ -282,9 +284,9 @@ func (opr *OperationProcessor) Close() error {
 	defer opr.close()
 
 	if opr.cp != nil && len(opr.fee) > 0 {
-		op := currency.NewFeeOperation(currency.NewFeeOperationFact(opr.pool.Height(), opr.fee))
+		op := extensioncurrency.NewFeeOperation(extensioncurrency.NewFeeOperationFact(opr.pool.Height(), opr.fee))
 
-		pr := currency.NewFeeOperationProcessor(opr.cp, op)
+		pr := extensioncurrency.NewFeeOperationProcessor(opr.cp, op)
 		if err := pr.Process(opr.pool.Get, opr.pool.Set); err != nil {
 			return err
 		}
@@ -315,12 +317,12 @@ func (opr *OperationProcessor) getNewProcessor(op state.Processor) (state.Proces
 	case currency.Transfers,
 		currency.CreateAccounts,
 		currency.KeyUpdater,
-		currency.CurrencyRegister,
-		currency.CurrencyPolicyUpdater,
-		currency.SuffrageInflation,
-		CreateContractAccounts,
-		Deactivate,
-		Withdraws:
+		extensioncurrency.CurrencyRegister,
+		extensioncurrency.CurrencyPolicyUpdater,
+		extensioncurrency.SuffrageInflation,
+		extension.CreateContractAccounts,
+		extension.Deactivate,
+		extension.Withdraws:
 
 		return nil, false, errors.Errorf("%T needs SetProcessor", t)
 	default:

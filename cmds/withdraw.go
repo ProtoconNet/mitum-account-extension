@@ -1,7 +1,7 @@
 package cmds
 
 import (
-	"github.com/ProtoconNet/mitum-account-extension/extension"
+	"github.com/ProtoconNet/mitum-currency-extension/extension"
 	"github.com/pkg/errors"
 
 	currencycmds "github.com/spikeekips/mitum-currency/cmds"

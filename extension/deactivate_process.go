@@ -3,6 +3,7 @@ package extension
 import (
 	"sync"
 
+	extensioncurrency "github.com/ProtoconNet/mitum-currency-extension/currency"
 	"github.com/pkg/errors"
 	"github.com/spikeekips/mitum-currency/currency"
 	"github.com/spikeekips/mitum/base/operation"
@@ -24,7 +25,7 @@ func (Deactivate) Process(
 }
 
 type DeactivateProcessor struct {
-	cp *currency.CurrencyPool
+	cp *extensioncurrency.CurrencyPool
 	Deactivate
 	cs  state.State          // contract account status state
 	sb  currency.AmountState // sender amount state
@@ -32,7 +33,7 @@ type DeactivateProcessor struct {
 	as  ContractAccount // contract account status value
 }
 
-func NewDeactivateProcessor(cp *currency.CurrencyPool) currency.GetNewProcessor {
+func NewDeactivateProcessor(cp *extensioncurrency.CurrencyPool) currency.GetNewProcessor {
 	return func(op state.Processor) (state.Processor, error) {
 		i, ok := op.(Deactivate)
 		if !ok {
