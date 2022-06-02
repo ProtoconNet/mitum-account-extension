@@ -25,15 +25,15 @@ func IsStateExampleConfigKey(key string) bool {
 	return strings.HasSuffix(key, StateKeyExampleConfigSuffix)
 }
 
-func StateExampleConfigValue(st state.State) (extension.BaseConfigData, error) {
+func StateExampleConfigValue(st state.State) (extensioncurrency.BaseConfigData, error) {
 	v := st.Value()
 	if v == nil {
-		return extension.BaseConfigData{}, util.NotFoundError.Errorf("not found BaseConfigData in State")
+		return extensioncurrency.BaseConfigData{}, util.NotFoundError.Errorf("not found BaseConfigData in State")
 	}
 
-	s, ok := v.Interface().(extension.BaseConfigData)
+	s, ok := v.Interface().(extensioncurrency.BaseConfigData)
 	if !ok {
-		return extension.BaseConfigData{}, errors.Errorf("invalid BaseConfigData value found, %T", v.Interface())
+		return extensioncurrency.BaseConfigData{}, errors.Errorf("invalid BaseConfigData value found, %T", v.Interface())
 	}
 	return s, nil
 }

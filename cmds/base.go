@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	extensioncurrency "github.com/ProtoconNet/mitum-currency-extension/currency"
-	"github.com/ProtoconNet/mitum-currency-extension/extension"
 	"github.com/ProtoconNet/mitum-currency-extension/operation"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
@@ -159,11 +158,11 @@ func AttachProposalProcessor(
 		return nil, err
 	} else if _, err := opr.SetProcessor(currency.TransfersHinter, extensioncurrency.NewTransfersProcessor(cp)); err != nil {
 		return nil, err
-	} else if _, err := opr.SetProcessor(extension.CreateContractAccountsHinter, extension.NewCreateContractAccountsProcessor(cp)); err != nil {
+	} else if _, err := opr.SetProcessor(extensioncurrency.CreateContractAccountsHinter, extensioncurrency.NewCreateContractAccountsProcessor(cp)); err != nil {
 		return nil, err
-	} else if _, err := opr.SetProcessor(extension.DeactivateHinter, extension.NewDeactivateProcessor(cp)); err != nil {
+	} else if _, err := opr.SetProcessor(extensioncurrency.DeactivateHinter, extensioncurrency.NewDeactivateProcessor(cp)); err != nil {
 		return nil, err
-	} else if _, err := opr.SetProcessor(extension.WithdrawsHinter, extension.NewWithdrawsProcessor(cp)); err != nil {
+	} else if _, err := opr.SetProcessor(extensioncurrency.WithdrawsHinter, extensioncurrency.NewWithdrawsProcessor(cp)); err != nil {
 		return nil, err
 	}
 
@@ -224,9 +223,9 @@ func InitializeProposalProcessor(ctx context.Context, opr *operation.OperationPr
 		extensioncurrency.CurrencyPolicyUpdaterHinter,
 		extensioncurrency.CurrencyRegisterHinter,
 		extensioncurrency.SuffrageInflationHinter,
-		extension.CreateContractAccountsHinter,
-		extension.DeactivateHinter,
-		extension.WithdrawsHinter,
+		extensioncurrency.CreateContractAccountsHinter,
+		extensioncurrency.DeactivateHinter,
+		extensioncurrency.WithdrawsHinter,
 	} {
 		if err := oprs.Add(hinter, opr); err != nil {
 			return ctx, err

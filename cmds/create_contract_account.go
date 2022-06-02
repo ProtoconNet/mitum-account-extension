@@ -3,7 +3,7 @@ package cmds
 import (
 	"bytes"
 
-	"github.com/ProtoconNet/mitum-currency-extension/extension"
+	extensioncurrency "github.com/ProtoconNet/mitum-currency-extension/currency"
 	"github.com/pkg/errors"
 
 	currencycmds "github.com/spikeekips/mitum-currency/cmds"
@@ -105,10 +105,10 @@ func (cmd *CreateContractAccountCommand) createOperation() (operation.Operation,
 	if err != nil {
 		return nil, err
 	}
-	var items []extension.CreateContractAccountsItem
+	var items []extensioncurrency.CreateContractAccountsItem
 	for j := range i {
-		if t, ok := i[j].(extension.CreateContractAccounts); ok {
-			items = t.Fact().(extension.CreateContractAccountsFact).Items()
+		if t, ok := i[j].(extensioncurrency.CreateContractAccounts); ok {
+			items = t.Fact().(extensioncurrency.CreateContractAccountsFact).Items()
 		}
 	}
 
@@ -123,13 +123,13 @@ func (cmd *CreateContractAccountCommand) createOperation() (operation.Operation,
 		ams[i] = am
 	}
 
-	item := extension.NewCreateContractAccountsItemMultiAmounts(cmd.keys, ams)
+	item := extensioncurrency.NewCreateContractAccountsItemMultiAmounts(cmd.keys, ams)
 	if err = item.IsValid(nil); err != nil {
 		return nil, err
 	}
 	items = append(items, item)
 
-	fact := extension.NewCreateContractAccountsFact([]byte(cmd.Token), cmd.sender, items)
+	fact := extensioncurrency.NewCreateContractAccountsFact([]byte(cmd.Token), cmd.sender, items)
 
 	sig, err := base.NewFactSignature(cmd.Privatekey, fact, cmd.NetworkID.NetworkID())
 	if err != nil {
@@ -139,7 +139,7 @@ func (cmd *CreateContractAccountCommand) createOperation() (operation.Operation,
 		base.NewBaseFactSign(cmd.Privatekey.Publickey(), sig),
 	}
 
-	op, err := extension.NewCreateContractAccounts(fact, fs, cmd.Memo)
+	op, err := extensioncurrency.NewCreateContractAccounts(fact, fs, cmd.Memo)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create create-contract-account operation")
 	}

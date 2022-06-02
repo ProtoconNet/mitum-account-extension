@@ -1,7 +1,7 @@
 package cmds
 
 import (
-	"github.com/ProtoconNet/mitum-currency-extension/extension"
+	extensioncurrency "github.com/ProtoconNet/mitum-currency-extension/currency"
 	"github.com/pkg/errors"
 
 	currencycmds "github.com/spikeekips/mitum-currency/cmds"
@@ -84,10 +84,10 @@ func (cmd *WithdrawCommand) createOperation() (operation.Operation, error) { // 
 		return nil, err
 	}
 
-	var items []extension.WithdrawsItem
+	var items []extensioncurrency.WithdrawsItem
 	for j := range i {
 		if t, ok := i[j].(currency.Transfers); ok {
-			items = t.Fact().(extension.WithdrawsFact).Items()
+			items = t.Fact().(extensioncurrency.WithdrawsFact).Items()
 		}
 	}
 
@@ -102,13 +102,13 @@ func (cmd *WithdrawCommand) createOperation() (operation.Operation, error) { // 
 		ams[i] = am
 	}
 
-	item := extension.NewWithdrawsItemMultiAmounts(cmd.target, ams)
+	item := extensioncurrency.NewWithdrawsItemMultiAmounts(cmd.target, ams)
 	if err = item.IsValid(nil); err != nil {
 		return nil, err
 	}
 	items = append(items, item)
 
-	fact := extension.NewWithdrawsFact([]byte(cmd.Token), cmd.sender, items)
+	fact := extensioncurrency.NewWithdrawsFact([]byte(cmd.Token), cmd.sender, items)
 
 	var fs []base.FactSign
 	sig, err := base.NewFactSignature(cmd.Privatekey, fact, cmd.NetworkID.NetworkID())
@@ -117,7 +117,7 @@ func (cmd *WithdrawCommand) createOperation() (operation.Operation, error) { // 
 	}
 	fs = append(fs, base.NewBaseFactSign(cmd.Privatekey.Publickey(), sig))
 
-	op, err := extension.NewWithdraws(fact, fs, cmd.Memo)
+	op, err := extensioncurrency.NewWithdraws(fact, fs, cmd.Memo)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create withdraws operation")
 	}

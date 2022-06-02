@@ -15,15 +15,15 @@ var (
 	ConfigExampleHinter = configExample{BaseHinter: hint.NewBaseHinter(ConfigExampleHint)}
 )
 
-func NewBaseConfigData(id string, address base.Address) (extension.BaseConfigData, error) {
+func NewBaseConfigData(id string, address base.Address) (extensioncurrency.BaseConfigData, error) {
 	cfg := configExample{
 		BaseHinter: hint.NewBaseHinter(ConfigExampleHint),
 		id:         id,
 		address:    address,
 	}
-	bcfg, err := extension.NewBaseConfigData(cfg)
+	bcfg, err := extensioncurrency.NewBaseConfigData(cfg)
 	if err != nil {
-		return extension.BaseConfigData{}, err
+		return extensioncurrency.BaseConfigData{}, err
 	}
 	return bcfg, nil
 }

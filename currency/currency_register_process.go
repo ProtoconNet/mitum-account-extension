@@ -78,10 +78,17 @@ func (opp *CurrencyRegisterProcessor) PreProcess(
 		return nil, errors.Wrap(err, "genesis account not found")
 	}
 
-	if receiver := item.Policy().Feeer().Receiver(); receiver != nil {
+	receiver := item.Policy().Feeer().Receiver()
+	if receiver != nil {
 		if err := checkExistsState(currency.StateKeyAccount(receiver), getState); err != nil {
 			return nil, errors.Wrap(err, "feeer receiver account not found")
 		}
+	}
+
+	// check whether fee receiver is contract account
+	_, err := notExistsState(StateKeyContractAccount(receiver), "contract account status", getState)
+	if err != nil {
+		return nil, errors.Wrap(err, "feeer receiver account is contract account")
 	}
 
 	switch st, found, err := getState(StateKeyCurrencyDesign(item.Currency())); {

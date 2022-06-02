@@ -1,10 +1,8 @@
-package example
+package currency
 
-/*
 import (
 	"sync"
 
-	"github.com/ProtoconNet/mitum-account-extension/extension"
 	"github.com/pkg/errors"
 	"github.com/spikeekips/mitum-currency/currency"
 	"github.com/spikeekips/mitum/base/operation"
@@ -12,53 +10,53 @@ import (
 	"github.com/spikeekips/mitum/util/valuehash"
 )
 
-var configContractAccountProcessorPool = sync.Pool{
+var deactivateProcessorPool = sync.Pool{
 	New: func() interface{} {
-		return new(ConfigContractAccountProcessor)
+		return new(DeactivateProcessor)
 	},
 }
 
-func (ConfigContractAccount) Process(
+func (Deactivate) Process(
 	func(key string) (state.State, bool, error),
 	func(valuehash.Hash, ...state.State) error,
 ) error {
 	return nil
 }
 
-type ConfigContractAccountProcessor struct {
-	cp *currency.CurrencyPool
-	ConfigContractAccount
+type DeactivateProcessor struct {
+	cp *CurrencyPool
+	Deactivate
 	cs  state.State          // contract account status state
 	sb  currency.AmountState // sender amount state
 	fee currency.Big
-	as  extensioncurrency.ContractAccount // contract account status value
+	as  ContractAccount // contract account status value
 }
 
-func NewConfigContractAccountProcessor(cp *currency.CurrencyPool) currency.GetNewProcessor {
+func NewDeactivateProcessor(cp *CurrencyPool) currency.GetNewProcessor {
 	return func(op state.Processor) (state.Processor, error) {
-		i, ok := op.(ConfigContractAccount)
+		i, ok := op.(Deactivate)
 		if !ok {
-			return nil, errors.Errorf("not ConfigContractAccount, %T", op)
+			return nil, errors.Errorf("not Deactivate, %T", op)
 		}
 
-		opp := configContractAccountProcessorPool.Get().(*ConfigContractAccountProcessor)
+		opp := deactivateProcessorPool.Get().(*DeactivateProcessor)
 
 		opp.cp = cp
-		opp.ConfigContractAccount = i
+		opp.Deactivate = i
 		opp.cs = nil
 		opp.sb = currency.AmountState{}
 		opp.fee = currency.ZeroBig
-		opp.as = extensioncurrency.ContractAccount{}
+		opp.as = ContractAccount{}
 
 		return opp, nil
 	}
 }
 
-func (opp *ConfigContractAccountProcessor) PreProcess(
+func (opp *DeactivateProcessor) PreProcess(
 	getState func(string) (state.State, bool, error),
 	_ func(valuehash.Hash, ...state.State) error,
 ) (state.Processor, error) {
-	fact := opp.Fact().(ConfigContractAccountFact)
+	fact := opp.Fact().(DeactivateFact)
 
 	// check existence of target account state
 	// keep target account state
@@ -79,23 +77,23 @@ func (opp *ConfigContractAccountProcessor) PreProcess(
 		if !k.Equal(emptykeys) {
 			return nil, errors.Errorf("not contract account, contract account keys is not empty contract account keys")
 		}
-*/
-/*
+	*/
+
 	// check not existence of contract account status state
 	// check sender matched with contract account owner
-	st, err = existsState(extensioncurrency.StateKeyContractAccount(fact.target), "contract account status", getState)
+	st, err = existsState(StateKeyContractAccount(fact.target), "contract account status", getState)
 	if err != nil {
 		return nil, err
 	}
 
-	v, err := extensioncurrency.StateContractAccountValue(st)
+	v, err := StateContractAccountValue(st)
 	if err != nil {
 		return nil, err
 	}
-	if !v.Owner().Equal(fact.sender) {
-		return nil, errors.Errorf("contract account owner, %q is not matched with %q", v.Owner(), fact.sender)
+	if !v.owner.Equal(fact.sender) {
+		return nil, errors.Errorf("contract account owner, %q is not matched with %q", v.owner, fact.sender)
 	}
-	if !v.IsActive() {
+	if !v.isActive {
 		return nil, errors.Errorf("contract account is already deactivated, %q", fact.target)
 	}
 	opp.cs = st
@@ -138,30 +136,29 @@ func (opp *ConfigContractAccountProcessor) PreProcess(
 	return opp, nil
 }
 
-func (opp *ConfigContractAccountProcessor) Process(
+func (opp *DeactivateProcessor) Process(
 	_ func(key string) (state.State, bool, error),
 	setState func(valuehash.Hash, ...state.State) error,
 ) error {
-	fact := opp.Fact().(ConfigContractAccountFact)
+	fact := opp.Fact().(DeactivateFact)
 
 	opp.sb = opp.sb.Sub(opp.fee).AddFee(opp.fee)
-	v := configExample{}
-	st, err := setStateConfigExampleValue(opp.cs, v)
+	v := opp.as.SetIsActive(false)
+	st, err := SetStateContractAccountValue(opp.cs, v)
 	if err != nil {
 		return operation.NewBaseReasonErrorFromError(err)
 	}
 	return setState(fact.Hash(), st, opp.sb)
 }
 
-func (opp *ConfigContractAccountProcessor) Close() error {
+func (opp *DeactivateProcessor) Close() error {
 	opp.cp = nil
-	opp.ConfigContractAccount = ConfigContractAccount{}
+	opp.Deactivate = Deactivate{}
 	opp.cs = nil
 	opp.sb = currency.AmountState{}
 	opp.fee = currency.ZeroBig
 
-	configContractAccountProcessorPool.Put(opp)
+	deactivateProcessorPool.Put(opp)
 
 	return nil
 }
-*/

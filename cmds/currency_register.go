@@ -18,6 +18,10 @@ type CurrencyFixedFeeerFlags struct {
 	feeer             extensioncurrency.Feeer
 }
 
+func (fl *CurrencyFixedFeeerFlags) Feeer() extensioncurrency.Feeer {
+	return fl.feeer
+}
+
 func (fl *CurrencyFixedFeeerFlags) IsValid([]byte) error {
 	if len(fl.Receiver.String()) < 1 {
 		return nil
@@ -43,6 +47,10 @@ type CurrencyRatioFeeerFlags struct {
 	Max               currencycmds.BigFlag `name:"max" help:"maximum fee"`
 	ExchangeMinAmount currencycmds.BigFlag `name:"exchange-min-amount" help:"exchange fee amount"`
 	feeer             extensioncurrency.Feeer
+}
+
+func (fl *CurrencyRatioFeeerFlags) Feeer() extensioncurrency.Feeer {
+	return fl.feeer
 }
 
 func (fl *CurrencyRatioFeeerFlags) IsValid([]byte) error {
@@ -79,7 +87,11 @@ type CurrencyDesignFlags struct {
 	FeeerString             string `name:"feeer" help:"feeer type, {nil, fixed, ratio}" required:"true"`
 	CurrencyFixedFeeerFlags `prefix:"feeer-fixed-" help:"fixed feeer"`
 	CurrencyRatioFeeerFlags `prefix:"feeer-ratio-" help:"ratio feeer"`
-	CurrencyDesign          extensioncurrency.CurrencyDesign
+	currencyDesign          extensioncurrency.CurrencyDesign
+}
+
+func (fl *CurrencyDesignFlags) CurrencyDesign() extensioncurrency.CurrencyDesign {
+	return fl.currencyDesign
 }
 
 func (fl *CurrencyDesignFlags) IsValid([]byte) error {
@@ -128,8 +140,8 @@ func (fl *CurrencyDesignFlags) IsValid([]byte) error {
 		return err
 	}
 
-	fl.CurrencyDesign = extensioncurrency.NewCurrencyDesign(am, genesisAccount, po)
-	return fl.CurrencyDesign.IsValid(nil)
+	fl.currencyDesign = extensioncurrency.NewCurrencyDesign(am, genesisAccount, po)
+	return fl.currencyDesign.IsValid(nil)
 }
 
 type CurrencyRegisterCommand struct {
@@ -186,13 +198,13 @@ func (cmd *CurrencyRegisterCommand) parseFlags() error {
 		return err
 	}
 
-	cmd.Log().Debug().Interface("currency-design", cmd.CurrencyDesignFlags.CurrencyDesign).Msg("currency design loaded")
+	cmd.Log().Debug().Interface("currency-design", cmd.CurrencyDesignFlags.currencyDesign).Msg("currency design loaded")
 
 	return nil
 }
 
 func (cmd *CurrencyRegisterCommand) createOperation() (extensioncurrency.CurrencyRegister, error) {
-	fact := extensioncurrency.NewCurrencyRegisterFact([]byte(cmd.Token), cmd.CurrencyDesign)
+	fact := extensioncurrency.NewCurrencyRegisterFact([]byte(cmd.Token), cmd.currencyDesign)
 
 	var fs []base.FactSign
 	sig, err := base.NewFactSignature(

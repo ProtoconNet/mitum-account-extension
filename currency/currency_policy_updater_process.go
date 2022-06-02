@@ -79,10 +79,17 @@ func (opp *CurrencyPolicyUpdaterProcessor) PreProcess(
 		opp.de, _ = opp.cp.Get(fact.Currency())
 	}
 
-	if receiver := fact.Policy().Feeer().Receiver(); receiver != nil {
+	receiver := fact.Policy().Feeer().Receiver()
+	if receiver != nil {
 		if err := checkExistsState(currency.StateKeyAccount(receiver), getState); err != nil {
 			return nil, errors.Wrap(err, "feeer receiver account not found")
 		}
+	}
+
+	// check whether fee receiver is contract account
+	_, err := notExistsState(StateKeyContractAccount(receiver), "contract account status", getState)
+	if err != nil {
+		return nil, errors.Wrap(err, "feeer receiver account is contract account")
 	}
 
 	return opp, nil
