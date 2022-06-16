@@ -32,6 +32,14 @@ func NewSuffrageInflationItem(receiver base.Address, amount currency.Amount) Suf
 	}
 }
 
+func (item SuffrageInflationItem) Amount() currency.Amount {
+	return item.amount
+}
+
+func (item SuffrageInflationItem) Receiver() base.Address {
+	return item.receiver
+}
+
 func (item SuffrageInflationItem) Bytes() []byte {
 	var br []byte
 	if item.receiver != nil {

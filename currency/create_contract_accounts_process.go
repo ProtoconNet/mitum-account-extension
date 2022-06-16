@@ -328,8 +328,8 @@ func CheckEnoughBalance(
 	holder base.Address,
 	required map[currency.CurrencyID][2]currency.Big,
 	getState func(key string) (state.State, bool, error),
-) (map[currency.CurrencyID]currency.AmountState, error) {
-	sb := map[currency.CurrencyID]currency.AmountState{}
+) (map[currency.CurrencyID]AmountState, error) {
+	sb := map[currency.CurrencyID]AmountState{}
 
 	for cid := range required {
 		rq := required[cid]

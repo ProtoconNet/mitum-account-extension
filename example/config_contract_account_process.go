@@ -29,7 +29,7 @@ type ConfigContractAccountProcessor struct {
 	cp *currency.CurrencyPool
 	ConfigContractAccount
 	cs  state.State          // contract account status state
-	sb  currency.AmountState // sender amount state
+	sb  AmountState // sender amount state
 	fee currency.Big
 	as  extensioncurrency.ContractAccount // contract account status value
 }
@@ -46,7 +46,7 @@ func NewConfigContractAccountProcessor(cp *currency.CurrencyPool) currency.GetNe
 		opp.cp = cp
 		opp.ConfigContractAccount = i
 		opp.cs = nil
-		opp.sb = currency.AmountState{}
+		opp.sb = AmountState{}
 		opp.fee = currency.ZeroBig
 		opp.as = extensioncurrency.ContractAccount{}
 
@@ -107,7 +107,7 @@ func (opp *ConfigContractAccountProcessor) PreProcess(
 	if err != nil {
 		return nil, err
 	}
-	opp.sb = currency.NewAmountState(st, fact.currency)
+	opp.sb = NewAmountState(st, fact.currency)
 
 	// check fact sign
 	if err = checkFactSignsByState(fact.sender, opp.Signs(), getState); err != nil {
@@ -157,7 +157,7 @@ func (opp *ConfigContractAccountProcessor) Close() error {
 	opp.cp = nil
 	opp.ConfigContractAccount = ConfigContractAccount{}
 	opp.cs = nil
-	opp.sb = currency.AmountState{}
+	opp.sb = AmountState{}
 	opp.fee = currency.ZeroBig
 
 	configContractAccountProcessorPool.Put(opp)

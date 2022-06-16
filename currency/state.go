@@ -16,6 +16,8 @@ var (
 	StateKeyContractAccountSuffix = ":contractaccount"
 )
 
+type StateKeyBalanceSuffix string
+
 func StateKeyContractAccount(a base.Address) string {
 	return fmt.Sprintf("%s%s", a.String(), StateKeyContractAccountSuffix)
 }
@@ -45,7 +47,40 @@ func SetStateContractAccountValue(st state.State, v ContractAccount) (state.Stat
 	return st.SetValue(uv)
 }
 
-var StateKeyCurrencyDesignPrefix = "currencyextensiondesign:"
+func StateBalanceKeyPrefix(a base.Address, id ContractID, cid currency.CurrencyID) string {
+	return fmt.Sprintf("%s-%s-%s", a.String(), id, cid)
+}
+
+func StateKeyBalance(a base.Address, id ContractID, cid currency.CurrencyID, suffix StateKeyBalanceSuffix) string {
+	return fmt.Sprintf("%s%s", StateBalanceKeyPrefix(a, id, cid), suffix)
+}
+
+func IsStateBalanceKey(key string, suffix StateKeyBalanceSuffix) bool {
+	return strings.HasSuffix(key, string(suffix))
+}
+
+func StateBalanceValue(st state.State) (AmountValue, error) {
+	v := st.Value()
+	if v == nil {
+		return AmountValue{}, util.NotFoundError.Errorf("AmountValue not found in State")
+	}
+
+	s, ok := v.Interface().(AmountValue)
+	if !ok {
+		return AmountValue{}, errors.Errorf("invalid AmountValue found, %T", v.Interface())
+	}
+	return s, nil
+}
+
+func SetStateBalanceValue(st state.State, v AmountValue) (state.State, error) {
+	uv, err := state.NewHintedValue(v)
+	if err != nil {
+		return nil, err
+	}
+	return st.SetValue(uv)
+}
+
+var StateKeyCurrencyDesignPrefix = "extensioncurrencydesign:"
 
 func IsStateCurrencyDesignKey(key string) bool {
 	return strings.HasPrefix(key, StateKeyCurrencyDesignPrefix)

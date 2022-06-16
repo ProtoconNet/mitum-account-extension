@@ -253,7 +253,7 @@ func CalculateItemsFee(cp *CurrencyPool, items []currency.AmountsItem) (map[curr
 
 			feeer, found := cp.Feeer(am.Currency())
 			if !found {
-				return nil, errors.Errorf("unknown currency id found, %q", am.Currency())
+				return nil, operation.NewBaseReasonError("unknown currency id found, %q", am.Currency())
 			}
 			switch k, err := feeer.Fee(am.Big()); {
 			case err != nil:

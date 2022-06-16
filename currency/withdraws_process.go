@@ -61,7 +61,7 @@ func (opp *WithdrawsItemProcessor) PreProcess(
 		return err
 	}
 	if !v.owner.Equal(opp.sender) {
-		return errors.Errorf("decentralized account owner is not matched with %q", opp.sender)
+		return operation.NewBaseReasonError("decentralized account owner is not matched with %q", opp.sender)
 	}
 
 	// calculate required amount state of items
@@ -86,7 +86,7 @@ func (opp *WithdrawsItemProcessor) PreProcess(
 		feeer, found := opp.cp.Feeer(am.Currency())
 		// if feeer not found, unknown currency id
 		if !found {
-			return errors.Errorf("unknown currency id found, %q", am.Currency())
+			return operation.NewBaseReasonError("unknown currency id found, %q", am.Currency())
 		}
 		// known fee
 		switch k, err := feeer.Fee(am.Big()); {
@@ -122,7 +122,7 @@ func (opp *WithdrawsItemProcessor) PreProcess(
 			return operation.NewBaseReasonError(
 				"insufficient balance of sender, %s; %d !> %d", opp.item.Target().String(), am.Big(), rq[0].Add(rq[1]))
 		}
-		// currency.NewAmountState return amount state if st is amount state else return new zero amount state
+		// NewAmountState return amount state if st is amount state else return new zero amount state
 		tb[cid] = currency.NewAmountState(st, cid)
 	}
 	opp.required = required
@@ -209,7 +209,7 @@ func (opp *WithdrawsProcessor) PreProcess(
 	for cid := range opp.required {
 		if opp.cp != nil {
 			if !opp.cp.Exists(cid) {
-				return nil, errors.Errorf("currency not registered, %q", cid)
+				return nil, operation.NewBaseReasonError("currency not registered, %q", cid)
 			}
 		}
 

@@ -80,6 +80,11 @@ func (de CurrencyDesign) GenesisAccount() base.Address {
 	return de.genesisAccount
 }
 
+func (de CurrencyDesign) SetGenesisAccount(a base.Address) CurrencyDesign {
+	de.genesisAccount = a
+	return de
+}
+
 func (de CurrencyDesign) Policy() CurrencyPolicy {
 	return de.policy
 }

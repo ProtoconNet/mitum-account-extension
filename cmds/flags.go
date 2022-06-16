@@ -1,6 +1,7 @@
 package cmds
 
 import (
+	extensioncurrency "github.com/ProtoconNet/mitum-currency-extension/currency"
 	"github.com/spikeekips/mitum/base"
 	"github.com/spikeekips/mitum/util/encoder"
 )
@@ -21,4 +22,22 @@ func (v *AddressFlag) String() string {
 
 func (v *AddressFlag) Encode(enc encoder.Encoder) (base.Address, error) {
 	return base.DecodeAddressFromString(v.s, enc)
+}
+
+type ContractIDFlag struct {
+	ID extensioncurrency.ContractID
+}
+
+func (v *ContractIDFlag) UnmarshalText(b []byte) error {
+	cid := extensioncurrency.ContractID(string(b))
+	if err := cid.IsValid(nil); err != nil {
+		return err
+	}
+	v.ID = cid
+
+	return nil
+}
+
+func (v *ContractIDFlag) String() string {
+	return v.ID.String()
 }

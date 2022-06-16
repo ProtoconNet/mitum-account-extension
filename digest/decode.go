@@ -1,8 +1,6 @@
 package digest
 
 import (
-	"fmt"
-
 	"github.com/pkg/errors"
 	"github.com/spikeekips/mitum/base/state"
 	mongodbstorage "github.com/spikeekips/mitum/storage/mongodb"
@@ -79,7 +77,6 @@ func LoadContractAccountStatus(decoder func(interface{}) error, encs *encoder.En
 	if _, hinter, err := mongodbstorage.LoadDataFromDoc(b, encs); err != nil {
 		return nil, err
 	} else if st, ok := hinter.(state.State); !ok {
-		fmt.Printf("not ContractAccountStatus : %T", hinter)
 		return nil, errors.Errorf("not ContractAccountStatus : %T", hinter)
 	} else {
 		return st, nil
