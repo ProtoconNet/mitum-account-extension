@@ -106,9 +106,9 @@ func (cid ContractID) String() string {
 func (cid ContractID) IsValid([]byte) error {
 	if l := len(cid); l < MinLengthContractID || l > MaxLengthContractID {
 		return isvalid.InvalidError.Errorf(
-			"invalid length of currency id, %d <= %d <= %d", MinLengthContractID, l, MaxLengthContractID)
+			"invalid length of contract id, %d <= %d <= %d", MinLengthContractID, l, MaxLengthContractID)
 	} else if !ReValidContractID.Match([]byte(cid)) {
-		return isvalid.InvalidError.Errorf("wrong currency id, %q", cid)
+		return isvalid.InvalidError.Errorf("wrong contract id, %q", cid)
 	}
 
 	return nil
