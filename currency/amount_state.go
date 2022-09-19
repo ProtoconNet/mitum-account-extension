@@ -67,8 +67,13 @@ func (st AmountState) Merge(b state.State) (state.State, error) {
 	} else {
 		am = b
 	}
+
+	amountState, ok := b.(AmountState)
+	if !ok {
+		return nil, errors.Errorf("expected AmountState, not %T", b)
+	}
 	return SetStateBalanceValue(
-		st.AddFee(b.(AmountState).fee),
+		st.AddFee(amountState.fee),
 		am.WithBig(am.amount.Big().Add(st.add)),
 	)
 }
