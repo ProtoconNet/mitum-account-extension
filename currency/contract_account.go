@@ -90,7 +90,7 @@ func (cs ContractAccount) Equal(b ContractAccount) bool {
 var (
 	MinLengthContractID = 3
 	MaxLengthContractID = 10
-	ReValidContractID   = regexp.MustCompile(`^[A-Z0-9][A-Z0-9_\.\!\$\*\@]*[A-Z0-9]$`)
+	ReValidContractID   = regexp.MustCompile(`^[A-Z0-9][A-Z0-9-_\.\!\$\*\@]*[A-Z0-9]$`)
 )
 
 type ContractID string
