@@ -61,7 +61,7 @@ func (st AmountState) Merge(b state.State) (state.State, error) {
 		if !errors.Is(err, util.NotFoundError) {
 			return nil, err
 		}
-		am = AmountValue{}
+		am = NewZeroAmountValue(st.cid, st.contractid)
 	} else if b.ID() != st.contractid {
 		return nil, errors.Errorf("contractid is not matched with state to be merged, %v", b.ID())
 	} else {

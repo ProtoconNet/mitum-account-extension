@@ -36,6 +36,10 @@ func NewAmountValuefromAmount(am currency.Amount, id ContractID) AmountValue {
 	return amv
 }
 
+func NewZeroAmountValue(cid currency.CurrencyID, id ContractID) AmountValue {
+	return NewAmountValue(currency.NewBig(0), cid, id)
+}
+
 func MustNewAmountValue(big currency.Big, cid currency.CurrencyID, id ContractID) AmountValue {
 	amv := NewAmountValue(big, cid, id)
 	if err := amv.IsValid(nil); err != nil {
