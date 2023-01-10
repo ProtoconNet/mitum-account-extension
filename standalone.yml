@@ -1,50 +1,22 @@
-address: mc-nodesas
-privatekey: KxaTHDAQnmFeWWik5MqWXBYkhvp5EpWbsZzXeHDdTDb5NE1dVw8wmpr
-storage:
-    database:
-        uri: mongodb://127.0.0.1:27017/mbd
-    blockdata:
-        path: ./blockdata
-network-id: mitum
+address: no0sas
+privatekey: EYc4WdFjP9qkgfwJZfnsVXeh827rsNppm5HUSjSDeMFFmpr
+network_id: mitum
 network:
-    bind: https://0.0.0.0:54330
-    url: https://127.0.0.1:54330
-
-genesis-operations:
-    - type: genesis-currencies
-      account-keys:
-        keys:
-            - publickey: zzeo6WAS4uqwCss4eRibtLnYHqJM21zhzPbKWQVPttxWmpu
-              # privatekey: KzFERQKNQbPA8cdsX5tCiCZvR4KgBou41cgtPk69XueFbaEjrczbmpr
-              weight: 100
-        threshold: 100
-      currencies:
-        - currency: MCC
-          new-account-min-balance: "33"
-          balance: "99999999999999999999"
-          feeer:
-            type: fixed
-            amount: 1
-
-policy:
-    threshold: 100
-    max-operations-in-seal: 10
-    max-operations-in-proposal: 100
-    timeout-waiting-proposal: 5s
-    interval-broadcasting-init-ballot: 1s
-    interval-broadcasting-proposal: 1s
-    wait-broadcasting-accept-ballot: 1s
-    interval-broadcasting-accept-ballot: 1s
-    timespan-valid-ballot: 1m0s
-    timeout-process-proposal: 10s
-
-suffrage:
-    nodes:
-        - mc-nodesas
-
-nodes:
-
+  bind: 0.0.0.0:4320
+  tls_insecure: true
+storage:
+  base: ./mitum-data
+  database: leveldb://
 digest:
-    network:
-        bind: http://localhost:54320
-        url: http://127.0.0.1:54320
+  network:
+    bind: http://localhost:54320
+    url: http://localhost:54320
+  database: 
+    uri: mongodb://127.0.0.1:27017/mc1
+parameters:
+  threshold: 100
+  interval_broadcast_ballot: 3s
+  wait_preparing_init_ballot: 5s
+  wait_preparing_next_round_init_ballot: 1s
+  timeout_request_proposal: 1s
+  max_operation_size: 500000
