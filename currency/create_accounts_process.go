@@ -164,6 +164,10 @@ func (opp *CreateAccountsProcessor) PreProcess(
 		return ctx, base.NewBaseOperationProcessReasonError("failed to check existence of sender %v: %w", fact.Sender(), err), nil
 	}
 
+	if err := checkNotExistsState(StateKeyContractAccount(fact.Sender()), getStateFunc); err != nil {
+		return ctx, base.NewBaseOperationProcessReasonError("contract account create accounts, %v: %w", fact.Sender(), err), nil
+	}
+
 	if err := checkFactSignsByState(fact.Sender(), op.Signs(), getStateFunc); err != nil {
 		return ctx, base.NewBaseOperationProcessReasonError("invalid signing: %w", err), nil
 	}

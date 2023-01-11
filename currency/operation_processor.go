@@ -171,8 +171,8 @@ func (opr *OperationProcessor) checkDuplication(op base.Operation) error {
 	opr.Lock()
 	defer opr.Unlock()
 
-	// var did string
-	// var didtype DuplicationType
+	var did string
+	var didtype DuplicationType
 	var newAddresses []base.Address
 
 	switch t := op.(type) {
@@ -210,13 +210,13 @@ func (opr *OperationProcessor) checkDuplication(op base.Operation) error {
 	// 	newAddresses = as
 	// did = fact.Target().String()
 	// didtype = DuplicationTypeSender
-	// case Transfers:
-	// 	fact, ok := t.Fact().(TransfersFact)
-	// 	if !ok {
-	// 		return errors.Errorf("expected TransfersFact, not %T", t.Fact())
-	// 	}
-	// 	did = fact.Sender().String()
-	// 	didtype = DuplicationTypeSender
+	case currency.Transfers:
+		fact, ok := t.Fact().(currency.TransfersFact)
+		if !ok {
+			return errors.Errorf("expected TransfersFact, not %T", t.Fact())
+		}
+		did = fact.Sender().String()
+		didtype = DuplicationTypeSender
 	// case CurrencyRegister:
 	// 	fact, ok := t.Fact().(CurrencyRegisterFact)
 	// 	if !ok {
@@ -235,20 +235,20 @@ func (opr *OperationProcessor) checkDuplication(op base.Operation) error {
 		return nil
 	}
 
-	// if len(did) > 0 {
-	// 	if _, found := opr.duplicated[did]; found {
-	// 		switch didtype {
-	// 		case DuplicationTypeSender:
-	// 			return errors.Errorf("violates only one sender in proposal")
-	// 		case DuplicationTypeCurrency:
-	// 			return errors.Errorf("duplicate currency id, %q found in proposal", did)
-	// 		default:
-	// 			return errors.Errorf("violates duplication in proposal")
-	// 		}
-	// 	}
+	if len(did) > 0 {
+		if _, found := opr.duplicated[did]; found {
+			switch didtype {
+			case DuplicationTypeSender:
+				return errors.Errorf("violates only one sender in proposal")
+			case DuplicationTypeCurrency:
+				return errors.Errorf("duplicate currency id, %q found in proposal", did)
+			default:
+				return errors.Errorf("violates duplication in proposal")
+			}
+		}
 
-	// 	opr.duplicated[did] = didtype
-	// }
+		opr.duplicated[did] = didtype
+	}
 
 	if len(newAddresses) > 0 {
 		if err := opr.checkNewAddressDuplication(newAddresses); err != nil {
@@ -320,9 +320,9 @@ func (opr *OperationProcessor) getNewProcessor(op base.Operation) (base.Operatio
 
 	switch t := op.(type) {
 	case currency.CreateAccounts,
-		CreateContractAccounts:
 		// KeyUpdater,
-		// Transfers,
+		currency.Transfers,
+		CreateContractAccounts:
 		// CurrencyRegister,
 		// CurrencyPolicyUpdater,
 		// SuffrageInflation:

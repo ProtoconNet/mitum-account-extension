@@ -167,7 +167,7 @@ func POperationProcessorsMap(ctx context.Context) (context.Context, error) {
 	opr := currency.NewOperationProcessor()
 	opr.SetProcessor(mitumcurrency.CreateAccountsHint, currency.NewCreateAccountsProcessor())
 	// opr.SetProcessor(mitumcurrency.KeyUpdaterHint, mitumcurrency.NewKeyUpdaterProcessor())
-	// opr.SetProcessor(mitumcurrency.TransfersHint, mitumcurrency.NewTransfersProcessor())
+	opr.SetProcessor(mitumcurrency.TransfersHint, currency.NewTransfersProcessor())
 	// opr.SetProcessor(mitumcurrency.CurrencyRegisterHint, mitumcurrency.NewCurrencyRegisterProcessor(params.Threshold()))
 	// opr.SetProcessor(mitumcurrency.CurrencyPolicyUpdaterHint, mitumcurrency.NewCurrencyPolicyUpdaterProcessor(params.Threshold()))
 	// opr.SetProcessor(mitumcurrency.SuffrageInflationHint, mitumcurrency.NewSuffrageInflationProcessor(params.Threshold()))
@@ -191,14 +191,14 @@ func POperationProcessorsMap(ctx context.Context) (context.Context, error) {
 	// 	)
 	// })
 
-	// _ = set.Add(mitumcurrency.TransfersHint, func(height base.Height) (base.OperationProcessor, error) {
-	// 	return opr.New(
-	// 		height,
-	// 		db.State,
-	// 		nil,
-	// 		nil,
-	// 	)
-	// })
+	_ = set.Add(mitumcurrency.TransfersHint, func(height base.Height) (base.OperationProcessor, error) {
+		return opr.New(
+			height,
+			db.State,
+			nil,
+			nil,
+		)
+	})
 
 	// _ = set.Add(mitumcurrency.CurrencyRegisterHint, func(height base.Height) (base.OperationProcessor, error) {
 	// 	return opr.New(
