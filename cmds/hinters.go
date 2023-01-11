@@ -29,6 +29,9 @@ var hinters = []encoder.DecodeDetail{
 	// {Hint: mitumcurrency.CurrencyRegisterHint, Instance: mitumcurrency.CurrencyRegister{}},
 	// {Hint: mitumcurrency.CurrencyPolicyUpdaterHint, Instance: mitumcurrency.CurrencyPolicyUpdater{}},
 	// {Hint: mitumcurrency.SuffrageInflationHint, Instance: mitumcurrency.SuffrageInflation{}},
+	{Hint: currency.CreateContractAccountsItemMultiAmountsHint, Instance: currency.CreateContractAccountsItemMultiAmounts{}},
+	{Hint: currency.CreateContractAccountsItemSingleAmountHint, Instance: currency.CreateContractAccountsItemSingleAmount{}},
+	{Hint: currency.CreateContractAccountsHint, Instance: currency.CreateContractAccounts{}},
 	// {Hint: mitumcurrency.FeeOperationFactHint, Instance: mitumcurrency.FeeOperationFact{}},
 	// {Hint: mitumcurrency.FeeOperationHint, Instance: mitumcurrency.FeeOperation{}},
 	{Hint: currency.GenesisCurrenciesFactHint, Instance: currency.GenesisCurrenciesFact{}},
@@ -52,6 +55,7 @@ var supportedProposalOperationFactHinters = []encoder.DecodeDetail{
 	// {Hint: mitumcurrency.CurrencyRegisterFactHint, Instance: mitumcurrency.CurrencyRegisterFact{}},
 	// {Hint: mitumcurrency.CurrencyPolicyUpdaterFactHint, Instance: mitumcurrency.CurrencyPolicyUpdaterFact{}},
 	// {Hint: mitumcurrency.SuffrageInflationFactHint, Instance: mitumcurrency.SuffrageInflationFact{}},
+	{Hint: currency.CreateContractAccountsFactHint, Instance: currency.CreateContractAccountsFact{}},
 }
 
 func init() {

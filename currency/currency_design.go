@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	CurrencyDesignHint = hint.MustNewHint("mitum-currency-extension-currency-design-v0.0.1")
+	CurrencyDesignHint = hint.MustNewHint("mitum-currency-currency-design-v0.0.1")
 )
 
 type CurrencyDesign struct {

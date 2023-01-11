@@ -74,7 +74,7 @@ func (fact GenesisCurrenciesFact) IsValid(b []byte) error {
 		if err := c.IsValid(nil); err != nil {
 			return err
 		} else if _, found := founds[c.amount.Currency()]; found {
-			return util.ErrInvalid.Errorf("duplicated currency id found, %q", c.amount.Currency())
+			return util.ErrInvalid.Errorf("duplicate currency id found, %q", c.amount.Currency())
 		} else {
 			founds[c.amount.Currency()] = struct{}{}
 		}

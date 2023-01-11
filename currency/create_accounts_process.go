@@ -47,12 +47,12 @@ func (opp *CreateAccountsItemProcessor) PreProcess(
 
 		policy, err := existsCurrencyPolicy(am.Currency(), getStateFunc)
 		if err != nil {
-			return err
+			return e(err, "")
 		}
 
 		if am.Big().Compare(policy.NewAccountMinBalance()) < 0 {
-			return base.NewBaseOperationProcessReasonError(
-				"amount should be over minimum balance, %v < %v", am.Big(), policy.NewAccountMinBalance())
+			return e(base.NewBaseOperationProcessReasonError(
+				"amount should be over minimum balance, %v < %v", am.Big(), policy.NewAccountMinBalance()), "")
 		}
 	}
 
@@ -63,7 +63,7 @@ func (opp *CreateAccountsItemProcessor) PreProcess(
 
 	st, err := notExistsState(currency.StateKeyAccount(target), "keys of target", getStateFunc)
 	if err != nil {
-		return err
+		return e(err, "")
 	}
 	opp.ns = currency.NewAccountStateMergeValue(st.Key(), st.Value())
 
@@ -123,15 +123,9 @@ func (opp *CreateAccountsItemProcessor) Close() error {
 
 type CreateAccountsProcessor struct {
 	*base.BaseOperationProcessor
-	sb       map[currency.CurrencyID]base.StateMergeValue
-	ns       []*CreateAccountsItemProcessor
-	required map[currency.CurrencyID][2]currency.Big
-	// collectFee func(AddFee) error
 }
 
-func NewCreateAccountsProcessor(
-// collectFee func(*OperationProcessor, AddFee) error,
-) GetNewProcessor {
+func NewCreateAccountsProcessor() GetNewProcessor {
 	return func(
 		height base.Height,
 		getStateFunc base.GetStateFunc,
@@ -143,7 +137,7 @@ func NewCreateAccountsProcessor(
 		nopp := createAccountsProcessorPool.Get()
 		opp, ok := nopp.(*CreateAccountsProcessor)
 		if !ok {
-			return nil, errors.Errorf("expected CreateAccountsProcessor, not %T", nopp)
+			return nil, e(errors.Errorf("expected CreateAccountsProcessor, not %T", nopp), "")
 		}
 
 		b, err := base.NewBaseOperationProcessor(
@@ -153,10 +147,6 @@ func NewCreateAccountsProcessor(
 		}
 
 		opp.BaseOperationProcessor = b
-		opp.sb = nil
-		opp.ns = nil
-		opp.required = nil
-		// opp.collectFee = collectFee
 
 		return opp, nil
 	}
@@ -171,11 +161,11 @@ func (opp *CreateAccountsProcessor) PreProcess(
 	}
 
 	if err := checkExistsState(currency.StateKeyAccount(fact.Sender()), getStateFunc); err != nil {
-		return ctx, base.NewBaseOperationProcessReasonError("failed to check existence of sender %v : %w", fact.Sender(), err), nil
+		return ctx, base.NewBaseOperationProcessReasonError("failed to check existence of sender %v: %w", fact.Sender(), err), nil
 	}
 
 	if err := checkFactSignsByState(fact.Sender(), op.Signs(), getStateFunc); err != nil {
-		return ctx, base.NewBaseOperationProcessReasonError("invalid signing :  %w", err), nil
+		return ctx, base.NewBaseOperationProcessReasonError("invalid signing: %w", err), nil
 	}
 
 	return ctx, nil, nil
@@ -190,13 +180,14 @@ func (opp *CreateAccountsProcessor) Process( // nolint:dupl
 		return nil, base.NewBaseOperationProcessReasonError("expected CreateAccountsFact, not %T", op.Fact()), nil
 	}
 
-	if required, err := opp.calculateItemsFee(op, getStateFunc); err != nil {
+	required, err := opp.calculateItemsFee(op, getStateFunc)
+	if err != nil {
 		return nil, base.NewBaseOperationProcessReasonError("failed to calculate fee: %w", err), nil
-	} else if sb, err := CheckEnoughBalance(fact.Sender(), required, getStateFunc); err != nil {
+	}
+
+	sb, err := CheckEnoughBalance(fact.Sender(), required, getStateFunc)
+	if err != nil {
 		return nil, base.NewBaseOperationProcessReasonError("not enough balance of sender %s : %w", fact.Sender(), err), nil
-	} else {
-		opp.required = required
-		opp.sb = sb
 	}
 
 	ns := make([]*CreateAccountsItemProcessor, len(fact.Items()))
@@ -216,38 +207,31 @@ func (opp *CreateAccountsProcessor) Process( // nolint:dupl
 
 		ns[i] = c
 	}
-	opp.ns = ns
 
 	var sts []base.StateMergeValue // nolint:prealloc
-	for i := range opp.ns {
-		s, err := opp.ns[i].Process(ctx, op, getStateFunc)
+	for i := range ns {
+		s, err := ns[i].Process(ctx, op, getStateFunc)
 		if err != nil {
 			return nil, base.NewBaseOperationProcessReasonError("failed to process CreateAccountsItem: %w", err), nil
 		}
 		sts = append(sts, s...)
+
+		ns[i].Close()
 	}
 
-	for i := range opp.sb {
-		v, ok := opp.sb[i].Value().(currency.BalanceStateValue)
+	for i := range sb {
+		v, ok := sb[i].Value().(currency.BalanceStateValue)
 		if !ok {
-			return nil, base.NewBaseOperationProcessReasonError("expected BalanceStateValue, not %T", opp.sb[i].Value()), nil
+			return nil, base.NewBaseOperationProcessReasonError("expected BalanceStateValue, not %T", sb[i].Value()), nil
 		}
-		stv := currency.NewBalanceStateValue(v.Amount.WithBig(v.Amount.Big().Sub(opp.required[i][0])))
-		sts = append(sts, currency.NewBalanceStateMergeValue(opp.sb[i].Key(), stv))
+		stv := currency.NewBalanceStateValue(v.Amount.WithBig(v.Amount.Big().Sub(required[i][0])))
+		sts = append(sts, currency.NewBalanceStateMergeValue(sb[i].Key(), stv))
 	}
 
 	return sts, nil, nil
 }
 
 func (opp *CreateAccountsProcessor) Close() error {
-	for i := range opp.ns {
-		_ = opp.ns[i].Close()
-	}
-
-	opp.sb = nil
-	opp.ns = nil
-	opp.required = nil
-
 	createAccountsProcessorPool.Put(opp)
 
 	return nil

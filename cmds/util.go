@@ -171,6 +171,7 @@ func POperationProcessorsMap(ctx context.Context) (context.Context, error) {
 	// opr.SetProcessor(mitumcurrency.CurrencyRegisterHint, mitumcurrency.NewCurrencyRegisterProcessor(params.Threshold()))
 	// opr.SetProcessor(mitumcurrency.CurrencyPolicyUpdaterHint, mitumcurrency.NewCurrencyPolicyUpdaterProcessor(params.Threshold()))
 	// opr.SetProcessor(mitumcurrency.SuffrageInflationHint, mitumcurrency.NewSuffrageInflationProcessor(params.Threshold()))
+	opr.SetProcessor(currency.CreateContractAccountsHint, currency.NewCreateContractAccountsProcessor())
 
 	_ = set.Add(mitumcurrency.CreateAccountsHint, func(height base.Height) (base.OperationProcessor, error) {
 		return opr.New(
@@ -225,6 +226,15 @@ func POperationProcessorsMap(ctx context.Context) (context.Context, error) {
 	// 		nil,
 	// 	)
 	// })
+
+	_ = set.Add(currency.CreateContractAccountsHint, func(height base.Height) (base.OperationProcessor, error) {
+		return opr.New(
+			height,
+			db.State,
+			nil,
+			nil,
+		)
+	})
 
 	_ = set.Add(isaacoperation.SuffrageCandidateHint, func(height base.Height) (base.OperationProcessor, error) {
 		policy := db.LastNetworkPolicy()

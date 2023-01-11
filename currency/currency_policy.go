@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	CurrencyPolicyHint = hint.MustNewHint("mitum-currency-extension-currency-policy-v0.0.1")
+	CurrencyPolicyHint = hint.MustNewHint("mitum-currency-currency-policy-v0.0.1")
 )
 
 type CurrencyPolicy struct {

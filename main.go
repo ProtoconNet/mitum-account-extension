@@ -35,13 +35,14 @@ type CLI struct { //nolint:govet //...
 }
 
 var flagDefaults = kong.Vars{
-	"log_out":                  "stderr",
-	"log_format":               "terminal",
-	"log_level":                "debug",
-	"log_force_color":          "false",
-	"design_uri":               launch.DefaultDesignURI,
-	"create_account_threshold": "100",
-	"safe_threshold":           base.SafeThreshold.String(),
+	"log_out":                           "stderr",
+	"log_format":                        "terminal",
+	"log_level":                         "debug",
+	"log_force_color":                   "false",
+	"design_uri":                        launch.DefaultDesignURI,
+	"create_account_threshold":          "100",
+	"create_contract_account_threshold": "100",
+	"safe_threshold":                    base.SafeThreshold.String(),
 }
 
 func main() {

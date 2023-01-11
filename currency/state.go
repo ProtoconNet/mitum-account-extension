@@ -13,7 +13,7 @@ import (
 
 var CurrencyDesignStateValueHint = hint.MustNewHint("currency-design-state-value-v0.0.1")
 
-var StateKeyCurrencyDesignPrefix = "extensioncurrencydesign:"
+var StateKeyCurrencyDesignPrefix = "currencydesign:"
 
 type CurrencyDesignStateValue struct {
 	hint.BaseHinter
@@ -71,6 +71,109 @@ func StateKeyCurrencyDesign(cid currency.CurrencyID) string {
 	return fmt.Sprintf("%s%s", StateKeyCurrencyDesignPrefix, cid)
 }
 
+var ContractAccountStateValueHint = hint.MustNewHint("contract-account-state-value-v0.0.1")
+
+var StateKeyContractAccountSuffix = ":contractaccount"
+
+type ContractAccountStateValue struct {
+	hint.BaseHinter
+	account ContractAccount
+}
+
+func NewContractAccountStateValue(account ContractAccount) ContractAccountStateValue {
+	return ContractAccountStateValue{
+		BaseHinter: hint.NewBaseHinter(ContractAccountStateValueHint),
+		account:    account,
+	}
+}
+
+func (c ContractAccountStateValue) Hint() hint.Hint {
+	return c.BaseHinter.Hint()
+}
+
+func (c ContractAccountStateValue) IsValid([]byte) error {
+	e := util.ErrInvalid.Errorf("invalid ContractAccountStateValue")
+
+	if err := c.BaseHinter.IsValid(ContractAccountStateValueHint.Type().Bytes()); err != nil {
+		return e.Wrap(err)
+	}
+
+	if err := util.CheckIsValiders(nil, false, c.account); err != nil {
+		return e.Wrap(err)
+	}
+
+	return nil
+}
+
+func (c ContractAccountStateValue) HashBytes() []byte {
+	return c.account.Bytes()
+}
+
+func StateKeyContractAccount(a base.Address) string {
+	return fmt.Sprintf("%s%s", a.String(), StateKeyContractAccountSuffix)
+}
+
+func IsStateContractAccountKey(key string) bool {
+	return strings.HasSuffix(key, StateKeyContractAccountSuffix)
+}
+
+func StateContractAccountValue(st base.State) (ContractAccount, error) {
+	v := st.Value()
+	if v == nil {
+		return ContractAccount{}, util.ErrNotFound.Errorf("contract account status not found in State")
+	}
+
+	cs, ok := v.(ContractAccountStateValue)
+	if !ok {
+		return ContractAccount{}, errors.Errorf("invalid contract account status value found, %T", v)
+	}
+	return cs.account, nil
+}
+
+type CurrencyDesignStateValueMerger struct {
+	*base.BaseStateValueMerger
+}
+
+func NewCurrencyDesignStateValueMerger(height base.Height, key string, st base.State) *CurrencyDesignStateValueMerger {
+	s := &CurrencyDesignStateValueMerger{
+		BaseStateValueMerger: base.NewBaseStateValueMerger(height, key, st),
+	}
+
+	return s
+}
+
+func NewCurrencyDesignStateMergeValue(key string, stv base.StateValue) base.StateMergeValue {
+	return base.NewBaseStateMergeValue(
+		key,
+		stv,
+		func(height base.Height, st base.State) base.StateValueMerger {
+			return NewCurrencyDesignStateValueMerger(height, key, st)
+		},
+	)
+}
+
+type ContractAccountStateValueMerger struct {
+	*base.BaseStateValueMerger
+}
+
+func NewContractAccountStateValueMerger(height base.Height, key string, st base.State) *ContractAccountStateValueMerger {
+	s := &ContractAccountStateValueMerger{
+		BaseStateValueMerger: base.NewBaseStateValueMerger(height, key, st),
+	}
+
+	return s
+}
+
+func NewContractAccountStateMergeValue(key string, stv base.StateValue) base.StateMergeValue {
+	return base.NewBaseStateMergeValue(
+		key,
+		stv,
+		func(height base.Height, st base.State) base.StateValueMerger {
+			return NewContractAccountStateValueMerger(height, key, st)
+		},
+	)
+}
+
 func checkExistsState(
 	key string,
 	getState base.GetStateFunc,
@@ -80,6 +183,20 @@ func checkExistsState(
 		return err
 	case !found:
 		return base.NewBaseOperationProcessReasonError("state, %q does not exist", key)
+	default:
+		return nil
+	}
+}
+
+func checkNotExistsState(
+	key string,
+	getState base.GetStateFunc,
+) error {
+	switch _, found, err := getState(key); {
+	case err != nil:
+		return err
+	case found:
+		return base.NewBaseOperationProcessReasonError("state, %q already exists", key)
 	default:
 		return nil
 	}
@@ -132,26 +249,4 @@ func existsCurrencyPolicy(cid currency.CurrencyID, getStateFunc base.GetStateFun
 		policy = currencydesign.CurrencyDesign.policy
 	}
 	return policy, nil
-}
-
-type CurrencyDesignStateValueMerger struct {
-	*base.BaseStateValueMerger
-}
-
-func NewCurrencyDesignStateValueMerger(height base.Height, key string, st base.State) *CurrencyDesignStateValueMerger {
-	s := &CurrencyDesignStateValueMerger{
-		BaseStateValueMerger: base.NewBaseStateValueMerger(height, key, st),
-	}
-
-	return s
-}
-
-func NewCurrencyDesignStateMergeValue(key string, stv base.StateValue) base.StateMergeValue {
-	return base.NewBaseStateMergeValue(
-		key,
-		stv,
-		func(height base.Height, st base.State) base.StateValueMerger {
-			return NewCurrencyDesignStateValueMerger(height, key, st)
-		},
-	)
 }

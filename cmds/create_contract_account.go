@@ -5,29 +5,30 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/spikeekips/mitum-currency/currency"
+	"github.com/ProtoconNet/mitum-currency-extension/currency"
+	mitumcurrency "github.com/spikeekips/mitum-currency/currency"
 	"github.com/spikeekips/mitum/base"
 )
 
-type CreateAccountCommand struct {
+type CreateContractAccountCommand struct {
 	baseCommand
 	OperationFlags
 	Sender    AddressFlag          `arg:"" name:"sender" help:"sender address" required:"true"`
-	Threshold uint                 `help:"threshold for keys (default: ${create_account_threshold})" default:"${create_account_threshold}"` // nolint
+	Threshold uint                 `help:"threshold for keys (default: ${create_contract_account_threshold})" default:"${create_contract_account_threshold}"` // nolint
 	Keys      []KeyFlag            `name:"key" help:"key for new account (ex: \"<public key>,<weight>\")" sep:"@"`
 	Amounts   []CurrencyAmountFlag `arg:"" name:"currency-amount" help:"amount (ex: \"<currency>,<amount>\")"`
 	sender    base.Address
-	keys      currency.BaseAccountKeys
+	keys      mitumcurrency.BaseAccountKeys
 }
 
-func NewCreateAccountCommand() CreateAccountCommand {
+func NewCreateContractAccountCommand() CreateContractAccountCommand {
 	cmd := NewbaseCommand()
-	return CreateAccountCommand{
+	return CreateContractAccountCommand{
 		baseCommand: *cmd,
 	}
 }
 
-func (cmd *CreateAccountCommand) Run(pctx context.Context) error { // nolint:dupl
+func (cmd *CreateContractAccountCommand) Run(pctx context.Context) error { // nolint:dupl
 	if _, err := cmd.prepare(pctx); err != nil {
 		return err
 	}
@@ -49,7 +50,7 @@ func (cmd *CreateAccountCommand) Run(pctx context.Context) error { // nolint:dup
 	return nil
 }
 
-func (cmd *CreateAccountCommand) parseFlags() error {
+func (cmd *CreateContractAccountCommand) parseFlags() error {
 	if err := cmd.OperationFlags.IsValid(nil); err != nil {
 		return err
 	}
@@ -69,12 +70,12 @@ func (cmd *CreateAccountCommand) parseFlags() error {
 	}
 
 	{
-		ks := make([]currency.AccountKey, len(cmd.Keys))
+		ks := make([]mitumcurrency.AccountKey, len(cmd.Keys))
 		for i := range cmd.Keys {
 			ks[i] = cmd.Keys[i].Key
 		}
 
-		if kys, err := currency.NewBaseAccountKeys(ks, cmd.Threshold); err != nil {
+		if kys, err := mitumcurrency.NewBaseAccountKeys(ks, cmd.Threshold); err != nil {
 			return err
 		} else if err := kys.IsValid(nil); err != nil {
 			return err
@@ -86,13 +87,13 @@ func (cmd *CreateAccountCommand) parseFlags() error {
 	return nil
 }
 
-func (cmd *CreateAccountCommand) createOperation() (base.Operation, error) { // nolint:dupl}
-	var items []currency.CreateAccountsItem
+func (cmd *CreateContractAccountCommand) createOperation() (base.Operation, error) { // nolint:dupl}
+	var items []currency.CreateContractAccountsItem
 
-	ams := make([]currency.Amount, len(cmd.Amounts))
+	ams := make([]mitumcurrency.Amount, len(cmd.Amounts))
 	for i := range cmd.Amounts {
 		a := cmd.Amounts[i]
-		am := currency.NewAmount(a.Big, a.CID)
+		am := mitumcurrency.NewAmount(a.Big, a.CID)
 		if err := am.IsValid(nil); err != nil {
 			return nil, err
 		}
@@ -100,21 +101,21 @@ func (cmd *CreateAccountCommand) createOperation() (base.Operation, error) { // 
 		ams[i] = am
 	}
 
-	item := currency.NewCreateAccountsItemMultiAmounts(cmd.keys, ams)
+	item := currency.NewCreateContractAccountsItemMultiAmounts(cmd.keys, ams)
 	if err := item.IsValid(nil); err != nil {
 		return nil, err
 	}
 	items = append(items, item)
 
-	fact := currency.NewCreateAccountsFact([]byte(cmd.Token), cmd.sender, items)
+	fact := currency.NewCreateContractAccountsFact([]byte(cmd.Token), cmd.sender, items)
 
-	op, err := currency.NewCreateAccounts(fact, cmd.Memo)
+	op, err := currency.NewCreateContractAccounts(fact, cmd.Memo)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to create create-account operation")
+		return nil, errors.Wrap(err, "failed to create create-contract-account operation")
 	}
 	err = op.HashSign(cmd.Privatekey, cmd.NetworkID.NetworkID())
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to create create-account operation")
+		return nil, errors.Wrap(err, "failed to create create-contract-account operation")
 	}
 
 	return op, nil

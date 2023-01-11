@@ -17,9 +17,9 @@ const (
 )
 
 var (
-	NilFeeerHint   = hint.MustNewHint("mitum-currency-extension-nil-feeer-v0.0.1")
-	FixedFeeerHint = hint.MustNewHint("mitum-currency-extension-fixed-feeer-v0.0.1")
-	RatioFeeerHint = hint.MustNewHint("mitum-currency-extension-ratio-feeer-v0.0.1")
+	NilFeeerHint   = hint.MustNewHint("mitum-currency-nil-feeer-v0.0.1")
+	FixedFeeerHint = hint.MustNewHint("mitum-currency-fixed-feeer-v0.0.1")
+	RatioFeeerHint = hint.MustNewHint("mitum-currency-ratio-feeer-v0.0.1")
 )
 
 var UnlimitedMaxFeeAmount = currency.NewBig(-1)

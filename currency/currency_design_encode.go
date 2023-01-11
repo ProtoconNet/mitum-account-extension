@@ -20,11 +20,11 @@ func (de *CurrencyDesign) unpack(enc encoder.Encoder, ht hint.Hint, bam []byte, 
 
 	de.amount = am
 
-	switch ad, err := base.DecodeAddress(ga, enc); {
+	switch a, err := base.DecodeAddress(ga, enc); {
 	case err != nil:
 		return e(err, "failed to decode address")
 	default:
-		de.genesisAccount = ad
+		de.genesisAccount = a
 	}
 
 	var policy CurrencyPolicy

@@ -31,14 +31,14 @@ func (hal BaseHal) MarshalJSON() ([]byte, error) {
 	})
 }
 
-type BaseHalJSONUnpacker struct {
+type BaseHalJSONUnmarshaler struct {
 	R  json.RawMessage        `json:"_embedded,omitempty"`
 	LS map[string]HalLink     `json:"_links,omitempty"`
 	EX map[string]interface{} `json:"_extra,omitempty"`
 }
 
 func (hal *BaseHal) UnmarshalJSON(b []byte) error {
-	var uh BaseHalJSONUnpacker
+	var uh BaseHalJSONUnmarshaler
 	if err := Unmarshal(b, &uh); err != nil {
 		return err
 	}
@@ -62,13 +62,13 @@ func (hl HalLink) MarshalJSON() ([]byte, error) {
 	return Marshal(all)
 }
 
-type HalLinkJSONUnpacker struct {
+type HalLinkJSONUnmarshaler struct {
 	HR string                 `json:"href"`
 	PR map[string]interface{} `json:"properties,omitempty"`
 }
 
 func (hl *HalLink) UnmarshalJSON(b []byte) error {
-	var uh HalLinkJSONUnpacker
+	var uh HalLinkJSONUnmarshaler
 	if err := Unmarshal(b, &uh); err != nil {
 		return err
 	}

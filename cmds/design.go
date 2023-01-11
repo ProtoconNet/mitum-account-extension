@@ -629,11 +629,11 @@ func (d *NodeDesign) DecodeYAML(b []byte, enc *jsonenc.Encoder) error {
 		return e(err, "")
 	}
 
-	switch address, err := base.DecodeAddress(u.Address, enc); {
+	switch a, err := base.DecodeAddress(u.Address, enc); {
 	case err != nil:
 		return e(err, "invalid address")
 	default:
-		d.Address = address
+		d.Address = a
 	}
 
 	switch priv, err := base.DecodePrivatekeyFromString(u.Privatekey, enc); {

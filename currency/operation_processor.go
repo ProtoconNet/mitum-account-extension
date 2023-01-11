@@ -50,7 +50,6 @@ type OperationProcessor struct {
 	duplicatedNewAddress map[string]struct{}
 	processorClosers     *sync.Map
 	GetStateFunc         base.GetStateFunc
-	// CollectFee           func(*OperationProcessor, AddFee) error
 }
 
 func NewOperationProcessor() *OperationProcessor {
@@ -64,7 +63,6 @@ func NewOperationProcessor() *OperationProcessor {
 		duplicated:           map[string]DuplicationType{},
 		duplicatedNewAddress: map[string]struct{}{},
 		processorClosers:     &m,
-		// CollectFee:           CollectFee,
 	}
 }
 
@@ -165,7 +163,6 @@ func (opr *OperationProcessor) Process(ctx context.Context, op base.Operation, g
 	}
 
 	stateMergeValues, reasonerr, err := sp.Process(ctx, op, getStateFunc)
-	// opr.collecFee(stateMergeValues...)
 
 	return stateMergeValues, reasonerr, err
 }
@@ -191,6 +188,16 @@ func (opr *OperationProcessor) checkDuplication(op base.Operation) error {
 		newAddresses = as
 		// did = fact.Sender().String()
 		// didtype = DuplicationTypeSender
+	case CreateContractAccounts:
+		fact, ok := t.Fact().(CreateContractAccountsFact)
+		if !ok {
+			return errors.Errorf("expected CreateContractAccountsFact, not %T", t.Fact())
+		}
+		as, err := fact.Targets()
+		if err != nil {
+			return errors.Errorf("failed to get Addresses")
+		}
+		newAddresses = as
 	// case KeyUpdater:
 	// 	fact, ok := t.Fact().(KeyUpdaterFact)
 	// 	if !ok {
@@ -234,7 +241,7 @@ func (opr *OperationProcessor) checkDuplication(op base.Operation) error {
 	// 		case DuplicationTypeSender:
 	// 			return errors.Errorf("violates only one sender in proposal")
 	// 		case DuplicationTypeCurrency:
-	// 			return errors.Errorf("duplicated currency id, %q found in proposal", did)
+	// 			return errors.Errorf("duplicate currency id, %q found in proposal", did)
 	// 		default:
 	// 			return errors.Errorf("violates duplication in proposal")
 	// 		}
@@ -312,7 +319,8 @@ func (opr *OperationProcessor) getNewProcessor(op base.Operation) (base.Operatio
 	}
 
 	switch t := op.(type) {
-	case currency.CreateAccounts:
+	case currency.CreateAccounts,
+		CreateContractAccounts:
 		// KeyUpdater,
 		// Transfers,
 		// CurrencyRegister,
@@ -369,7 +377,6 @@ func (opr *OperationProcessor) close() {
 		return true
 	})
 
-	// opr.pool = nil
 	opr.fee = nil
 	opr.duplicated = nil
 	opr.duplicatedNewAddress = nil
@@ -379,24 +386,3 @@ func (opr *OperationProcessor) close() {
 
 	opr.Log().Debug().Msg("operation processors closed")
 }
-
-// func CollectFee(opr *OperationProcessor, required currency.AddFee) error {
-// 	opr.Lock()
-// 	defer opr.Unlock()
-
-// 	for k, v := range required {
-// 		if k == "" {
-// 			return errors.Errorf("AddFee key is empty")
-// 		}
-// 		if v == [2]currency.Big{} {
-// 			return errors.Errorf("AddFee value is nil")
-// 		}
-// 		switch i, found := opr.fee[k]; {
-// 		case !found:
-// 			opr.fee[k] = v[1]
-// 		default:
-// 			opr.fee[k] = i.Add(v[1])
-// 		}
-// 	}
-// 	return nil
-// }

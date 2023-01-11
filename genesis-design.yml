@@ -25,17 +25,17 @@ facts:
           weight: 100
       threshold: 100
     currencies:
-      - _hint: mitum-currency-extension-currency-design-v0.0.1
+      - _hint: mitum-currency-currency-design-v0.0.1
         amount: 
           _hint: mitum-currency-amount-v0.0.1
           amount: "1000000000000000000000000000"
           currency: MCC
         genesis_account:
         policy:
-          _hint: mitum-currency-extension-currency-policy-v0.0.1
+          _hint: mitum-currency-currency-policy-v0.0.1
           new_account_min_balance: "1"
           feeer:
-            _hint: mitum-currency-extension-fixed-feeer-v0.0.1
+            _hint: mitum-currency-fixed-feeer-v0.0.1
             receiver: 2E5qNuz9HsXydeTTdG1a3SZtj1iBWNUyVyfHYNcs4gSgmca
             amount: "1"
             exchange_min_amount: "1"
