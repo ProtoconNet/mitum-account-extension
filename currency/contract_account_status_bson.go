@@ -17,7 +17,7 @@ func (cs ContractAccount) MarshalBSON() ([]byte, error) {
 	)
 }
 
-type ContractAccountBSONMarshaler struct {
+type ContractAccountBSONUnmarshaler struct {
 	HT hint.Hint `json:"_hint"`
 	IA bool      `bson:"isactive"`
 	OW string    `bson:"owner"`
@@ -26,7 +26,7 @@ type ContractAccountBSONMarshaler struct {
 func (cs *ContractAccount) DecodeBSON(b []byte, enc *bsonenc.Encoder) error {
 	e := util.StringErrorFunc("failed to decode bson of ContractAccount")
 
-	var ucs ContractAccountBSONMarshaler
+	var ucs ContractAccountBSONUnmarshaler
 	if err := bsonenc.Unmarshal(b, &ucs); err != nil {
 		return e(err, "")
 	}
