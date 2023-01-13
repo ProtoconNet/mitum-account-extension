@@ -22,13 +22,6 @@ var transfersProcessorPool = sync.Pool{
 	},
 }
 
-// func (Transfers) Process(
-// 	ctx context.Context, getStateFunc base.GetStateFunc,
-// ) ([]base.StateMergeValue, base.OperationProcessReasonError, error) {
-// 	// NOTE Process is nil func
-// 	return nil, nil, nil
-// }
-
 type TransfersItemProcessor struct {
 	h    util.Hash
 	item currency.TransfersItem
@@ -140,7 +133,7 @@ func (opp *TransfersProcessor) PreProcess(
 	}
 
 	if err := checkExistsState(currency.StateKeyAccount(fact.Sender()), getStateFunc); err != nil {
-		return ctx, base.NewBaseOperationProcessReasonError("failed to check existence of sender %v : %w", fact.Sender(), err), nil
+		return ctx, base.NewBaseOperationProcessReasonError("failed to check existence of sender %v: %w", fact.Sender(), err), nil
 	}
 
 	if err := checkNotExistsState(StateKeyContractAccount(fact.Sender()), getStateFunc); err != nil {
@@ -148,7 +141,7 @@ func (opp *TransfersProcessor) PreProcess(
 	}
 
 	if err := checkFactSignsByState(fact.Sender(), op.Signs(), getStateFunc); err != nil {
-		return ctx, base.NewBaseOperationProcessReasonError("invalid signing :  %w", err), nil
+		return ctx, base.NewBaseOperationProcessReasonError("invalid signing: %w", err), nil
 	}
 
 	return ctx, nil, nil

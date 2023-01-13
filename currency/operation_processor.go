@@ -188,16 +188,6 @@ func (opr *OperationProcessor) checkDuplication(op base.Operation) error {
 		newAddresses = as
 		// did = fact.Sender().String()
 		// didtype = DuplicationTypeSender
-	case CreateContractAccounts:
-		fact, ok := t.Fact().(CreateContractAccountsFact)
-		if !ok {
-			return errors.Errorf("expected CreateContractAccountsFact, not %T", t.Fact())
-		}
-		as, err := fact.Targets()
-		if err != nil {
-			return errors.Errorf("failed to get Addresses")
-		}
-		newAddresses = as
 	// case KeyUpdater:
 	// 	fact, ok := t.Fact().(KeyUpdaterFact)
 	// 	if !ok {
@@ -214,6 +204,23 @@ func (opr *OperationProcessor) checkDuplication(op base.Operation) error {
 		fact, ok := t.Fact().(currency.TransfersFact)
 		if !ok {
 			return errors.Errorf("expected TransfersFact, not %T", t.Fact())
+		}
+		did = fact.Sender().String()
+		didtype = DuplicationTypeSender
+	case CreateContractAccounts:
+		fact, ok := t.Fact().(CreateContractAccountsFact)
+		if !ok {
+			return errors.Errorf("expected CreateContractAccountsFact, not %T", t.Fact())
+		}
+		as, err := fact.Targets()
+		if err != nil {
+			return errors.Errorf("failed to get Addresses")
+		}
+		newAddresses = as
+	case Withdraws:
+		fact, ok := t.Fact().(WithdrawsFact)
+		if !ok {
+			return errors.Errorf("expected WithdrawsFact, not %T", t.Fact())
 		}
 		did = fact.Sender().String()
 		didtype = DuplicationTypeSender
@@ -322,7 +329,8 @@ func (opr *OperationProcessor) getNewProcessor(op base.Operation) (base.Operatio
 	case currency.CreateAccounts,
 		// KeyUpdater,
 		currency.Transfers,
-		CreateContractAccounts:
+		CreateContractAccounts,
+		Withdraws:
 		// CurrencyRegister,
 		// CurrencyPolicyUpdater,
 		// SuffrageInflation:

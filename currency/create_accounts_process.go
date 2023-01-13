@@ -23,13 +23,6 @@ var createAccountsProcessorPool = sync.Pool{
 	},
 }
 
-// func (CreateAccounts) Process(
-// 	ctx context.Context, getStateFunc base.GetStateFunc,
-// ) ([]base.StateMergeValue, base.OperationProcessReasonError, error) {
-// 	// NOTE Process is nil func
-// 	return nil, nil, nil
-// }
-
 type CreateAccountsItemProcessor struct {
 	h    util.Hash
 	item currency.CreateAccountsItem
@@ -191,7 +184,7 @@ func (opp *CreateAccountsProcessor) Process( // nolint:dupl
 
 	sb, err := CheckEnoughBalance(fact.Sender(), required, getStateFunc)
 	if err != nil {
-		return nil, base.NewBaseOperationProcessReasonError("not enough balance of sender %s : %w", fact.Sender(), err), nil
+		return nil, base.NewBaseOperationProcessReasonError("not enough balance of sender %s: %w", fact.Sender(), err), nil
 	}
 
 	ns := make([]*CreateAccountsItemProcessor, len(fact.Items()))

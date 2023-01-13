@@ -29,9 +29,13 @@ var hinters = []encoder.DecodeDetail{
 	// {Hint: mitumcurrency.CurrencyRegisterHint, Instance: mitumcurrency.CurrencyRegister{}},
 	// {Hint: mitumcurrency.CurrencyPolicyUpdaterHint, Instance: mitumcurrency.CurrencyPolicyUpdater{}},
 	// {Hint: mitumcurrency.SuffrageInflationHint, Instance: mitumcurrency.SuffrageInflation{}},
+	{Hint: currency.ContractAccountKeysHint, Instance: currency.ContractAccountKeys{}},
 	{Hint: currency.CreateContractAccountsItemMultiAmountsHint, Instance: currency.CreateContractAccountsItemMultiAmounts{}},
 	{Hint: currency.CreateContractAccountsItemSingleAmountHint, Instance: currency.CreateContractAccountsItemSingleAmount{}},
 	{Hint: currency.CreateContractAccountsHint, Instance: currency.CreateContractAccounts{}},
+	{Hint: currency.WithdrawsItemMultiAmountsHint, Instance: currency.WithdrawsItemMultiAmounts{}},
+	{Hint: currency.WithdrawsItemSingleAmountHint, Instance: currency.WithdrawsItemSingleAmount{}},
+	{Hint: currency.WithdrawsHint, Instance: currency.Withdraws{}},
 	// {Hint: mitumcurrency.FeeOperationFactHint, Instance: mitumcurrency.FeeOperationFact{}},
 	// {Hint: mitumcurrency.FeeOperationHint, Instance: mitumcurrency.FeeOperation{}},
 	{Hint: currency.GenesisCurrenciesFactHint, Instance: currency.GenesisCurrenciesFact{}},
@@ -43,6 +47,7 @@ var hinters = []encoder.DecodeDetail{
 	{Hint: currency.RatioFeeerHint, Instance: currency.RatioFeeer{}},
 	{Hint: mitumcurrency.AccountStateValueHint, Instance: mitumcurrency.AccountStateValue{}},
 	{Hint: mitumcurrency.BalanceStateValueHint, Instance: mitumcurrency.BalanceStateValue{}},
+	{Hint: currency.ContractAccountStateValueHint, Instance: currency.ContractAccountStateValue{}},
 	{Hint: currency.CurrencyDesignStateValueHint, Instance: currency.CurrencyDesignStateValue{}},
 	{Hint: digest.AccountValueHint, Instance: digest.AccountValue{}},
 	{Hint: digest.OperationValueHint, Instance: digest.OperationValue{}},
@@ -56,6 +61,7 @@ var supportedProposalOperationFactHinters = []encoder.DecodeDetail{
 	// {Hint: mitumcurrency.CurrencyPolicyUpdaterFactHint, Instance: mitumcurrency.CurrencyPolicyUpdaterFact{}},
 	// {Hint: mitumcurrency.SuffrageInflationFactHint, Instance: mitumcurrency.SuffrageInflationFact{}},
 	{Hint: currency.CreateContractAccountsFactHint, Instance: currency.CreateContractAccountsFact{}},
+	{Hint: currency.WithdrawsFactHint, Instance: currency.WithdrawsFact{}},
 }
 
 func init() {

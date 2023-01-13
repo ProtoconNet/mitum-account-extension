@@ -17,16 +17,16 @@ func (cs ContractAccount) MarshalBSON() ([]byte, error) {
 	)
 }
 
-type ContractAccountBSONUnpacker struct {
+type ContractAccountBSONMarshaler struct {
 	HT hint.Hint `json:"_hint"`
 	IA bool      `bson:"isactive"`
 	OW string    `bson:"owner"`
 }
 
-func (cs *ContractAccount) UnpackBSON(b []byte, enc *bsonenc.Encoder) error {
+func (cs *ContractAccount) DecodeBSON(b []byte, enc *bsonenc.Encoder) error {
 	e := util.StringErrorFunc("failed to decode bson of ContractAccount")
 
-	var ucs ContractAccountBSONUnpacker
+	var ucs ContractAccountBSONMarshaler
 	if err := bsonenc.Unmarshal(b, &ucs); err != nil {
 		return e(err, "")
 	}

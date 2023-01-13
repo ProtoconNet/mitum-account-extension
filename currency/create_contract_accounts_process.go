@@ -199,7 +199,7 @@ func (opp *CreateContractAccountsProcessor) PreProcess(
 	}
 
 	if err := checkFactSignsByState(fact.sender, op.Signs(), getStateFunc); err != nil {
-		return ctx, base.NewBaseOperationProcessReasonError("invalid signing :  %w", err), nil
+		return ctx, base.NewBaseOperationProcessReasonError("invalid signing: %w", err), nil
 	}
 
 	return ctx, nil, nil
@@ -221,7 +221,7 @@ func (opp *CreateContractAccountsProcessor) Process( // nolint:dupl
 
 	sb, err := CheckEnoughBalance(fact.Sender(), required, getStateFunc)
 	if err != nil {
-		return nil, base.NewBaseOperationProcessReasonError("not enough balance of sender %s : %w", fact.Sender(), err), nil
+		return nil, base.NewBaseOperationProcessReasonError("not enough balance of sender %s: %w", fact.Sender(), err), nil
 	}
 
 	ns := make([]*CreateContractAccountsItemProcessor, len(fact.items))

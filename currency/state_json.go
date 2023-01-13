@@ -42,3 +42,38 @@ func (s *CurrencyDesignStateValue) DecodeJSON(b []byte, enc *jsonenc.Encoder) er
 
 	return nil
 }
+
+type ContractAccountStateValueJSONMarshaler struct {
+	hint.BaseHinter
+	CA ContractAccount `json:"contractaccount"`
+}
+
+func (s ContractAccountStateValue) MarshalJSON() ([]byte, error) {
+	return util.MarshalJSON(ContractAccountStateValueJSONMarshaler{
+		BaseHinter: s.BaseHinter,
+		CA:         s.account,
+	})
+}
+
+type ContractAccountStateValueJSONUnmarshaler struct {
+	CA json.RawMessage `json:"contractaccount"`
+}
+
+func (s *ContractAccountStateValue) DecodeJSON(b []byte, enc *jsonenc.Encoder) error {
+	e := util.StringErrorFunc("failed to decode ContractAccountStateValue")
+
+	var u ContractAccountStateValueJSONUnmarshaler
+	if err := enc.Unmarshal(b, &u); err != nil {
+		return e(err, "")
+	}
+
+	var ca ContractAccount
+
+	if err := ca.DecodeJSON(u.CA, enc); err != nil {
+		return e(err, "")
+	}
+
+	s.account = ca
+
+	return nil
+}
