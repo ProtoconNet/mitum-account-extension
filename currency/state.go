@@ -240,7 +240,7 @@ func existsCurrencyPolicy(cid currency.CurrencyID, getStateFunc base.GetStateFun
 	case err != nil:
 		return CurrencyPolicy{}, err
 	case !found:
-		return CurrencyPolicy{}, base.NewBaseOperationProcessReasonError("currency not found, %v", cid)
+		return CurrencyPolicy{}, errors.Errorf("currency not found, %v", cid)
 	default:
 		currencydesign, ok := i.Value().(CurrencyDesignStateValue) //nolint:forcetypeassert //...
 		if !ok {
