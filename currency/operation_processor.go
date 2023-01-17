@@ -238,6 +238,7 @@ func (opr *OperationProcessor) checkDuplication(op base.Operation) error {
 	// 	}
 	//  did = fact.Currency().amount.Currency().String()
 	// 	didtype = DuplicationTypeCurrency
+	// case currency.SuffrageInflation:
 	default:
 		return nil
 	}
@@ -330,10 +331,10 @@ func (opr *OperationProcessor) getNewProcessor(op base.Operation) (base.Operatio
 		currency.KeyUpdater,
 		currency.Transfers,
 		CreateContractAccounts,
-		Withdraws:
+		Withdraws,
 		// CurrencyRegister,
 		// CurrencyPolicyUpdater,
-		// SuffrageInflation:
+		currency.SuffrageInflation:
 		return nil, false, errors.Errorf("%T needs SetProcessor", t)
 	default:
 		return nil, false, nil
