@@ -29,7 +29,7 @@ func (it *BaseWithdrawsItem) unpack(enc encoder.Encoder, ht hint.Hint, tg string
 	for i := range ham {
 		j, ok := ham[i].(currency.Amount)
 		if !ok {
-			return util.ErrWrongType.Errorf("expected Amount, not %T", ham[i])
+			return e(util.ErrWrongType.Errorf("expected Amount, not %T", ham[i]), "")
 		}
 
 		amounts[i] = j

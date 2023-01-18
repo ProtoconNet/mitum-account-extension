@@ -25,7 +25,7 @@ func (fact *WithdrawsFact) unpack(enc encoder.Encoder, sd string, bit []byte) er
 	for i := range hit {
 		j, ok := hit[i].(WithdrawsItem)
 		if !ok {
-			return util.ErrWrongType.Errorf("expected WithdrawsItem, not %T", hit[i])
+			return e(util.ErrWrongType.Errorf("expected WithdrawsItem, not %T", hit[i]), "")
 		}
 
 		items[i] = j

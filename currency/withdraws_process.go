@@ -39,22 +39,20 @@ type WithdrawsItemProcessor struct {
 func (opp *WithdrawsItemProcessor) PreProcess(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc,
 ) error {
-	e := util.StringErrorFunc("failed to preprocess for WithdrawsItemProcessor")
-
 	if err := checkExistsState(currency.StateKeyAccount(opp.item.Target()), getStateFunc); err != nil {
-		return e(err, "")
+		return err
 	}
 
-	st, err := existsState(StateKeyContractAccount(opp.item.Target()), "contract account status", getStateFunc)
+	st, err := existsState(StateKeyContractAccount(opp.item.Target()), "key of target contract account", getStateFunc)
 	if err != nil {
-		return e(err, "")
+		return err
 	}
 	v, err := StateContractAccountValue(st)
 	if err != nil {
-		return e(err, "")
+		return err
 	}
 	if !v.owner.Equal(opp.sender) {
-		return e(errors.Errorf("contract account owner is not matched with %q", opp.sender), "")
+		return errors.Errorf("contract account owner is not matched with %q", opp.sender)
 	}
 
 	tb := map[currency.CurrencyID]base.StateMergeValue{}
@@ -87,14 +85,12 @@ func (opp *WithdrawsItemProcessor) PreProcess(
 func (opp *WithdrawsItemProcessor) Process(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc,
 ) ([]base.StateMergeValue, error) {
-	e := util.StringErrorFunc("failed to preprocess for WithdrawsItemProcessor")
-
 	sts := make([]base.StateMergeValue, len(opp.item.Amounts()))
 	for i := range opp.item.Amounts() {
 		am := opp.item.Amounts()[i]
 		v, ok := opp.tb[am.Currency()].Value().(currency.BalanceStateValue)
 		if !ok {
-			return nil, e(errors.Errorf("not BalanceStateValue, %T", opp.tb[am.Currency()].Value()), "")
+			return nil, errors.Errorf("expect BalanceStateValue, not %T", opp.tb[am.Currency()].Value())
 		}
 		stv := currency.NewBalanceStateValue(v.Amount.WithBig(v.Amount.Big().Sub(am.Big())))
 		sts[i] = currency.NewBalanceStateMergeValue(opp.tb[am.Currency()].Key(), stv)
@@ -130,7 +126,7 @@ func NewWithdrawsProcessor() GetNewProcessor {
 		nopp := withdrawsProcessorPool.Get()
 		opp, ok := nopp.(*WithdrawsProcessor)
 		if !ok {
-			return nil, e(errors.Errorf("expected WithdrawsProcessor, not %T", nopp), "")
+			return nil, e(nil, "expected WithdrawsProcessor, not %T", nopp)
 		}
 
 		b, err := base.NewBaseOperationProcessor(
@@ -150,15 +146,15 @@ func (opp *WithdrawsProcessor) PreProcess(
 ) (context.Context, base.OperationProcessReasonError, error) {
 	fact, ok := op.Fact().(WithdrawsFact)
 	if !ok {
-		return ctx, base.NewBaseOperationProcessReasonError("expected WithdrawsFact, not %T", op.Fact()), nil
+		return ctx, nil, errors.Errorf("expected WithdrawsFact, not %T", op.Fact())
 	}
 
 	if err := checkExistsState(currency.StateKeyAccount(fact.sender), getStateFunc); err != nil {
-		return ctx, base.NewBaseOperationProcessReasonError("failed to check existence of sender %v: %w", fact.sender, err), nil
+		return ctx, base.NewBaseOperationProcessReasonError("sender not found, %q: %w", fact.sender, err), nil
 	}
 
 	if err := checkNotExistsState(StateKeyContractAccount(fact.sender), getStateFunc); err != nil {
-		return ctx, base.NewBaseOperationProcessReasonError("contract account cannot withdraw amounts, %v: %w", fact.sender, err), nil
+		return ctx, base.NewBaseOperationProcessReasonError("contract account cannot be ca withdraw sender, %q: %w", fact.sender, err), nil
 	}
 
 	if err := checkFactSignsByState(fact.sender, op.Signs(), getStateFunc); err != nil {
@@ -174,7 +170,7 @@ func (opp *WithdrawsProcessor) Process( // nolint:dupl
 ) {
 	fact, ok := op.Fact().(WithdrawsFact)
 	if !ok {
-		return nil, base.NewBaseOperationProcessReasonError("expected WithdrawsFact, not %T", op.Fact()), nil
+		return nil, nil, errors.Errorf("expected WithdrawsFact, not %T", op.Fact())
 	}
 
 	required, err := opp.calculateItemsFee(op, getStateFunc)
@@ -191,7 +187,7 @@ func (opp *WithdrawsProcessor) Process( // nolint:dupl
 		cip := withdrawsItemProcessorPool.Get()
 		c, ok := cip.(*WithdrawsItemProcessor)
 		if !ok {
-			return nil, base.NewBaseOperationProcessReasonError("expected WithdrawsItemProcessor, not %T", cip), nil
+			return nil, nil, errors.Errorf("expected WithdrawsItemProcessor, not %T", cip)
 		}
 
 		c.h = op.Hash()

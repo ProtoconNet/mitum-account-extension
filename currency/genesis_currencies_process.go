@@ -25,12 +25,12 @@ func (op GenesisCurrencies) Process(
 
 	newAddress, err := fact.Address()
 	if err != nil {
-		return nil, base.NewBaseOperationProcessReasonError(err.Error()), nil
+		return nil, nil, err
 	}
 
-	ns, err := notExistsState(currency.StateKeyAccount(newAddress), "key of genesis", getStateFunc)
+	ns, err := notExistsState(currency.StateKeyAccount(newAddress), "key of genesis account", getStateFunc)
 	if err != nil {
-		return nil, nil, err
+		return nil, base.NewBaseOperationProcessReasonError("genesis account already exists, %q: %w", newAddress, err), nil
 	}
 
 	cs := make([]CurrencyDesign, len(fact.cs))
@@ -43,14 +43,14 @@ func (op GenesisCurrencies) Process(
 
 		st, err := notExistsState(StateKeyCurrencyDesign(c.amount.Currency()), "currency", getStateFunc)
 		if err != nil {
-			return nil, nil, err
+			return nil, base.NewBaseOperationProcessReasonError("currency design already exists, %q: %w", c.amount.Currency(), err), nil
 		}
 
 		sts[c.amount.Currency()] = NewCurrencyDesignStateMergeValue(st.Key(), NewCurrencyDesignStateValue(c))
 
-		st, err = notExistsState(currency.StateKeyBalance(newAddress, c.amount.Currency()), "balance of genesis", getStateFunc)
+		st, err = notExistsState(currency.StateKeyBalance(newAddress, c.amount.Currency()), "key of genesis balance", getStateFunc)
 		if err != nil {
-			return nil, nil, err
+			return nil, base.NewBaseOperationProcessReasonError("account balance already exists, %q: %w", newAddress, err), nil
 		}
 		gas[c.amount.Currency()] = currency.NewBalanceStateMergeValue(st.Key(), currency.NewBalanceStateValue(currency.NewZeroAmount(c.amount.Currency())))
 	}
@@ -66,7 +66,7 @@ func (op GenesisCurrencies) Process(
 		c := cs[i]
 		v, ok := gas[c.amount.Currency()].Value().(currency.BalanceStateValue)
 		if !ok {
-			return nil, base.NewBaseOperationProcessReasonError("invalid BalanceState value found, %T", gas[c.amount.Currency()].Value()), nil
+			return nil, nil, errors.Errorf("expected BalanceStateValue, not %T", gas[c.amount.Currency()].Value())
 		}
 
 		gst := currency.NewBalanceStateMergeValue(gas[c.amount.Currency()].Key(), currency.NewBalanceStateValue(v.Amount.WithBig(v.Amount.Big().Add(c.amount.Big()))))
@@ -75,7 +75,7 @@ func (op GenesisCurrencies) Process(
 
 		sts, err := createZeroAccount(c.amount.Currency(), getStateFunc)
 		if err != nil {
-			return nil, nil, err
+			return nil, base.NewBaseOperationProcessReasonError("failed to create zero account, %q: %w", c.amount.Currency(), err), nil
 		}
 
 		smvs = append(smvs, sts...)
@@ -94,14 +94,14 @@ func createZeroAccount(
 	if err != nil {
 		return nil, err
 	}
-	ast, err := notExistsState(currency.StateKeyAccount(ac.Address()), "keys of zero account", getStateFunc)
+	ast, err := notExistsState(currency.StateKeyAccount(ac.Address()), "key of zero account", getStateFunc)
 	if err != nil {
 		return nil, err
 	}
 
 	sts[0] = currency.NewAccountStateMergeValue(ast.Key(), currency.NewAccountStateValue(ac))
 
-	bst, err := notExistsState(currency.StateKeyBalance(ac.Address(), cid), "balance of zero account", getStateFunc)
+	bst, err := notExistsState(currency.StateKeyBalance(ac.Address(), cid), "key of zero account balance", getStateFunc)
 	if err != nil {
 		return nil, err
 	}

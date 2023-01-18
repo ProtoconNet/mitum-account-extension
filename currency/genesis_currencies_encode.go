@@ -27,7 +27,7 @@ func (fact *GenesisCurrenciesFact) unpack(
 	if err != nil {
 		return e(err, "")
 	} else if k, ok := hinter.(currency.AccountKeys); !ok {
-		return util.ErrWrongType.Errorf("expected AccountKeys, not %T", hinter)
+		return e(util.ErrWrongType.Errorf("expected AccountKeys, not %T", hinter), "")
 	} else {
 		keys = k
 	}
@@ -43,7 +43,7 @@ func (fact *GenesisCurrenciesFact) unpack(
 	for i := range hcs {
 		j, ok := hcs[i].(CurrencyDesign)
 		if !ok {
-			return util.ErrWrongType.Errorf("expected CurrencyDesign, not %T", hcs[i])
+			return e(util.ErrWrongType.Errorf("expected CurrencyDesign, not %T", hcs[i]), "")
 		}
 
 		cs[i] = j

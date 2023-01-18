@@ -43,46 +43,43 @@ type CreateContractAccountsItemProcessor struct {
 func (opp *CreateContractAccountsItemProcessor) PreProcess(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc,
 ) error {
-	e := util.StringErrorFunc("failed to preprocess for CreateContractAccountsItemProcessor")
-
 	for i := range opp.item.Amounts() {
 		am := opp.item.Amounts()[i]
 
 		policy, err := existsCurrencyPolicy(am.Currency(), getStateFunc)
 		if err != nil {
-			return e(err, "")
+			return err
 		}
 
 		if am.Big().Compare(policy.NewAccountMinBalance()) < 0 {
-			return base.NewBaseOperationProcessReasonError(
-				"amount should be over minimum balance, %v < %v", am.Big(), policy.NewAccountMinBalance())
+			return errors.Errorf("amount should be over minimum balance, %v < %v", am.Big(), policy.NewAccountMinBalance())
 		}
 	}
 
 	target, err := opp.item.Address()
 	if err != nil {
-		return e(err, "")
+		return err
 	}
 
-	st, err := notExistsState(currency.StateKeyAccount(target), "key of target", getStateFunc)
+	st, err := notExistsState(currency.StateKeyAccount(target), "key of target account", getStateFunc)
 	if err != nil {
-		return e(err, "")
+		return err
 	}
 	opp.ns = currency.NewAccountStateMergeValue(st.Key(), st.Value())
 
-	st, err = notExistsState(StateKeyContractAccount(target), "key of target ca", getStateFunc)
+	st, err = notExistsState(StateKeyContractAccount(target), "key of target contract account", getStateFunc)
 	if err != nil {
-		return e(err, "")
+		return err
 	}
 	opp.oas = NewContractAccountStateMergeValue(st.Key(), st.Value())
 
-	st, err = existsState(currency.StateKeyAccount(opp.sender), "account of sender", getStateFunc)
+	st, err = existsState(currency.StateKeyAccount(opp.sender), "key of sender account", getStateFunc)
 	if err != nil {
-		return e(err, "")
+		return err
 	}
 	oac, err := currency.LoadStateAccountValue(st)
 	if err != nil {
-		return e(err, "")
+		return err
 	}
 	opp.oac = oac
 
@@ -91,9 +88,9 @@ func (opp *CreateContractAccountsItemProcessor) PreProcess(
 		am := opp.item.Amounts()[i]
 		switch _, found, err := getStateFunc(currency.StateKeyBalance(target, am.Currency())); {
 		case err != nil:
-			return e(err, "")
+			return err
 		case found:
-			return e(isaac.ErrStopProcessingRetry.Errorf("target balance already exists"), "")
+			return isaac.ErrStopProcessingRetry.Errorf("target balance already exists, %q", target)
 		default:
 			nb[am.Currency()] = currency.NewBalanceStateMergeValue(currency.StateKeyBalance(target, am.Currency()), currency.NewBalanceStateValue(currency.NewZeroAmount(am.Currency())))
 		}
@@ -106,18 +103,16 @@ func (opp *CreateContractAccountsItemProcessor) PreProcess(
 func (opp *CreateContractAccountsItemProcessor) Process(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc,
 ) ([]base.StateMergeValue, error) {
-	e := util.StringErrorFunc("failed to preprocess for CreateContractAccountsItemProcessor")
-
 	sts := make([]base.StateMergeValue, len(opp.item.Amounts())+2)
 
 	nac, err := currency.NewAccountFromKeys(opp.item.Keys())
 	if err != nil {
-		return nil, e(err, "")
+		return nil, err
 	}
 	ks := NewContractAccountKeys()
 	ncac, err := nac.SetKeys(ks)
 	if err != nil {
-		return nil, e(err, "")
+		return nil, err
 	}
 	sts[0] = currency.NewAccountStateMergeValue(opp.ns.Key(), currency.NewAccountStateValue(ncac))
 
@@ -128,7 +123,7 @@ func (opp *CreateContractAccountsItemProcessor) Process(
 		am := opp.item.Amounts()[i]
 		v, ok := opp.nb[am.Currency()].Value().(currency.BalanceStateValue)
 		if !ok {
-			return nil, e(errors.Errorf("not BalanceStateValue, %T", opp.nb[am.Currency()].Value()), "")
+			return nil, errors.Errorf("expected BalanceStateValue, not %T", opp.nb[am.Currency()].Value())
 		}
 		stv := currency.NewBalanceStateValue(v.Amount.WithBig(v.Amount.Big().Add(am.Big())))
 		sts[i+2] = currency.NewBalanceStateMergeValue(opp.nb[am.Currency()].Key(), stv)
@@ -167,7 +162,7 @@ func NewCreateContractAccountsProcessor() GetNewProcessor {
 		nopp := createContractAccountsProcessorPool.Get()
 		opp, ok := nopp.(*CreateContractAccountsProcessor)
 		if !ok {
-			return nil, errors.Errorf("expected CreateContractAccountsProcessor, not %T", nopp)
+			return nil, e(nil, "expected CreateContractAccountsProcessor, not %T", nopp)
 		}
 
 		b, err := base.NewBaseOperationProcessor(
@@ -187,15 +182,15 @@ func (opp *CreateContractAccountsProcessor) PreProcess(
 ) (context.Context, base.OperationProcessReasonError, error) {
 	fact, ok := op.Fact().(CreateContractAccountsFact)
 	if !ok {
-		return ctx, base.NewBaseOperationProcessReasonError("expected CreateContractAccountsFact, not %T", op.Fact()), nil
+		return ctx, nil, errors.Errorf("expected CreateContractAccountsFact, not %T", op.Fact())
 	}
 
 	if err := checkExistsState(currency.StateKeyAccount(fact.sender), getStateFunc); err != nil {
-		return ctx, base.NewBaseOperationProcessReasonError("failed to check existence of sender %v: %w", fact.sender, err), nil
+		return ctx, base.NewBaseOperationProcessReasonError("sender not found, %q: %w", fact.sender, err), nil
 	}
 
 	if err := checkNotExistsState(StateKeyContractAccount(fact.sender), getStateFunc); err != nil {
-		return ctx, base.NewBaseOperationProcessReasonError("contract account cannot be owner of contract accounts, %v: %w", fact.sender, err), nil
+		return ctx, base.NewBaseOperationProcessReasonError("contract account cannot be create-contract-account sender, %q: %w", fact.sender, err), nil
 	}
 
 	if err := checkFactSignsByState(fact.sender, op.Signs(), getStateFunc); err != nil {
@@ -211,7 +206,7 @@ func (opp *CreateContractAccountsProcessor) Process( // nolint:dupl
 ) {
 	fact, ok := op.Fact().(CreateContractAccountsFact)
 	if !ok {
-		return nil, base.NewBaseOperationProcessReasonError("expected CreateContractAccountsFact, not %T", op.Fact()), nil
+		return nil, nil, errors.Errorf("expected CreateContractAccountsFact, not %T", op.Fact())
 	}
 
 	required, err := opp.calculateItemsFee(op, getStateFunc)
@@ -219,9 +214,9 @@ func (opp *CreateContractAccountsProcessor) Process( // nolint:dupl
 		return nil, base.NewBaseOperationProcessReasonError("failed to calculate fee: %w", err), nil
 	}
 
-	sb, err := CheckEnoughBalance(fact.Sender(), required, getStateFunc)
+	sb, err := CheckEnoughBalance(fact.sender, required, getStateFunc)
 	if err != nil {
-		return nil, base.NewBaseOperationProcessReasonError("not enough balance of sender %s: %w", fact.Sender(), err), nil
+		return nil, base.NewBaseOperationProcessReasonError("failed to check enough balance: %w", err), nil
 	}
 
 	ns := make([]*CreateContractAccountsItemProcessor, len(fact.items))
@@ -229,7 +224,7 @@ func (opp *CreateContractAccountsProcessor) Process( // nolint:dupl
 		cip := createContractAccountsItemProcessorPool.Get()
 		c, ok := cip.(*CreateContractAccountsItemProcessor)
 		if !ok {
-			return nil, base.NewBaseOperationProcessReasonError("expected CreateContractAccountsItemProcessor, not %T", cip), nil
+			return nil, nil, errors.Errorf("expected CreateContractAccountsItemProcessor, not %T", cip)
 		}
 
 		c.h = op.Hash()
@@ -257,7 +252,7 @@ func (opp *CreateContractAccountsProcessor) Process( // nolint:dupl
 	for i := range sb {
 		v, ok := sb[i].Value().(currency.BalanceStateValue)
 		if !ok {
-			return nil, base.NewBaseOperationProcessReasonError("expected BalanceStateValue, not %T", sb[i].Value()), nil
+			return nil, nil, errors.Errorf("expected BalanceStateValue, not %T", sb[i].Value())
 		}
 		stv := currency.NewBalanceStateValue(v.Amount.WithBig(v.Amount.Big().Sub(required[i][0])))
 		sts = append(sts, currency.NewBalanceStateMergeValue(sb[i].Key(), stv))

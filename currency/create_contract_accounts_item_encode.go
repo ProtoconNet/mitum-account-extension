@@ -15,7 +15,7 @@ func (it *BaseCreateContractAccountsItem) unpack(enc encoder.Encoder, ht hint.Hi
 	if hinter, err := enc.Decode(bks); err != nil {
 		return e(err, "")
 	} else if k, ok := hinter.(currency.AccountKeys); !ok {
-		return util.ErrWrongType.Errorf("expected AccountsKeys, not %T", hinter)
+		return e(util.ErrWrongType.Errorf("expected AccountsKeys, not %T", hinter), "")
 	} else {
 		it.keys = k
 	}
@@ -29,7 +29,7 @@ func (it *BaseCreateContractAccountsItem) unpack(enc encoder.Encoder, ht hint.Hi
 	for i := range ham {
 		j, ok := ham[i].(currency.Amount)
 		if !ok {
-			return util.ErrWrongType.Errorf("expected Amount, not %T", ham[i])
+			return e(util.ErrWrongType.Errorf("expected Amount, not %T", ham[i]), "")
 		}
 
 		amounts[i] = j

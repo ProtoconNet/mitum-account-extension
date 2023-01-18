@@ -25,7 +25,7 @@ func (fact *CreateContractAccountsFact) unpack(enc encoder.Encoder, ow string, b
 	for i := range hit {
 		j, ok := hit[i].(CreateContractAccountsItem)
 		if !ok {
-			return util.ErrWrongType.Errorf("expected CreateContractAccountsItem, not %T", hit[i])
+			return e(util.ErrWrongType.Errorf("expected CreateContractAccountsItem, not %T", hit[i]), "")
 		}
 
 		items[i] = j
