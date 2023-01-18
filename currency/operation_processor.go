@@ -224,21 +224,27 @@ func (opr *OperationProcessor) checkDuplication(op base.Operation) error {
 		}
 		did = fact.Sender().String()
 		didtype = DuplicationTypeSender
-	// case CurrencyRegister:
-	// 	fact, ok := t.Fact().(CurrencyRegisterFact)
-	// 	if !ok {
-	// 		return errors.Errorf("expected CurrencyRegisterFact, not %T", t.Fact())
-	// 	}
-	//  did = fact.Currency().amount.Currency().String()
-	// 	didtype = DuplicationTypeCurrency
-	// case CurrencyPolicyUpdater:
-	// 	fact, ok := t.Fact().(CurrencyPolicyUpdaterFact)
-	// 	if !ok {
-	// 		return errors.Errorf("expected CurrencyPolicyUpdaterFact, not %T", t.Fact())
-	// 	}
-	//  did = fact.Currency().amount.Currency().String()
-	// 	didtype = DuplicationTypeCurrency
-	// case currency.SuffrageInflation:
+	case CurrencyRegister:
+		fact, ok := t.Fact().(CurrencyRegisterFact)
+		if !ok {
+			return errors.Errorf("expected CurrencyRegisterFact, not %T", t.Fact())
+		}
+		did = fact.currency.amount.Currency().String()
+		didtype = DuplicationTypeCurrency
+	case CurrencyPolicyUpdater:
+		fact, ok := t.Fact().(CurrencyPolicyUpdaterFact)
+		if !ok {
+			return errors.Errorf("expected CurrencyPolicyUpdaterFact, not %T", t.Fact())
+		}
+		did = fact.currency.String()
+		didtype = DuplicationTypeCurrency
+	case currency.SuffrageInflation:
+		// fact, ok := t.Fact().(currency.SuffrageInflationFact)
+		// if !ok {
+		// 	return errors.Errorf("expected SuffrageInflationFact, not %T", t.Fact())
+		// }
+		// did = fact.currency.String()
+		// didtype = DuplicationTypeCurrency
 	default:
 		return nil
 	}
@@ -332,8 +338,8 @@ func (opr *OperationProcessor) getNewProcessor(op base.Operation) (base.Operatio
 		currency.Transfers,
 		CreateContractAccounts,
 		Withdraws,
-		// CurrencyRegister,
-		// CurrencyPolicyUpdater,
+		CurrencyRegister,
+		CurrencyPolicyUpdater,
 		currency.SuffrageInflation:
 		return nil, false, errors.Errorf("%T needs SetProcessor", t)
 	default:
