@@ -3,9 +3,9 @@ package currency
 import (
 	"context"
 
-	"github.com/pkg/errors"
 	"github.com/spikeekips/mitum-currency/currency"
 	"github.com/spikeekips/mitum/base"
+	"github.com/spikeekips/mitum/util"
 )
 
 func (GenesisCurrencies) PreProcess(
@@ -18,14 +18,16 @@ func (op GenesisCurrencies) Process(
 	ctx context.Context, getStateFunc base.GetStateFunc) (
 	[]base.StateMergeValue, base.OperationProcessReasonError, error,
 ) {
+	e := util.StringErrorFunc("failed to process GenesisCurrencies")
+
 	fact, ok := op.Fact().(GenesisCurrenciesFact)
 	if !ok {
-		return nil, nil, errors.Errorf("expected GenesisCurrenciesFact, not %T", op.Fact())
+		return nil, nil, e(nil, "expected GenesisCurrenciesFact, not %T", op.Fact())
 	}
 
 	newAddress, err := fact.Address()
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, e(err, "")
 	}
 
 	ns, err := notExistsState(currency.StateKeyAccount(newAddress), "key of genesis account", getStateFunc)
@@ -57,7 +59,7 @@ func (op GenesisCurrencies) Process(
 
 	var smvs []base.StateMergeValue
 	if ac, err := currency.NewAccount(newAddress, fact.keys); err != nil {
-		return nil, nil, err
+		return nil, nil, e(err, "")
 	} else {
 		smvs = append(smvs, currency.NewAccountStateMergeValue(ns.Key(), currency.NewAccountStateValue(ac)))
 	}
@@ -66,7 +68,7 @@ func (op GenesisCurrencies) Process(
 		c := cs[i]
 		v, ok := gas[c.amount.Currency()].Value().(currency.BalanceStateValue)
 		if !ok {
-			return nil, nil, errors.Errorf("expected BalanceStateValue, not %T", gas[c.amount.Currency()].Value())
+			return nil, nil, e(nil, "expected BalanceStateValue, not %T", gas[c.amount.Currency()].Value())
 		}
 
 		gst := currency.NewBalanceStateMergeValue(gas[c.amount.Currency()].Key(), currency.NewBalanceStateValue(v.Amount.WithBig(v.Amount.Big().Add(c.amount.Big()))))

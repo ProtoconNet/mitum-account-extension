@@ -144,9 +144,11 @@ func NewWithdrawsProcessor() GetNewProcessor {
 func (opp *WithdrawsProcessor) PreProcess(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc,
 ) (context.Context, base.OperationProcessReasonError, error) {
+	e := util.StringErrorFunc("failed to preprocess WithdrawsProcessor")
+
 	fact, ok := op.Fact().(WithdrawsFact)
 	if !ok {
-		return ctx, nil, errors.Errorf("expected WithdrawsFact, not %T", op.Fact())
+		return ctx, nil, e(nil, "expected WithdrawsFact, not %T", op.Fact())
 	}
 
 	if err := checkExistsState(currency.StateKeyAccount(fact.sender), getStateFunc); err != nil {
@@ -168,9 +170,11 @@ func (opp *WithdrawsProcessor) Process( // nolint:dupl
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc) (
 	[]base.StateMergeValue, base.OperationProcessReasonError, error,
 ) {
+	e := util.StringErrorFunc("failed to process WithdrawsProcessor")
+
 	fact, ok := op.Fact().(WithdrawsFact)
 	if !ok {
-		return nil, nil, errors.Errorf("expected WithdrawsFact, not %T", op.Fact())
+		return nil, nil, e(nil, "expected WithdrawsFact, not %T", op.Fact())
 	}
 
 	required, err := opp.calculateItemsFee(op, getStateFunc)
@@ -187,7 +191,7 @@ func (opp *WithdrawsProcessor) Process( // nolint:dupl
 		cip := withdrawsItemProcessorPool.Get()
 		c, ok := cip.(*WithdrawsItemProcessor)
 		if !ok {
-			return nil, nil, errors.Errorf("expected WithdrawsItemProcessor, not %T", cip)
+			return nil, nil, e(nil, "expected WithdrawsItemProcessor, not %T", cip)
 		}
 
 		c.h = op.Hash()

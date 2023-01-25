@@ -50,9 +50,11 @@ func NewKeyUpdaterProcessor() GetNewProcessor {
 func (opp *KeyUpdaterProcessor) PreProcess(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc,
 ) (context.Context, base.OperationProcessReasonError, error) {
+	e := util.StringErrorFunc("failed to preprocess KeyUpdaterProcessor")
+
 	fact, ok := op.Fact().(currency.KeyUpdaterFact)
 	if !ok {
-		return ctx, nil, errors.Errorf("expected KeyUpdaterFact, not %T", op.Fact())
+		return ctx, nil, e(nil, "expected KeyUpdaterFact, not %T", op.Fact())
 	}
 
 	st, err := existsState(currency.StateKeyAccount(fact.Target()), "key of target account", getStateFunc)
@@ -83,9 +85,11 @@ func (opp *KeyUpdaterProcessor) Process( // nolint:dupl
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc) (
 	[]base.StateMergeValue, base.OperationProcessReasonError, error,
 ) {
+	e := util.StringErrorFunc("failed to process KeyUpdaterProcessor")
+
 	fact, ok := op.Fact().(currency.KeyUpdaterFact)
 	if !ok {
-		return nil, nil, errors.Errorf("expected KeyUpdaterFact, not %T", op.Fact())
+		return nil, nil, e(nil, "expected KeyUpdaterFact, not %T", op.Fact())
 	}
 
 	st, err := existsState(currency.StateKeyAccount(fact.Target()), "key of target account", getStateFunc)

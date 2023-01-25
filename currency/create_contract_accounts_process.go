@@ -180,9 +180,11 @@ func NewCreateContractAccountsProcessor() GetNewProcessor {
 func (opp *CreateContractAccountsProcessor) PreProcess(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc,
 ) (context.Context, base.OperationProcessReasonError, error) {
+	e := util.StringErrorFunc("failed to preprocess CreateContractAccountsProcessor")
+
 	fact, ok := op.Fact().(CreateContractAccountsFact)
 	if !ok {
-		return ctx, nil, errors.Errorf("expected CreateContractAccountsFact, not %T", op.Fact())
+		return ctx, nil, e(nil, "expected CreateContractAccountsFact, not %T", op.Fact())
 	}
 
 	if err := checkExistsState(currency.StateKeyAccount(fact.sender), getStateFunc); err != nil {
@@ -204,9 +206,11 @@ func (opp *CreateContractAccountsProcessor) Process( // nolint:dupl
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc) (
 	[]base.StateMergeValue, base.OperationProcessReasonError, error,
 ) {
+	e := util.StringErrorFunc("failed to process CreateContractAccountsProcessor")
+
 	fact, ok := op.Fact().(CreateContractAccountsFact)
 	if !ok {
-		return nil, nil, errors.Errorf("expected CreateContractAccountsFact, not %T", op.Fact())
+		return nil, nil, e(nil, "expected CreateContractAccountsFact, not %T", op.Fact())
 	}
 
 	required, err := opp.calculateItemsFee(op, getStateFunc)
@@ -224,7 +228,7 @@ func (opp *CreateContractAccountsProcessor) Process( // nolint:dupl
 		cip := createContractAccountsItemProcessorPool.Get()
 		c, ok := cip.(*CreateContractAccountsItemProcessor)
 		if !ok {
-			return nil, nil, errors.Errorf("expected CreateContractAccountsItemProcessor, not %T", cip)
+			return nil, nil, e(nil, "expected CreateContractAccountsItemProcessor, not %T", cip)
 		}
 
 		c.h = op.Hash()
@@ -252,7 +256,7 @@ func (opp *CreateContractAccountsProcessor) Process( // nolint:dupl
 	for i := range sb {
 		v, ok := sb[i].Value().(currency.BalanceStateValue)
 		if !ok {
-			return nil, nil, errors.Errorf("expected BalanceStateValue, not %T", sb[i].Value())
+			return nil, nil, e(nil, "expected BalanceStateValue, not %T", sb[i].Value())
 		}
 		stv := currency.NewBalanceStateValue(v.Amount.WithBig(v.Amount.Big().Sub(required[i][0])))
 		sts = append(sts, currency.NewBalanceStateMergeValue(sb[i].Key(), stv))

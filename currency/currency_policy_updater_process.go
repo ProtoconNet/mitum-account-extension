@@ -4,7 +4,6 @@ import (
 	"context"
 	"sync"
 
-	"github.com/pkg/errors"
 	"github.com/spikeekips/mitum-currency/currency"
 	"github.com/spikeekips/mitum/base"
 	"github.com/spikeekips/mitum/isaac"
@@ -76,9 +75,11 @@ func NewCurrencyPolicyUpdaterProcessor(threshold base.Threshold) GetNewProcessor
 func (opp *CurrencyPolicyUpdaterProcessor) PreProcess(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc,
 ) (context.Context, base.OperationProcessReasonError, error) {
+	e := util.StringErrorFunc("failed to preprocess CurrencyPolicyUpdaterProcessor")
+
 	nop, ok := op.(CurrencyPolicyUpdater)
 	if !ok {
-		return ctx, nil, errors.Errorf("expected CurrencyPolicyUpdater, not %T", op)
+		return ctx, nil, e(nil, "expected CurrencyPolicyUpdater, not %T", op)
 	}
 
 	if err := base.CheckFactSignsBySuffrage(opp.suffrage, opp.threshold, nop.NodeSigns()); err != nil {
@@ -87,7 +88,7 @@ func (opp *CurrencyPolicyUpdaterProcessor) PreProcess(
 
 	fact, ok := op.Fact().(CurrencyPolicyUpdaterFact)
 	if !ok {
-		return ctx, nil, errors.Errorf("expected CurrencyPolicyUpdaterFact, not %T", op.Fact())
+		return ctx, nil, e(nil, "expected CurrencyPolicyUpdaterFact, not %T", op.Fact())
 	}
 
 	err := checkExistsState(StateKeyCurrencyDesign(fact.currency), getStateFunc)
@@ -108,9 +109,11 @@ func (opp *CurrencyPolicyUpdaterProcessor) Process(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc) (
 	[]base.StateMergeValue, base.OperationProcessReasonError, error,
 ) {
+	e := util.StringErrorFunc("failed to process CurrencyPolicyUpdaterProcessor")
+
 	fact, ok := op.Fact().(CurrencyPolicyUpdaterFact)
 	if !ok {
-		return nil, nil, errors.Errorf("expected CurrencyPolicyUpdaterFact, not %T", op.Fact())
+		return nil, nil, e(nil, "expected CurrencyPolicyUpdaterFact, not %T", op.Fact())
 	}
 
 	sts := make([]base.StateMergeValue, 1)

@@ -123,9 +123,11 @@ func NewTransfersProcessor() GetNewProcessor {
 func (opp *TransfersProcessor) PreProcess(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc,
 ) (context.Context, base.OperationProcessReasonError, error) {
+	e := util.StringErrorFunc("failed to preprocess TransfersProcessor")
+
 	fact, ok := op.Fact().(currency.TransfersFact)
 	if !ok {
-		return ctx, nil, errors.Errorf("expected TransfersFact, not %T", op.Fact())
+		return ctx, nil, e(nil, "expected TransfersFact, not %T", op.Fact())
 	}
 
 	if err := checkExistsState(currency.StateKeyAccount(fact.Sender()), getStateFunc); err != nil {
@@ -147,9 +149,11 @@ func (opp *TransfersProcessor) Process( // nolint:dupl
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc) (
 	[]base.StateMergeValue, base.OperationProcessReasonError, error,
 ) {
+	e := util.StringErrorFunc("failed to process TransfersProcessor")
+
 	fact, ok := op.Fact().(currency.TransfersFact)
 	if !ok {
-		return nil, nil, errors.Errorf("expected TransfersFact, not %T", op.Fact())
+		return nil, nil, e(nil, "expected TransfersFact, not %T", op.Fact())
 	}
 
 	required, err := opp.calculateItemsFee(op, getStateFunc)
@@ -167,7 +171,7 @@ func (opp *TransfersProcessor) Process( // nolint:dupl
 		cip := transfersItemProcessorPool.Get()
 		c, ok := cip.(*TransfersItemProcessor)
 		if !ok {
-			return nil, nil, errors.Errorf("expected TransfersItemProcessor, not %T", cip)
+			return nil, nil, e(nil, "expected TransfersItemProcessor, not %T", cip)
 		}
 
 		c.h = op.Hash()

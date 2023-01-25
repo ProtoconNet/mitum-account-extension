@@ -143,9 +143,11 @@ func NewCreateAccountsProcessor() GetNewProcessor {
 func (opp *CreateAccountsProcessor) PreProcess(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc,
 ) (context.Context, base.OperationProcessReasonError, error) {
+	e := util.StringErrorFunc("failed to preprocess CreateAccountsProcessor")
+
 	fact, ok := op.Fact().(currency.CreateAccountsFact)
 	if !ok {
-		return ctx, nil, errors.Errorf("expected CreateAccountsFact, not %T", op.Fact())
+		return ctx, nil, e(nil, "expected CreateAccountsFact, not %T", op.Fact())
 	}
 
 	if err := checkExistsState(currency.StateKeyAccount(fact.Sender()), getStateFunc); err != nil {
@@ -167,9 +169,11 @@ func (opp *CreateAccountsProcessor) Process( // nolint:dupl
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc) (
 	[]base.StateMergeValue, base.OperationProcessReasonError, error,
 ) {
+	e := util.StringErrorFunc("failed to process CreateAccountsProcessor")
+
 	fact, ok := op.Fact().(currency.CreateAccountsFact)
 	if !ok {
-		return nil, nil, errors.Errorf("expected CreateAccountsFact, not %T", op.Fact())
+		return nil, nil, e(nil, "expected CreateAccountsFact, not %T", op.Fact())
 	}
 
 	required, err := opp.calculateItemsFee(op, getStateFunc)
@@ -187,7 +191,7 @@ func (opp *CreateAccountsProcessor) Process( // nolint:dupl
 		cip := createAccountsItemProcessorPool.Get()
 		c, ok := cip.(*CreateAccountsItemProcessor)
 		if !ok {
-			return nil, nil, errors.Errorf("expected CreateAccountsItemProcessor, not %T", cip)
+			return nil, nil, e(nil, "expected CreateAccountsItemProcessor, not %T", cip)
 		}
 
 		c.h = op.Hash()
@@ -214,7 +218,7 @@ func (opp *CreateAccountsProcessor) Process( // nolint:dupl
 	for i := range sb {
 		v, ok := sb[i].Value().(currency.BalanceStateValue)
 		if !ok {
-			return nil, nil, errors.Errorf("expected BalanceStateValue, not %T", sb[i].Value())
+			return nil, nil, e(nil, "expected BalanceStateValue, not %T", sb[i].Value())
 		}
 		stv := currency.NewBalanceStateValue(v.Amount.WithBig(v.Amount.Big().Sub(required[i][0])))
 		sts = append(sts, currency.NewBalanceStateMergeValue(sb[i].Key(), stv))

@@ -4,7 +4,6 @@ import (
 	"context"
 	"sync"
 
-	"github.com/pkg/errors"
 	"github.com/spikeekips/mitum-currency/currency"
 	"github.com/spikeekips/mitum/base"
 	"github.com/spikeekips/mitum/isaac"
@@ -76,14 +75,16 @@ func NewCurrencyRegisterProcessor(threshold base.Threshold) GetNewProcessor {
 func (opp *CurrencyRegisterProcessor) PreProcess(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc,
 ) (context.Context, base.OperationProcessReasonError, error) {
+	e := util.StringErrorFunc("failed to preprocess CurrencyRegisterProcessor")
+
 	nop, ok := op.(CurrencyRegister)
 	if !ok {
-		return ctx, nil, errors.Errorf("expected CurrencyRegister, not %T", op)
+		return ctx, nil, e(nil, "expected CurrencyRegister, not %T", op)
 	}
 
 	fact, ok := op.Fact().(CurrencyRegisterFact)
 	if !ok {
-		return ctx, nil, errors.Errorf("expected CurrencyRegisterFact, not %T", op.Fact())
+		return ctx, nil, e(nil, "expected CurrencyRegisterFact, not %T", op.Fact())
 	}
 
 	if err := base.CheckFactSignsBySuffrage(opp.suffrage, opp.threshold, nop.NodeSigns()); err != nil {
@@ -125,9 +126,11 @@ func (opp *CurrencyRegisterProcessor) Process(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc) (
 	[]base.StateMergeValue, base.OperationProcessReasonError, error,
 ) {
+	e := util.StringErrorFunc("failed to process CurrencyRegisterProcessor")
+
 	fact, ok := op.Fact().(CurrencyRegisterFact)
 	if !ok {
-		return nil, nil, errors.Errorf("expected CurrencyRegisterFact, not %T", op.Fact())
+		return nil, nil, e(nil, "expected CurrencyRegisterFact, not %T", op.Fact())
 	}
 
 	sts := make([]base.StateMergeValue, 4)
@@ -146,7 +149,7 @@ func (opp *CurrencyRegisterProcessor) Process(
 	{
 		l, err := createZeroAccount(item.amount.Currency(), getStateFunc)
 		if err != nil {
-			return nil, nil, base.NewBaseOperationProcessReasonError("failed to create zero account, %q: %w", item.amount.Currency(), err)
+			return nil, base.NewBaseOperationProcessReasonError("failed to create zero account, %q: %w", item.amount.Currency(), err), nil
 		}
 		sts[2], sts[3] = l[0], l[1]
 	}

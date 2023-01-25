@@ -4,7 +4,6 @@ import (
 	"context"
 	"sync"
 
-	"github.com/pkg/errors"
 	"github.com/spikeekips/mitum-currency/currency"
 	"github.com/spikeekips/mitum/base"
 	"github.com/spikeekips/mitum/isaac"
@@ -69,14 +68,16 @@ func NewSuffrageInflationProcessor(threshold base.Threshold) GetNewProcessor {
 func (opp *SuffrageInflationProcessor) PreProcess(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc,
 ) (context.Context, base.OperationProcessReasonError, error) {
+	e := util.StringErrorFunc("failed to preprocess SuffrageInflationProcessor")
+
 	nop, ok := op.(currency.SuffrageInflation)
 	if !ok {
-		return ctx, nil, errors.Errorf("expected SuffrageInflation, not %T", op)
+		return ctx, nil, e(nil, "expected SuffrageInflation, not %T", op)
 	}
 
 	fact, ok := op.Fact().(currency.SuffrageInflationFact)
 	if !ok {
-		return ctx, nil, errors.Errorf("expected SuffrageInflationFact, not %T", op.Fact())
+		return ctx, nil, e(nil, "expected SuffrageInflationFact, not %T", op.Fact())
 	}
 
 	if err := base.CheckFactSignsBySuffrage(opp.suffrage, opp.threshold, nop.NodeSigns()); err != nil {
@@ -109,9 +110,11 @@ func (opp *SuffrageInflationProcessor) Process(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc) (
 	[]base.StateMergeValue, base.OperationProcessReasonError, error,
 ) {
+	e := util.StringErrorFunc("failed to process SuffrageInflationProcessor")
+
 	fact, ok := op.Fact().(currency.SuffrageInflationFact)
 	if !ok {
-		return nil, nil, errors.Errorf("not SuffrageInflationFact, %T", op.Fact())
+		return nil, nil, e(nil, "not SuffrageInflationFact, %T", op.Fact())
 	}
 
 	sts := []base.StateMergeValue{}
