@@ -5,7 +5,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/spikeekips/mitum-currency-extension/currency"
+	"github.com/ProtoconNet/mitum-currency-extension/currency"
 
 	mitumcurrency "github.com/spikeekips/mitum-currency/currency"
 	"github.com/spikeekips/mitum/base"

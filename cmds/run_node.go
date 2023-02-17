@@ -9,10 +9,10 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/ProtoconNet/mitum-currency-extension/digest"
 	"github.com/arl/statsviz"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
-	"github.com/spikeekips/mitum-currency-extension/digest"
 	"github.com/spikeekips/mitum/base"
 	"github.com/spikeekips/mitum/isaac"
 	isaacnetwork "github.com/spikeekips/mitum/isaac/network"

@@ -5,10 +5,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ProtoconNet/mitum-currency-extension/digest/util"
 	"github.com/bluele/gcache"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
-	"github.com/spikeekips/mitum-currency-extension/digest/util"
 	bsonenc "github.com/spikeekips/mitum-currency/digest/util/bson"
 	"github.com/spikeekips/mitum/base"
 	mitumutil "github.com/spikeekips/mitum/util"

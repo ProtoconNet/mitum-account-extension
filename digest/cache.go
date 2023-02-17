@@ -8,11 +8,11 @@ import (
 	"net/textproto"
 	"time"
 
+	"github.com/ProtoconNet/mitum-currency-extension/digest/util"
 	"github.com/bluele/gcache"
 	"github.com/pkg/errors"
 	"github.com/rainycape/memcache"
 	"github.com/rs/zerolog"
-	"github.com/spikeekips/mitum-currency-extension/digest/util"
 	mitumutil "github.com/spikeekips/mitum/util"
 	"github.com/spikeekips/mitum/util/valuehash"
 )

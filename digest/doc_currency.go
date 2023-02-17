@@ -1,9 +1,9 @@
 package digest
 
 import (
+	"github.com/ProtoconNet/mitum-currency-extension/currency"
+	mongodbstorage "github.com/ProtoconNet/mitum-currency-extension/digest/mongodb"
 	"github.com/pkg/errors"
-	"github.com/spikeekips/mitum-currency-extension/currency"
-	mongodbstorage "github.com/spikeekips/mitum-currency-extension/digest/mongodb"
 	bsonenc "github.com/spikeekips/mitum-currency/digest/util/bson"
 	"github.com/spikeekips/mitum/base"
 	"github.com/spikeekips/mitum/util/encoder"

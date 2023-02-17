@@ -7,11 +7,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ProtoconNet/mitum-currency-extension/digest/network"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
-	"github.com/spikeekips/mitum-currency-extension/digest/network"
 	"github.com/spikeekips/mitum/base"
 	"github.com/spikeekips/mitum/launch"
 	"github.com/spikeekips/mitum/util"

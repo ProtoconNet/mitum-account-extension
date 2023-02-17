@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ProtoconNet/mitum-currency-extension/currency"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
-	"github.com/spikeekips/mitum-currency-extension/currency"
 	"github.com/spikeekips/mitum/base"
 )
 

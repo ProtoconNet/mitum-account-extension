@@ -10,7 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"github.com/spikeekips/mitum-currency-extension/currency"
+	"github.com/ProtoconNet/mitum-currency-extension/currency"
 	mitumcurrency "github.com/spikeekips/mitum-currency/currency"
 	"github.com/spikeekips/mitum/base"
 	mitumutil "github.com/spikeekips/mitum/util"

@@ -3,9 +3,9 @@ package cmds
 import (
 	"context"
 
+	"github.com/ProtoconNet/mitum-currency-extension/currency"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
-	"github.com/spikeekips/mitum-currency-extension/currency"
 	mitumcurrency "github.com/spikeekips/mitum-currency/currency"
 	"github.com/spikeekips/mitum/base"
 	"github.com/spikeekips/mitum/isaac"

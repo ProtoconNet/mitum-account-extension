@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/spikeekips/mitum-currency-extension/digest/cache"
-	"github.com/spikeekips/mitum-currency-extension/digest/util"
+	"github.com/ProtoconNet/mitum-currency-extension/digest/cache"
+	"github.com/ProtoconNet/mitum-currency-extension/digest/util"
 )
 
 var (

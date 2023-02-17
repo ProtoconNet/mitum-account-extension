@@ -13,7 +13,7 @@ import (
 	"github.com/spikeekips/mitum/util/logging"
 	"github.com/spikeekips/mitum/util/ps"
 
-	"github.com/spikeekips/mitum-currency-extension/digest"
+	"github.com/ProtoconNet/mitum-currency-extension/digest"
 )
 
 const (

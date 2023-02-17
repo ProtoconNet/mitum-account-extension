@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/ProtoconNet/mitum-currency-extension/cmds"
 	"github.com/alecthomas/kong"
 	"github.com/pkg/errors"
-	"github.com/spikeekips/mitum-currency-extension/cmds"
 	"github.com/spikeekips/mitum/base"
 	"github.com/spikeekips/mitum/launch"
 	"github.com/spikeekips/mitum/util"

@@ -8,11 +8,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ProtoconNet/mitum-currency-extension/digest/network"
+	"github.com/ProtoconNet/mitum-currency-extension/digest/util"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
-	"github.com/spikeekips/mitum-currency-extension/digest/network"
-	"github.com/spikeekips/mitum-currency-extension/digest/util"
 	mitumutil "github.com/spikeekips/mitum/util"
 	"github.com/spikeekips/mitum/util/logging"
 	"golang.org/x/net/http2"

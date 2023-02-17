@@ -16,9 +16,9 @@ import (
 	"os"
 	"time"
 
+	"github.com/ProtoconNet/mitum-currency-extension/currency"
+	mongodbstorage "github.com/ProtoconNet/mitum-currency-extension/digest/mongodb"
 	"github.com/pkg/errors"
-	"github.com/spikeekips/mitum-currency-extension/currency"
-	mongodbstorage "github.com/spikeekips/mitum-currency-extension/digest/mongodb"
 	mitumcurrency "github.com/spikeekips/mitum-currency/currency"
 	bsonenc "github.com/spikeekips/mitum-currency/digest/util/bson"
 	"github.com/spikeekips/mitum/base"

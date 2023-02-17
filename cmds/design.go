@@ -9,8 +9,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 
-	"github.com/spikeekips/mitum-currency-extension/digest/config"
-	"github.com/spikeekips/mitum-currency-extension/digest/util"
+	"github.com/ProtoconNet/mitum-currency-extension/digest/config"
+	"github.com/ProtoconNet/mitum-currency-extension/digest/util"
 	"github.com/spikeekips/mitum/base"
 	mitumutil "github.com/spikeekips/mitum/util"
 	jsonenc "github.com/spikeekips/mitum/util/encoder/json"

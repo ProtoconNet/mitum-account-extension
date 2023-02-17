@@ -5,9 +5,9 @@ import (
 	"crypto/tls"
 	"strings"
 
+	"github.com/ProtoconNet/mitum-currency-extension/digest/config"
+	"github.com/ProtoconNet/mitum-currency-extension/digest/util"
 	"github.com/pkg/errors"
-	"github.com/spikeekips/mitum-currency-extension/digest/config"
-	"github.com/spikeekips/mitum-currency-extension/digest/util"
 	mitumutil "github.com/spikeekips/mitum/util"
 )
 
