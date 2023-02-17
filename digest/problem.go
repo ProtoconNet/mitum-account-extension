@@ -2,7 +2,9 @@ package digest
 
 import (
 	"fmt"
+	"strings"
 
+	"github.com/pkg/errors"
 	"github.com/spikeekips/mitum/util/hint"
 )
 
@@ -65,4 +67,15 @@ func (pr Problem) SetExtra(key string, value interface{}) Problem {
 	pr.extra[key] = value
 
 	return pr
+}
+
+func makeProblemNamespace(t string) string {
+	return fmt.Sprintf("%s/%s", ProblemNamespace, t)
+}
+
+func parseProblemNamespace(s string) (string, error) {
+	if !strings.HasPrefix(s, ProblemNamespace) {
+		return "", errors.Errorf("invalid problem namespace: %q", s)
+	}
+	return s[len(ProblemNamespace)+1:], nil
 }

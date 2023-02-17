@@ -143,11 +143,8 @@ type Withdraws struct {
 	currency.BaseOperation
 }
 
-func NewWithdraws(
-	fact WithdrawsFact,
-	memo string,
-) (Withdraws, error) {
-	return Withdraws{BaseOperation: currency.NewBaseOperationFromFact(WithdrawsHint, fact, memo)}, nil
+func NewWithdraws(fact WithdrawsFact) (Withdraws, error) {
+	return Withdraws{BaseOperation: currency.NewBaseOperation(WithdrawsHint, fact)}, nil
 }
 
 func (op *Withdraws) HashSign(priv base.Privatekey, networkID base.NetworkID) error {

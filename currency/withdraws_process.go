@@ -144,7 +144,7 @@ func NewWithdrawsProcessor() GetNewProcessor {
 func (opp *WithdrawsProcessor) PreProcess(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc,
 ) (context.Context, base.OperationProcessReasonError, error) {
-	e := util.StringErrorFunc("failed to preprocess WithdrawsProcessor")
+	e := util.StringErrorFunc("failed to preprocess Withdraws")
 
 	fact, ok := op.Fact().(WithdrawsFact)
 	if !ok {
@@ -170,7 +170,7 @@ func (opp *WithdrawsProcessor) Process( // nolint:dupl
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc) (
 	[]base.StateMergeValue, base.OperationProcessReasonError, error,
 ) {
-	e := util.StringErrorFunc("failed to process WithdrawsProcessor")
+	e := util.StringErrorFunc("failed to process Withdraws")
 
 	fact, ok := op.Fact().(WithdrawsFact)
 	if !ok {
@@ -199,7 +199,7 @@ func (opp *WithdrawsProcessor) Process( // nolint:dupl
 		c.item = fact.items[i]
 
 		if err := c.PreProcess(ctx, op, getStateFunc); err != nil {
-			return nil, base.NewBaseOperationProcessReasonError("fail to preprocess withdraw item: %w", err), nil
+			return nil, base.NewBaseOperationProcessReasonError("fail to preprocess WithdrawsItem: %w", err), nil
 		}
 
 		ns[i] = c
@@ -209,7 +209,7 @@ func (opp *WithdrawsProcessor) Process( // nolint:dupl
 	for i := range ns {
 		s, err := ns[i].Process(ctx, op, getStateFunc)
 		if err != nil {
-			return nil, base.NewBaseOperationProcessReasonError("failed to process withdraw item: %w", err), nil
+			return nil, base.NewBaseOperationProcessReasonError("failed to process WithdrawsItem: %w", err), nil
 		}
 		sts = append(sts, s...)
 
@@ -220,7 +220,7 @@ func (opp *WithdrawsProcessor) Process( // nolint:dupl
 		rq := required[k]
 		v, ok := sb[k].Value().(currency.BalanceStateValue)
 		if !ok {
-			return nil, base.NewBaseOperationProcessReasonError("failed to process withdraw"), nil
+			return nil, base.NewBaseOperationProcessReasonError("failed to process Withdraws: expected BalanceStateValue, not %T", sb[k].Value()), nil
 		}
 		stv := currency.NewBalanceStateValue(v.Amount.WithBig(v.Amount.Big().Add(rq[0]).Sub(rq[1].MulInt64(2))))
 		sts = append(sts, currency.NewBalanceStateMergeValue(sb[k].Key(), stv))

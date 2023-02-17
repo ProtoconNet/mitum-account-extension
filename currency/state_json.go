@@ -10,34 +10,34 @@ import (
 
 type CurrencyDesignStateValueJSONMarshaler struct {
 	hint.BaseHinter
-	CD CurrencyDesign `json:"currencydesign"`
+	CurrencyDesign CurrencyDesign `json:"currencydesign"`
 }
 
 func (s CurrencyDesignStateValue) MarshalJSON() ([]byte, error) {
-	return util.MarshalJSON(CurrencyDesignStateValueJSONMarshaler{
-		BaseHinter: s.BaseHinter,
-		CD:         s.CurrencyDesign,
-	})
+	return util.MarshalJSON(
+		CurrencyDesignStateValueJSONMarshaler(s),
+	)
 }
 
 type CurrencyDesignStateValueJSONUnmarshaler struct {
-	CD json.RawMessage `json:"currencydesign"`
+	Hint           hint.Hint       `json:"_hint"`
+	CurrencyDesign json.RawMessage `json:"currencydesign"`
 }
 
 func (s *CurrencyDesignStateValue) DecodeJSON(b []byte, enc *jsonenc.Encoder) error {
-	e := util.StringErrorFunc("failed to decode CurrencyDesignStateValue")
+	e := util.StringErrorFunc("failed to decode json of CurrencyDesignStateValue")
 
 	var u CurrencyDesignStateValueJSONUnmarshaler
 	if err := enc.Unmarshal(b, &u); err != nil {
 		return e(err, "")
 	}
 
-	var cd CurrencyDesign
+	s.BaseHinter = hint.NewBaseHinter(u.Hint)
 
-	if err := cd.DecodeJSON(u.CD, enc); err != nil {
+	var cd CurrencyDesign
+	if err := cd.DecodeJSON(u.CurrencyDesign, enc); err != nil {
 		return e(err, "")
 	}
-
 	s.CurrencyDesign = cd
 
 	return nil
@@ -45,34 +45,35 @@ func (s *CurrencyDesignStateValue) DecodeJSON(b []byte, enc *jsonenc.Encoder) er
 
 type ContractAccountStateValueJSONMarshaler struct {
 	hint.BaseHinter
-	CA ContractAccount `json:"contractaccount"`
+	ContractAccount ContractAccount `json:"contractaccount"`
 }
 
 func (s ContractAccountStateValue) MarshalJSON() ([]byte, error) {
 	return util.MarshalJSON(ContractAccountStateValueJSONMarshaler{
-		BaseHinter: s.BaseHinter,
-		CA:         s.account,
+		BaseHinter:      s.BaseHinter,
+		ContractAccount: s.account,
 	})
 }
 
 type ContractAccountStateValueJSONUnmarshaler struct {
-	CA json.RawMessage `json:"contractaccount"`
+	Hint            hint.Hint       `json:"_hint"`
+	ContractAccount json.RawMessage `json:"contractaccount"`
 }
 
 func (s *ContractAccountStateValue) DecodeJSON(b []byte, enc *jsonenc.Encoder) error {
-	e := util.StringErrorFunc("failed to decode ContractAccountStateValue")
+	e := util.StringErrorFunc("failed to decode json of ContractAccountStateValue")
 
 	var u ContractAccountStateValueJSONUnmarshaler
 	if err := enc.Unmarshal(b, &u); err != nil {
 		return e(err, "")
 	}
 
-	var ca ContractAccount
+	s.BaseHinter = hint.NewBaseHinter(u.Hint)
 
-	if err := ca.DecodeJSON(u.CA, enc); err != nil {
+	var ca ContractAccount
+	if err := ca.DecodeJSON(u.ContractAccount, enc); err != nil {
 		return e(err, "")
 	}
-
 	s.account = ca
 
 	return nil

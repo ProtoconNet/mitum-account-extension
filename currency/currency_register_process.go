@@ -75,7 +75,7 @@ func NewCurrencyRegisterProcessor(threshold base.Threshold) GetNewProcessor {
 func (opp *CurrencyRegisterProcessor) PreProcess(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc,
 ) (context.Context, base.OperationProcessReasonError, error) {
-	e := util.StringErrorFunc("failed to preprocess CurrencyRegisterProcessor")
+	e := util.StringErrorFunc("failed to preprocess CurrencyRegister")
 
 	nop, ok := op.(CurrencyRegister)
 	if !ok {
@@ -93,8 +93,8 @@ func (opp *CurrencyRegisterProcessor) PreProcess(
 
 	item := fact.currency
 
-	if err := checkNotExistsState(StateKeyCurrencyDesign(item.amount.Currency()), getStateFunc); err != nil {
-		return ctx, base.NewBaseOperationProcessReasonError("currency design already exists, %q: %w", item.amount.Currency(), err), nil
+	if err := checkNotExistsState(StateKeyCurrencyDesign(item.Currency()), getStateFunc); err != nil {
+		return ctx, base.NewBaseOperationProcessReasonError("currency design already exists, %q: %w", item.Currency(), err), nil
 	}
 
 	if err := checkExistsState(currency.StateKeyAccount(item.genesisAccount), getStateFunc); err != nil {
@@ -115,8 +115,8 @@ func (opp *CurrencyRegisterProcessor) PreProcess(
 		}
 	}
 
-	if err := checkNotExistsState(currency.StateKeyBalance(item.genesisAccount, item.amount.Currency()), getStateFunc); err != nil {
-		return ctx, base.NewBaseOperationProcessReasonError("account balance already exists, %q: %w", currency.StateKeyBalance(item.genesisAccount, item.amount.Currency()), err), nil
+	if err := checkNotExistsState(currency.StateKeyBalance(item.genesisAccount, item.Currency()), getStateFunc); err != nil {
+		return ctx, base.NewBaseOperationProcessReasonError("account balance already exists, %q: %w", currency.StateKeyBalance(item.genesisAccount, item.Currency()), err), nil
 	}
 
 	return ctx, nil, nil
@@ -126,7 +126,7 @@ func (opp *CurrencyRegisterProcessor) Process(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc) (
 	[]base.StateMergeValue, base.OperationProcessReasonError, error,
 ) {
-	e := util.StringErrorFunc("failed to process CurrencyRegisterProcessor")
+	e := util.StringErrorFunc("failed to process CurrencyRegister")
 
 	fact, ok := op.Fact().(CurrencyRegisterFact)
 	if !ok {
@@ -139,17 +139,17 @@ func (opp *CurrencyRegisterProcessor) Process(
 
 	ba := currency.NewBalanceStateValue(item.amount)
 	sts[0] = currency.NewBalanceStateMergeValue(
-		currency.StateKeyBalance(item.genesisAccount, item.amount.Currency()),
+		currency.StateKeyBalance(item.genesisAccount, item.Currency()),
 		ba,
 	)
 
 	de := NewCurrencyDesignStateValue(item)
-	sts[1] = NewCurrencyDesignStateMergeValue(StateKeyCurrencyDesign(item.amount.Currency()), de)
+	sts[1] = NewCurrencyDesignStateMergeValue(StateKeyCurrencyDesign(item.Currency()), de)
 
 	{
-		l, err := createZeroAccount(item.amount.Currency(), getStateFunc)
+		l, err := createZeroAccount(item.Currency(), getStateFunc)
 		if err != nil {
-			return nil, base.NewBaseOperationProcessReasonError("failed to create zero account, %q: %w", item.amount.Currency(), err), nil
+			return nil, base.NewBaseOperationProcessReasonError("failed to create zero account, %q: %w", item.Currency(), err), nil
 		}
 		sts[2], sts[3] = l[0], l[1]
 	}

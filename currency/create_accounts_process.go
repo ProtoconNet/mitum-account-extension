@@ -143,7 +143,7 @@ func NewCreateAccountsProcessor() GetNewProcessor {
 func (opp *CreateAccountsProcessor) PreProcess(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc,
 ) (context.Context, base.OperationProcessReasonError, error) {
-	e := util.StringErrorFunc("failed to preprocess CreateAccountsProcessor")
+	e := util.StringErrorFunc("failed to preprocess CreateAccounts")
 
 	fact, ok := op.Fact().(currency.CreateAccountsFact)
 	if !ok {
@@ -169,7 +169,7 @@ func (opp *CreateAccountsProcessor) Process( // nolint:dupl
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc) (
 	[]base.StateMergeValue, base.OperationProcessReasonError, error,
 ) {
-	e := util.StringErrorFunc("failed to process CreateAccountsProcessor")
+	e := util.StringErrorFunc("failed to process CreateAccounts")
 
 	fact, ok := op.Fact().(currency.CreateAccountsFact)
 	if !ok {

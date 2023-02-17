@@ -11,9 +11,10 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
-	"github.com/spikeekips/mitum-currency/currency"
-	mongodbstorage "github.com/spikeekips/mitum-currency/digest/mongodb"
-	"github.com/spikeekips/mitum-currency/digest/util"
+	"github.com/spikeekips/mitum-currency-extension/currency"
+	mongodbstorage "github.com/spikeekips/mitum-currency-extension/digest/mongodb"
+	"github.com/spikeekips/mitum-currency-extension/digest/util"
+	mitumcurrency "github.com/spikeekips/mitum-currency/currency"
 	"github.com/spikeekips/mitum/base"
 	isaacdatabase "github.com/spikeekips/mitum/isaac/database"
 	mitumutil "github.com/spikeekips/mitum/util"
@@ -29,12 +30,14 @@ var maxLimit int64 = 50
 var (
 	defaultColNameAccount   = "digest_ac"
 	defaultColNameBalance   = "digest_bl"
+	defaultColNameCurrency  = "digest_cr"
 	defaultColNameOperation = "digest_op"
 )
 
 var AllCollections = []string{
 	defaultColNameAccount,
 	defaultColNameBalance,
+	defaultColNameCurrency,
 	defaultColNameOperation,
 }
 
@@ -193,6 +196,7 @@ func (st *Database) clean(ctx context.Context) error {
 	for _, col := range []string{
 		defaultColNameAccount,
 		defaultColNameBalance,
+		defaultColNameCurrency,
 		defaultColNameOperation,
 	} {
 		if err := st.database.Client().Collection(col).Drop(ctx); err != nil {
@@ -233,6 +237,7 @@ func (st *Database) cleanByHeight(ctx context.Context, height base.Height) error
 	for _, col := range []string{
 		defaultColNameAccount,
 		defaultColNameBalance,
+		defaultColNameCurrency,
 		defaultColNameOperation,
 	} {
 		res, err := st.database.Client().Collection(col).BulkWrite(
@@ -552,11 +557,11 @@ end:
 	return nil
 }
 
-func (st *Database) balance(a base.Address) ([]currency.Amount, base.Height, error) {
+func (st *Database) balance(a base.Address) ([]mitumcurrency.Amount, base.Height, error) {
 	lastHeight := base.NilHeight
 	var cids []string
 
-	amm := map[currency.CurrencyID]currency.Amount{}
+	amm := map[mitumcurrency.CurrencyID]mitumcurrency.Amount{}
 	for {
 		filter := util.NewBSONFilter("address", a.String())
 
@@ -589,7 +594,7 @@ func (st *Database) balance(a base.Address) ([]currency.Amount, base.Height, err
 			return nil, lastHeight, err
 		}
 
-		i, err := currency.StateBalanceValue(sta)
+		i, err := mitumcurrency.StateBalanceValue(sta)
 		if err != nil {
 			return nil, lastHeight, err
 		}
@@ -602,7 +607,7 @@ func (st *Database) balance(a base.Address) ([]currency.Amount, base.Height, err
 		}
 	}
 
-	ams := make([]currency.Amount, len(amm))
+	ams := make([]mitumcurrency.Amount, len(amm))
 	var i int
 	for k := range amm {
 		ams[i] = amm[k]
@@ -610,6 +615,92 @@ func (st *Database) balance(a base.Address) ([]currency.Amount, base.Height, err
 	}
 
 	return ams, lastHeight, nil
+}
+
+func (st *Database) currencies() ([]string, error) {
+	var cids []string
+
+	for {
+		filter := util.EmptyBSONFilter()
+
+		var q primitive.D
+		if len(cids) < 1 {
+			q = filter.D()
+		} else {
+			q = filter.Add("currency", bson.M{"$nin": cids}).D()
+		}
+
+		opt := options.FindOne().SetSort(
+			util.NewBSONFilter("height", -1).D(),
+		)
+		var sta base.State
+		if err := st.database.Client().GetByFilter(
+			defaultColNameCurrency,
+			q,
+			func(res *mongo.SingleResult) error {
+				i, err := LoadCurrency(res.Decode, st.database.Encoders())
+				if err != nil {
+					return err
+				}
+				sta = i
+				return nil
+			},
+			opt,
+		); err != nil {
+			if err.Error() == mitumutil.NewError("mongo: no documents in result").Error() {
+				break
+			}
+
+			return nil, err
+		}
+
+		if sta != nil {
+			i, err := currency.StateCurrencyDesignValue(sta)
+			if err != nil {
+				return nil, err
+			}
+			cids = append(cids, i.Currency().String())
+		} else {
+			return nil, errors.Errorf("state is nil")
+		}
+
+	}
+
+	return cids, nil
+}
+
+func (st *Database) currency(cid string) (currency.CurrencyDesign, base.State, error) {
+	q := util.NewBSONFilter("currency", cid).D()
+
+	opt := options.FindOne().SetSort(
+		util.NewBSONFilter("height", -1).D(),
+	)
+	var sta base.State
+	if err := st.database.Client().GetByFilter(
+		defaultColNameCurrency,
+		q,
+		func(res *mongo.SingleResult) error {
+			i, err := LoadCurrency(res.Decode, st.database.Encoders())
+			if err != nil {
+				return err
+			}
+			sta = i
+			return nil
+		},
+		opt,
+	); err != nil {
+		return currency.CurrencyDesign{}, nil, err
+	}
+
+	if sta != nil {
+		de, err := currency.StateCurrencyDesignValue(sta)
+		if err != nil {
+			return currency.CurrencyDesign{}, nil, err
+		}
+		return de, sta, nil
+	} else {
+		return currency.CurrencyDesign{}, nil, errors.Errorf("state is nil")
+	}
 }
 
 func (st *Database) topHeightByPublickey(pub base.Publickey) (base.Height, error) {

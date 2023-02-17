@@ -11,7 +11,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
-	"github.com/spikeekips/mitum-currency/digest/network"
+	"github.com/spikeekips/mitum-currency-extension/digest/network"
 	"github.com/spikeekips/mitum/base"
 	"github.com/spikeekips/mitum/launch"
 	"github.com/spikeekips/mitum/util"
@@ -161,10 +161,10 @@ func (hd *Handlers) Handler() http.Handler {
 }
 
 func (hd *Handlers) setHandlers() {
-	// _ = hd.setHandler(HandlerPathCurrencies, hd.handleCurrencies, true).
-	// 	Methods(http.MethodOptions, "GET")
-	// _ = hd.setHandler(HandlerPathCurrency, hd.handleCurrency, true).
-	// 	Methods(http.MethodOptions, "GET")
+	_ = hd.setHandler(HandlerPathCurrencies, hd.handleCurrencies, true).
+		Methods(http.MethodOptions, "GET")
+	_ = hd.setHandler(HandlerPathCurrency, hd.handleCurrency, true).
+		Methods(http.MethodOptions, "GET")
 	// _ = hd.setHandler(HandlerPathManifests, hd.handleManifests, true).
 	// 	Methods(http.MethodOptions, "GET")
 	_ = hd.setHandler(HandlerPathOperations, hd.handleOperations, true).

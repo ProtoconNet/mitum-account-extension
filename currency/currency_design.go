@@ -73,6 +73,14 @@ func (de CurrencyDesign) Bytes() []byte {
 	)
 }
 
+func (de CurrencyDesign) Amount() currency.Amount {
+	return de.amount
+}
+
+func (de CurrencyDesign) Currency() currency.CurrencyID {
+	return de.amount.Currency()
+}
+
 func (de CurrencyDesign) GenesisAccount() base.Address {
 	return de.genesisAccount
 }

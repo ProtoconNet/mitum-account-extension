@@ -68,7 +68,7 @@ func NewSuffrageInflationProcessor(threshold base.Threshold) GetNewProcessor {
 func (opp *SuffrageInflationProcessor) PreProcess(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc,
 ) (context.Context, base.OperationProcessReasonError, error) {
-	e := util.StringErrorFunc("failed to preprocess SuffrageInflationProcessor")
+	e := util.StringErrorFunc("failed to preprocess SuffrageInflation")
 
 	nop, ok := op.(currency.SuffrageInflation)
 	if !ok {
@@ -110,11 +110,11 @@ func (opp *SuffrageInflationProcessor) Process(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc) (
 	[]base.StateMergeValue, base.OperationProcessReasonError, error,
 ) {
-	e := util.StringErrorFunc("failed to process SuffrageInflationProcessor")
+	e := util.StringErrorFunc("failed to process SuffrageInflation")
 
 	fact, ok := op.Fact().(currency.SuffrageInflationFact)
 	if !ok {
-		return nil, nil, e(nil, "not SuffrageInflationFact, %T", op.Fact())
+		return nil, nil, e(nil, "expected SuffrageInflationFact, not %T", op.Fact())
 	}
 
 	sts := []base.StateMergeValue{}

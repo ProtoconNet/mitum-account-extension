@@ -164,11 +164,8 @@ type CreateContractAccounts struct {
 	currency.BaseOperation
 }
 
-func NewCreateContractAccounts(
-	fact CreateContractAccountsFact,
-	memo string,
-) (CreateContractAccounts, error) {
-	return CreateContractAccounts{BaseOperation: currency.NewBaseOperationFromFact(CreateContractAccountsHint, fact, "")}, nil
+func NewCreateContractAccounts(fact CreateContractAccountsFact) (CreateContractAccounts, error) {
+	return CreateContractAccounts{BaseOperation: currency.NewBaseOperation(CreateContractAccountsHint, fact)}, nil
 }
 
 func (op *CreateContractAccounts) HashSign(priv base.Privatekey, networkID base.NetworkID) error {

@@ -91,7 +91,7 @@ func (cmd *TransferCommand) createOperation() (base.Operation, error) { // nolin
 
 	fact := currency.NewTransfersFact([]byte(cmd.Token), cmd.sender, items)
 
-	op, err := currency.NewTransfers(fact, cmd.Memo)
+	op, err := currency.NewTransfers(fact)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create transfers operation")
 	}

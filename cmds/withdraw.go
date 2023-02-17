@@ -5,7 +5,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/ProtoconNet/mitum-currency-extension/currency"
+	"github.com/spikeekips/mitum-currency-extension/currency"
 
 	mitumcurrency "github.com/spikeekips/mitum-currency/currency"
 	"github.com/spikeekips/mitum/base"
@@ -93,7 +93,7 @@ func (cmd *WithdrawCommand) createOperation() (base.Operation, error) { // nolin
 
 	fact := currency.NewWithdrawsFact([]byte(cmd.Token), cmd.sender, items)
 
-	op, err := currency.NewWithdraws(fact, cmd.Memo)
+	op, err := currency.NewWithdraws(fact)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create withdraws operation")
 	}

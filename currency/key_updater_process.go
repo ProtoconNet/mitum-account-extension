@@ -50,7 +50,7 @@ func NewKeyUpdaterProcessor() GetNewProcessor {
 func (opp *KeyUpdaterProcessor) PreProcess(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc,
 ) (context.Context, base.OperationProcessReasonError, error) {
-	e := util.StringErrorFunc("failed to preprocess KeyUpdaterProcessor")
+	e := util.StringErrorFunc("failed to preprocess KeyUpdater")
 
 	fact, ok := op.Fact().(currency.KeyUpdaterFact)
 	if !ok {
@@ -85,7 +85,7 @@ func (opp *KeyUpdaterProcessor) Process( // nolint:dupl
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc) (
 	[]base.StateMergeValue, base.OperationProcessReasonError, error,
 ) {
-	e := util.StringErrorFunc("failed to process KeyUpdaterProcessor")
+	e := util.StringErrorFunc("failed to process KeyUpdater")
 
 	fact, ok := op.Fact().(currency.KeyUpdaterFact)
 	if !ok {

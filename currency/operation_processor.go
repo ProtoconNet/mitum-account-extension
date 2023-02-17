@@ -229,7 +229,7 @@ func (opr *OperationProcessor) checkDuplication(op base.Operation) error {
 		if !ok {
 			return errors.Errorf("expected CurrencyRegisterFact, not %T", t.Fact())
 		}
-		did = fact.currency.amount.Currency().String()
+		did = fact.currency.Currency().String()
 		didtype = DuplicationTypeCurrency
 	case CurrencyPolicyUpdater:
 		fact, ok := t.Fact().(CurrencyPolicyUpdaterFact)

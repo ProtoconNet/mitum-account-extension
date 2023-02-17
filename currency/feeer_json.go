@@ -28,24 +28,25 @@ func (fa *NilFeeer) UnmarsahlJSON(b []byte) error {
 
 type FixedFeeerJSONMarshaler struct {
 	hint.BaseHinter
-	RC base.Address `json:"receiver"`
-	AM string       `json:"amount"`
-	EM string       `json:"exchange_min_amount"`
+	Receiver          base.Address `json:"receiver"`
+	Amount            string       `json:"amount"`
+	ExchangeMinAmount string       `json:"exchange_min_amount"`
 }
 
 func (fa FixedFeeer) MarshalJSON() ([]byte, error) {
 	return util.MarshalJSON(FixedFeeerJSONMarshaler{
-		BaseHinter: fa.BaseHinter,
-		RC:         fa.receiver,
-		AM:         fa.amount.String(),
-		EM:         fa.exchangeMin.String(),
+		BaseHinter:        fa.BaseHinter,
+		Receiver:          fa.receiver,
+		Amount:            fa.amount.String(),
+		ExchangeMinAmount: fa.exchangeMin.String(),
 	})
 }
 
 type FixedFeeerJSONUnmarshaler struct {
-	RC string `json:"receiver"`
-	AM string `json:"amount"`
-	EM string `json:"exchange_min_amount"`
+	Hint              hint.Hint `json:"_hint"`
+	Receiver          string    `json:"receiver"`
+	Amount            string    `json:"amount"`
+	ExchangeMinAmount string    `json:"exchange_min_amount"`
 }
 
 func (fa *FixedFeeer) DecodeJSON(b []byte, enc *jsonenc.Encoder) error {
@@ -56,35 +57,36 @@ func (fa *FixedFeeer) DecodeJSON(b []byte, enc *jsonenc.Encoder) error {
 		return e(err, "")
 	}
 
-	return fa.unpack(enc, ufa.RC, ufa.AM, ufa.EM)
+	return fa.unpack(enc, ufa.Hint, ufa.Receiver, ufa.Amount, ufa.ExchangeMinAmount)
 }
 
 type RatioFeeerJSONMarshaler struct {
 	hint.BaseHinter
-	RC base.Address `json:"receiver"`
-	RA float64      `json:"ratio"`
-	MI string       `json:"min"`
-	MA string       `json:"max"`
-	EM string       `json:"exchange_min_amount"`
+	Receiver          base.Address `json:"receiver"`
+	Ratio             float64      `json:"ratio"`
+	Min               string       `json:"min"`
+	Max               string       `json:"max"`
+	ExchangeMinAmount string       `json:"exchange_min_amount"`
 }
 
 func (fa RatioFeeer) MarshalJSON() ([]byte, error) {
 	return util.MarshalJSON(RatioFeeerJSONMarshaler{
-		BaseHinter: fa.BaseHinter,
-		RC:         fa.receiver,
-		RA:         fa.ratio,
-		MI:         fa.min.String(),
-		MA:         fa.max.String(),
-		EM:         fa.exchangeMin.String(),
+		BaseHinter:        fa.BaseHinter,
+		Receiver:          fa.receiver,
+		Ratio:             fa.ratio,
+		Min:               fa.min.String(),
+		Max:               fa.max.String(),
+		ExchangeMinAmount: fa.exchangeMin.String(),
 	})
 }
 
 type RatioFeeerJSONUnmarshaler struct {
-	RC string  `json:"receiver"`
-	RA float64 `json:"ratio"`
-	MI string  `json:"min"`
-	MA string  `json:"max"`
-	EM string  `json:"exchange_min_amount"`
+	Hint              hint.Hint `json:"_hint"`
+	Receiver          string    `json:"receiver"`
+	Ratio             float64   `json:"ratio"`
+	Min               string    `json:"min"`
+	Max               string    `json:"max"`
+	ExchangeMinAmount string    `json:"exchange_min_amount"`
 }
 
 func (fa *RatioFeeer) DecodeJSON(b []byte, enc *jsonenc.Encoder) error {
@@ -95,5 +97,5 @@ func (fa *RatioFeeer) DecodeJSON(b []byte, enc *jsonenc.Encoder) error {
 		return e(err, "")
 	}
 
-	return fa.unpack(enc, ufa.RC, ufa.RA, ufa.MI, ufa.MA, ufa.EM)
+	return fa.unpack(enc, ufa.Hint, ufa.Receiver, ufa.Ratio, ufa.Min, ufa.Max, ufa.ExchangeMinAmount)
 }

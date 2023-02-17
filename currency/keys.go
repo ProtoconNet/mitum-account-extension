@@ -21,16 +21,20 @@ type ContractAccountKeys struct {
 	threshold uint
 }
 
-func NewContractAccountKeys() ContractAccountKeys {
+func EmptyBaseAccountKeys() ContractAccountKeys {
+	return ContractAccountKeys{BaseHinter: hint.NewBaseHinter(ContractAccountKeysHint)}
+}
+
+func NewContractAccountKeys() (ContractAccountKeys, error) {
 	ks := ContractAccountKeys{BaseHinter: hint.NewBaseHinter(ContractAccountKeysHint), keys: []currency.AccountKey{}, threshold: 100}
 
 	h, err := ks.GenerateHash()
 	if err != nil {
-		return ContractAccountKeys{}
+		return ContractAccountKeys{}, err
 	}
 	ks.h = h
 
-	return ks
+	return ks, ks.IsValid(nil)
 }
 
 func (ks ContractAccountKeys) Hash() util.Hash {

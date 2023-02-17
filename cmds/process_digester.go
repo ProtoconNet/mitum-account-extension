@@ -13,7 +13,7 @@ import (
 	"github.com/spikeekips/mitum/util/logging"
 	"github.com/spikeekips/mitum/util/ps"
 
-	"github.com/spikeekips/mitum-currency/digest"
+	"github.com/spikeekips/mitum-currency-extension/digest"
 )
 
 const (
@@ -37,7 +37,7 @@ func ProcessDigester(ctx context.Context) (context.Context, error) {
 		return ctx, nil
 	}
 
-	var design NodeDesign
+	var design launch.NodeDesign
 	if err := util.LoadFromContext(ctx, launch.DesignContextKey, &design); err != nil {
 		return ctx, err
 	}
@@ -112,7 +112,7 @@ func digestFollowup(ctx context.Context, height base.Height) error {
 		return err
 	}
 
-	var design NodeDesign
+	var design launch.NodeDesign
 	if err := util.LoadFromContext(ctx, launch.DesignContextKey, &design); err != nil {
 		return err
 	}

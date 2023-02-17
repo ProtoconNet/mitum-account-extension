@@ -3,6 +3,7 @@ package currency
 import (
 	"encoding/json"
 
+	"github.com/spikeekips/mitum-currency/currency"
 	"github.com/spikeekips/mitum/base"
 	"github.com/spikeekips/mitum/util"
 	jsonenc "github.com/spikeekips/mitum/util/encoder/json"
@@ -10,19 +11,19 @@ import (
 
 type CurrencyRegisterFactJSONMarshaler struct {
 	base.BaseFactJSONMarshaler
-	CR CurrencyDesign `json:"currency"`
+	Currency CurrencyDesign `json:"currency"`
 }
 
 func (fact CurrencyRegisterFact) MarshalJSON() ([]byte, error) {
 	return util.MarshalJSON(CurrencyRegisterFactJSONMarshaler{
 		BaseFactJSONMarshaler: fact.BaseFact.JSONMarshaler(),
-		CR:                    fact.currency,
+		Currency:              fact.currency,
 	})
 }
 
 type CurrencyRegisterFactJSONUnMarshaler struct {
 	base.BaseFactJSONUnmarshaler
-	CR json.RawMessage `json:"currency"`
+	Currency json.RawMessage `json:"currency"`
 }
 
 func (fact *CurrencyRegisterFact) DecodeJSON(b []byte, enc *jsonenc.Encoder) error {
@@ -35,13 +36,25 @@ func (fact *CurrencyRegisterFact) DecodeJSON(b []byte, enc *jsonenc.Encoder) err
 
 	fact.BaseFact.SetJSONUnmarshaler(uf.BaseFactJSONUnmarshaler)
 
-	return fact.unpack(enc, uf.CR)
+	return fact.unpack(enc, uf.Currency)
+}
+
+type currencyRegisterMarshaler struct {
+	currency.BaseOperationJSONMarshaler
+}
+
+func (op CurrencyRegister) MarshalJSON() ([]byte, error) {
+	return util.MarshalJSON(currencyRegisterMarshaler{
+		BaseOperationJSONMarshaler: op.BaseOperation.JSONMarshaler(),
+	})
 }
 
 func (op *CurrencyRegister) DecodeJSON(b []byte, enc *jsonenc.Encoder) error {
-	var ubo base.BaseNodeOperation
+	e := util.StringErrorFunc("failed to decode json of CurrencyRegister")
+
+	var ubo currency.BaseNodeOperation
 	if err := ubo.DecodeJSON(b, enc); err != nil {
-		return err
+		return e(err, "")
 	}
 
 	op.BaseNodeOperation = ubo

@@ -109,7 +109,12 @@ func (opp *CreateContractAccountsItemProcessor) Process(
 	if err != nil {
 		return nil, err
 	}
-	ks := NewContractAccountKeys()
+
+	ks, err := NewContractAccountKeys()
+	if err != nil {
+		return nil, err
+	}
+
 	ncac, err := nac.SetKeys(ks)
 	if err != nil {
 		return nil, err
@@ -180,7 +185,7 @@ func NewCreateContractAccountsProcessor() GetNewProcessor {
 func (opp *CreateContractAccountsProcessor) PreProcess(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc,
 ) (context.Context, base.OperationProcessReasonError, error) {
-	e := util.StringErrorFunc("failed to preprocess CreateContractAccountsProcessor")
+	e := util.StringErrorFunc("failed to preprocess CreateContractAccounts")
 
 	fact, ok := op.Fact().(CreateContractAccountsFact)
 	if !ok {
@@ -206,7 +211,7 @@ func (opp *CreateContractAccountsProcessor) Process( // nolint:dupl
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc) (
 	[]base.StateMergeValue, base.OperationProcessReasonError, error,
 ) {
-	e := util.StringErrorFunc("failed to process CreateContractAccountsProcessor")
+	e := util.StringErrorFunc("failed to process CreateContractAccounts")
 
 	fact, ok := op.Fact().(CreateContractAccountsFact)
 	if !ok {
@@ -236,7 +241,7 @@ func (opp *CreateContractAccountsProcessor) Process( // nolint:dupl
 		c.sender = fact.sender
 
 		if err := c.PreProcess(ctx, op, getStateFunc); err != nil {
-			return nil, base.NewBaseOperationProcessReasonError("fail to preprocess CreateContractAccountsItem: %w", err), nil
+			return nil, base.NewBaseOperationProcessReasonError("failed to preprocess CreateContractAccountsItem: %w", err), nil
 		}
 
 		ns[i] = c

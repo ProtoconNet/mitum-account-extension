@@ -5,7 +5,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/ProtoconNet/mitum-currency-extension/currency"
+	"github.com/spikeekips/mitum-currency-extension/currency"
 	mitumcurrency "github.com/spikeekips/mitum-currency/currency"
 	"github.com/spikeekips/mitum/base"
 )
@@ -109,7 +109,7 @@ func (cmd *CreateContractAccountCommand) createOperation() (base.Operation, erro
 
 	fact := currency.NewCreateContractAccountsFact([]byte(cmd.Token), cmd.sender, items)
 
-	op, err := currency.NewCreateContractAccounts(fact, cmd.Memo)
+	op, err := currency.NewCreateContractAccounts(fact)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create create-contract-account operation")
 	}

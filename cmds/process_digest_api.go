@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"github.com/spikeekips/mitum-currency/digest"
+	"github.com/spikeekips/mitum-currency-extension/digest"
 	"github.com/spikeekips/mitum/base"
 	isaacnetwork "github.com/spikeekips/mitum/isaac/network"
 	"github.com/spikeekips/mitum/launch"

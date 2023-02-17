@@ -10,24 +10,24 @@ import (
 	"github.com/spikeekips/mitum/util/hint"
 )
 
-type WithdrawsItemJSONPacker struct {
+type WithdrawsItemJSONMarshaler struct {
 	hint.BaseHinter
-	TG base.Address      `json:"target"`
-	AM []currency.Amount `json:"amounts"`
+	Target  base.Address      `json:"target"`
+	Amounts []currency.Amount `json:"amounts"`
 }
 
 func (it BaseWithdrawsItem) MarshalJSON() ([]byte, error) {
-	return util.MarshalJSON(WithdrawsItemJSONPacker{
+	return util.MarshalJSON(WithdrawsItemJSONMarshaler{
 		BaseHinter: it.BaseHinter,
-		TG:         it.target,
-		AM:         it.amounts,
+		Target:     it.target,
+		Amounts:    it.amounts,
 	})
 }
 
 type BaseWithdrawsItemJSONUnpacker struct {
-	HT hint.Hint       `json:"_hint"`
-	TG string          `json:"target"`
-	AM json.RawMessage `json:"amounts"`
+	Hint    hint.Hint       `json:"_hint"`
+	Target  string          `json:"target"`
+	Amounts json.RawMessage `json:"amounts"`
 }
 
 func (it *BaseWithdrawsItem) DecodeJSON(b []byte, enc *jsonenc.Encoder) error {
@@ -38,5 +38,5 @@ func (it *BaseWithdrawsItem) DecodeJSON(b []byte, enc *jsonenc.Encoder) error {
 		return e(err, "")
 	}
 
-	return it.unpack(enc, uit.HT, uit.TG, uit.AM)
+	return it.unpack(enc, uit.Hint, uit.Target, uit.Amounts)
 }

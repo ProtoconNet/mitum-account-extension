@@ -123,7 +123,7 @@ func NewTransfersProcessor() GetNewProcessor {
 func (opp *TransfersProcessor) PreProcess(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc,
 ) (context.Context, base.OperationProcessReasonError, error) {
-	e := util.StringErrorFunc("failed to preprocess TransfersProcessor")
+	e := util.StringErrorFunc("failed to preprocess Transfers")
 
 	fact, ok := op.Fact().(currency.TransfersFact)
 	if !ok {
@@ -149,7 +149,7 @@ func (opp *TransfersProcessor) Process( // nolint:dupl
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc) (
 	[]base.StateMergeValue, base.OperationProcessReasonError, error,
 ) {
-	e := util.StringErrorFunc("failed to process TransfersProcessor")
+	e := util.StringErrorFunc("failed to process Transfers")
 
 	fact, ok := op.Fact().(currency.TransfersFact)
 	if !ok {

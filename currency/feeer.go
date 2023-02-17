@@ -92,7 +92,7 @@ func (FixedFeeer) Type() string {
 }
 
 func (fa FixedFeeer) Bytes() []byte {
-	return util.ConcatBytesSlice(fa.receiver.Bytes(), fa.amount.Bytes())
+	return util.ConcatBytesSlice(fa.receiver.Bytes(), fa.amount.Bytes(), fa.exchangeMin.Bytes())
 }
 
 func (fa FixedFeeer) Receiver() base.Address {
@@ -163,7 +163,7 @@ func (fa RatioFeeer) Bytes() []byte {
 	var rb bytes.Buffer
 	_ = binary.Write(&rb, binary.BigEndian, fa.ratio)
 
-	return util.ConcatBytesSlice(fa.receiver.Bytes(), rb.Bytes(), fa.min.Bytes(), fa.max.Bytes())
+	return util.ConcatBytesSlice(fa.receiver.Bytes(), rb.Bytes(), fa.min.Bytes(), fa.max.Bytes(), fa.exchangeMin.Bytes())
 }
 
 func (fa RatioFeeer) Receiver() base.Address {

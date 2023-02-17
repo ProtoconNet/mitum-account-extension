@@ -6,10 +6,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/ProtoconNet/mitum-currency-extension/currency"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
-	mitumcurrency "github.com/spikeekips/mitum-currency/currency"
+	"github.com/spikeekips/mitum-currency/currency"
 	"github.com/spikeekips/mitum/base"
 	mitumutil "github.com/spikeekips/mitum/util"
 	"go.mongodb.org/mongo-driver/bson"
@@ -222,31 +221,16 @@ func (hd *Handlers) buildOperationHal(va OperationValue) (Hal, error) {
 	}
 	hal = hal.AddLink("block", NewHalLink(h, nil))
 
-	if va.InState() {
-		if t, ok := va.Operation().(mitumcurrency.CreateAccounts); ok {
-			items := t.Fact().(mitumcurrency.CreateAccountsFact).Items()
-			for i := range items {
-				a, err := items[i].Address()
-				if err != nil {
-					return nil, err
-				}
-				address := a.String()
+	// h, err = hd.combineURL(HandlerPathManifestByHeight, "height", va.Height().String())
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-				h, err := hd.combineURL(HandlerPathAccount, "address", address)
-				if err != nil {
-					return nil, err
-				}
-				keyHash := items[i].Keys().Hash().String()
-				hal = hal.AddLink(
-					fmt.Sprintf("new_account:%s", keyHash),
-					NewHalLink(h, nil).
-						SetProperty("key", keyHash).
-						SetProperty("address", address),
-				)
-			}
-		}
-		if t, ok := va.Operation().(currency.CreateContractAccounts); ok {
-			items := t.Fact().(currency.CreateContractAccountsFact).Items()
+	// hal = hal.AddLink("manifest", NewHalLink(h, nil))
+
+	if va.InState() {
+		if t, ok := va.Operation().(currency.CreateAccounts); ok {
+			items := t.Fact().(currency.CreateAccountsFact).Items()
 			for i := range items {
 				a, err := items[i].Address()
 				if err != nil {

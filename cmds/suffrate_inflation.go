@@ -67,9 +67,9 @@ func (v *SuffrageInflationItemFlag) IsValid([]byte) error {
 type SuffrageInflationCommand struct {
 	baseCommand
 	OperationFlags
-	Node  AddressFlag                 `arg:"" name:"node" help:"node address" required:"true"`
-	Items []SuffrageInflationItemFlag `arg:"" name:"inflation item" help:"ex: \"<receiver address>,<currency>,<amount>\""`
+	Node  AddressFlag `arg:"" name:"node" help:"node address" required:"true"`
 	node  base.Address
+	Items []SuffrageInflationItemFlag `arg:"" name:"inflation item" help:"ex: \"<receiver address>,<currency>,<amount>\""`
 	items []currency.SuffrageInflationItem
 }
 

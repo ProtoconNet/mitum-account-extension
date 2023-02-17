@@ -1,26 +1,26 @@
 package currency // nolint: dupl, revive
 
 import (
+	bsonenc "github.com/spikeekips/mitum-currency/digest/util/bson"
 	"github.com/spikeekips/mitum/util"
-	bsonenc "github.com/spikeekips/mitum/util/encoder/bson"
 	"github.com/spikeekips/mitum/util/hint"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
 func (cs ContractAccount) MarshalBSON() ([]byte, error) {
-	return bsonenc.Marshal(bsonenc.MergeBSONM(
-		bsonenc.NewHintedDoc(cs.Hint()),
+	return bsonenc.Marshal(
 		bson.M{
+			"_hint":    cs.Hint().String(),
 			"isactive": cs.isActive,
 			"owner":    cs.owner,
-		}),
+		},
 	)
 }
 
 type ContractAccountBSONUnmarshaler struct {
-	HT hint.Hint `json:"_hint"`
-	IA bool      `bson:"isactive"`
-	OW string    `bson:"owner"`
+	Hint     string `json:"_hint"`
+	IsActive bool   `bson:"isactive"`
+	Owner    string `bson:"owner"`
 }
 
 func (cs *ContractAccount) DecodeBSON(b []byte, enc *bsonenc.Encoder) error {
@@ -31,5 +31,10 @@ func (cs *ContractAccount) DecodeBSON(b []byte, enc *bsonenc.Encoder) error {
 		return e(err, "")
 	}
 
-	return cs.unpack(enc, ucs.HT, ucs.IA, ucs.OW)
+	ht, err := hint.ParseHint(ucs.Hint)
+	if err != nil {
+		return e(err, "")
+	}
+
+	return cs.unpack(enc, ht, ucs.IsActive, ucs.Owner)
 }

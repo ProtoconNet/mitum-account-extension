@@ -5,19 +5,19 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/ProtoconNet/mitum-currency-extension/currency"
+	"github.com/spikeekips/mitum-currency/currency"
 	"github.com/spikeekips/mitum/base"
 )
 
 type CurrencyPolicyUpdaterCommand struct {
 	baseCommand
 	OperationFlags
-	Node                    AddressFlag    `arg:"" name:"node" help:"node address" required:"true"`
 	Currency                CurrencyIDFlag `arg:"" name:"currency-id" help:"currency id" required:"true"`
 	CurrencyPolicyFlags     `prefix:"policy-" help:"currency policy" required:"true"`
 	FeeerString             string `name:"feeer" help:"feeer type, {nil, fixed, ratio}" required:"true"`
 	CurrencyFixedFeeerFlags `prefix:"feeer-fixed-" help:"fixed feeer"`
 	CurrencyRatioFeeerFlags `prefix:"feeer-ratio-" help:"ratio feeer"`
+	Node                    AddressFlag `arg:"" name:"node" help:"node address" required:"true"`
 	node                    base.Address
 	po                      currency.CurrencyPolicy
 }

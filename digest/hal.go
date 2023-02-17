@@ -3,7 +3,7 @@ package digest
 import (
 	"net/url"
 
-	"github.com/spikeekips/mitum-currency/digest/util"
+	"github.com/spikeekips/mitum-currency-extension/digest/util"
 	"github.com/spikeekips/mitum/util/hint"
 )
 

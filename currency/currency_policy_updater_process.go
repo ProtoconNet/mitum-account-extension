@@ -75,7 +75,7 @@ func NewCurrencyPolicyUpdaterProcessor(threshold base.Threshold) GetNewProcessor
 func (opp *CurrencyPolicyUpdaterProcessor) PreProcess(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc,
 ) (context.Context, base.OperationProcessReasonError, error) {
-	e := util.StringErrorFunc("failed to preprocess CurrencyPolicyUpdaterProcessor")
+	e := util.StringErrorFunc("failed to preprocess CurrencyPolicyUpdater")
 
 	nop, ok := op.(CurrencyPolicyUpdater)
 	if !ok {
@@ -109,7 +109,7 @@ func (opp *CurrencyPolicyUpdaterProcessor) Process(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc) (
 	[]base.StateMergeValue, base.OperationProcessReasonError, error,
 ) {
-	e := util.StringErrorFunc("failed to process CurrencyPolicyUpdaterProcessor")
+	e := util.StringErrorFunc("failed to process CurrencyPolicyUpdater")
 
 	fact, ok := op.Fact().(CurrencyPolicyUpdaterFact)
 	if !ok {

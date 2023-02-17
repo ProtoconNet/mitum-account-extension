@@ -43,18 +43,18 @@ func (op GenesisCurrencies) Process(
 		c.genesisAccount = newAddress
 		cs[i] = c
 
-		st, err := notExistsState(StateKeyCurrencyDesign(c.amount.Currency()), "currency", getStateFunc)
+		st, err := notExistsState(StateKeyCurrencyDesign(c.Currency()), "currency", getStateFunc)
 		if err != nil {
-			return nil, base.NewBaseOperationProcessReasonError("currency design already exists, %q: %w", c.amount.Currency(), err), nil
+			return nil, base.NewBaseOperationProcessReasonError("currency design already exists, %q: %w", c.Currency(), err), nil
 		}
 
-		sts[c.amount.Currency()] = NewCurrencyDesignStateMergeValue(st.Key(), NewCurrencyDesignStateValue(c))
+		sts[c.Currency()] = NewCurrencyDesignStateMergeValue(st.Key(), NewCurrencyDesignStateValue(c))
 
-		st, err = notExistsState(currency.StateKeyBalance(newAddress, c.amount.Currency()), "key of genesis balance", getStateFunc)
+		st, err = notExistsState(currency.StateKeyBalance(newAddress, c.Currency()), "key of genesis balance", getStateFunc)
 		if err != nil {
 			return nil, base.NewBaseOperationProcessReasonError("account balance already exists, %q: %w", newAddress, err), nil
 		}
-		gas[c.amount.Currency()] = currency.NewBalanceStateMergeValue(st.Key(), currency.NewBalanceStateValue(currency.NewZeroAmount(c.amount.Currency())))
+		gas[c.Currency()] = currency.NewBalanceStateMergeValue(st.Key(), currency.NewBalanceStateValue(currency.NewZeroAmount(c.Currency())))
 	}
 
 	var smvs []base.StateMergeValue
@@ -66,18 +66,18 @@ func (op GenesisCurrencies) Process(
 
 	for i := range cs {
 		c := cs[i]
-		v, ok := gas[c.amount.Currency()].Value().(currency.BalanceStateValue)
+		v, ok := gas[c.Currency()].Value().(currency.BalanceStateValue)
 		if !ok {
-			return nil, nil, e(nil, "expected BalanceStateValue, not %T", gas[c.amount.Currency()].Value())
+			return nil, nil, e(nil, "expected BalanceStateValue, not %T", gas[c.Currency()].Value())
 		}
 
-		gst := currency.NewBalanceStateMergeValue(gas[c.amount.Currency()].Key(), currency.NewBalanceStateValue(v.Amount.WithBig(v.Amount.Big().Add(c.amount.Big()))))
-		dst := NewCurrencyDesignStateMergeValue(sts[c.amount.Currency()].Key(), NewCurrencyDesignStateValue(c))
+		gst := currency.NewBalanceStateMergeValue(gas[c.Currency()].Key(), currency.NewBalanceStateValue(v.Amount.WithBig(v.Amount.Big().Add(c.amount.Big()))))
+		dst := NewCurrencyDesignStateMergeValue(sts[c.Currency()].Key(), NewCurrencyDesignStateValue(c))
 		smvs = append(smvs, gst, dst)
 
-		sts, err := createZeroAccount(c.amount.Currency(), getStateFunc)
+		sts, err := createZeroAccount(c.Currency(), getStateFunc)
 		if err != nil {
-			return nil, base.NewBaseOperationProcessReasonError("failed to create zero account, %q: %w", c.amount.Currency(), err), nil
+			return nil, base.NewBaseOperationProcessReasonError("failed to create zero account, %q: %w", c.Currency(), err), nil
 		}
 
 		smvs = append(smvs, sts...)

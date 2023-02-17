@@ -12,7 +12,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rainycape/memcache"
 	"github.com/rs/zerolog"
-	"github.com/spikeekips/mitum-currency/digest/util"
+	"github.com/spikeekips/mitum-currency-extension/digest/util"
 	mitumutil "github.com/spikeekips/mitum/util"
 	"github.com/spikeekips/mitum/util/valuehash"
 )

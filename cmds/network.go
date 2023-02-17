@@ -6,18 +6,18 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	"github.com/spikeekips/mitum-currency/digest/config"
-	"github.com/spikeekips/mitum-currency/digest/util"
+	"github.com/spikeekips/mitum-currency-extension/digest/config"
+	"github.com/spikeekips/mitum-currency-extension/digest/util"
 	mitumutil "github.com/spikeekips/mitum/util"
 )
 
 type NetworkCommand struct {
-	Client ClientCommand `cmd:"" help:"network client"`
+	Client NetworkClientCommand `cmd:"" help:"network client"`
 }
 
 func NewNetworkCommand() NetworkCommand {
 	return NetworkCommand{
-		Client: NewClientCommand(),
+		Client: NewNetworkClientCommand(),
 	}
 }
 

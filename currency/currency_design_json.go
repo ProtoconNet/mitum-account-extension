@@ -12,28 +12,28 @@ import (
 
 type CurrencyDesignJSONMarshaler struct {
 	hint.BaseHinter
-	AM currency.Amount `json:"amount"`
-	GA base.Address    `json:"genesis_account"`
-	PO CurrencyPolicy  `json:"policy"`
-	AG string          `json:"aggregate"`
+	Amount         currency.Amount `json:"amount"`
+	GenesisAccount base.Address    `json:"genesis_account"`
+	Policy         CurrencyPolicy  `json:"policy"`
+	Aggregate      string          `json:"aggregate"`
 }
 
 func (de CurrencyDesign) MarshalJSON() ([]byte, error) {
 	return util.MarshalJSON(CurrencyDesignJSONMarshaler{
-		BaseHinter: de.BaseHinter,
-		AM:         de.amount,
-		GA:         de.genesisAccount,
-		PO:         de.policy,
-		AG:         de.aggregate.String(),
+		BaseHinter:     de.BaseHinter,
+		Amount:         de.amount,
+		GenesisAccount: de.genesisAccount,
+		Policy:         de.policy,
+		Aggregate:      de.aggregate.String(),
 	})
 }
 
 type CurrencyDesignJSONUnmarshaler struct {
-	HT hint.Hint       `json:"_hint"`
-	AM json.RawMessage `json:"amount"`
-	GA string          `json:"genesis_account"`
-	PO json.RawMessage `json:"policy"`
-	AG string          `json:"aggregate"`
+	Hint           hint.Hint       `json:"_hint"`
+	Amount         json.RawMessage `json:"amount"`
+	GenesisAccount string          `json:"genesis_account"`
+	Policy         json.RawMessage `json:"policy"`
+	Aggregate      string          `json:"aggregate"`
 }
 
 func (de *CurrencyDesign) DecodeJSON(b []byte, enc *jsonenc.Encoder) error {
@@ -44,5 +44,5 @@ func (de *CurrencyDesign) DecodeJSON(b []byte, enc *jsonenc.Encoder) error {
 		return e(err, "")
 	}
 
-	return de.unpack(enc, ude.HT, ude.AM, ude.GA, ude.PO, ude.AG)
+	return de.unpack(enc, ude.Hint, ude.Amount, ude.GenesisAccount, ude.Policy, ude.Aggregate)
 }

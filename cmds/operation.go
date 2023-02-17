@@ -8,7 +8,10 @@ type SealCommand struct {
 	Withdraw              WithdrawCommand              `cmd:"" name:"withdraw" help:"withdraw amounts from target contract account"`
 	CurrencyRegister      CurrencyRegisterCommand      `cmd:"" name:"currency-register" help:"register new currency"`
 	CurrencyPolicyUpdater CurrencyPolicyUpdaterCommand `cmd:"" name:"currency-policy-updater" help:"update currency policy"`
-	SuffrageInflation     SuffrageInflationCommand     `cmd:"" name:"suffrage-inflation" help:"suffrage inflation operation"` // revive:disable-line:line-length-limit
+	SuffrageInflation     SuffrageInflationCommand     `cmd:"" name:"suffrage-inflation" help:"suffrage inflation operation"`
+	SuffrageCandidate     SuffrageCandidateCommand     `cmd:"" name:"suffrage-candidate" help:"suffrage candidate operation"`
+	SuffrageJoin          SuffrageJoinCommand          `cmd:"" name:"suffrage-join" help:"suffrage join operation"`
+	SuffrageDisjoin       SuffrageDisjoinCommand       `cmd:"" name:"suffrage-disjoin" help:"suffrage disjoin operation"` // revive:disable-line:line-length-limit
 }
 
 func NewSealCommand() SealCommand {
@@ -21,5 +24,8 @@ func NewSealCommand() SealCommand {
 		CurrencyRegister:      NewCurrencyRegisterCommand(),
 		CurrencyPolicyUpdater: NewCurrencyPolicyUpdaterCommand(),
 		SuffrageInflation:     NewSuffrageInflationCommand(),
+		SuffrageCandidate:     NewSuffrageCandidateCommand(),
+		SuffrageJoin:          NewSuffrageJoinCommand(),
+		SuffrageDisjoin:       NewSuffrageDisjoinCommand(),
 	}
 }

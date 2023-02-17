@@ -5,10 +5,13 @@ import (
 	"github.com/spikeekips/mitum/base"
 	"github.com/spikeekips/mitum/util"
 	"github.com/spikeekips/mitum/util/encoder"
+	"github.com/spikeekips/mitum/util/hint"
 )
 
-func (fa *FixedFeeer) unpack(enc encoder.Encoder, rc string, am string, em string) error {
+func (fa *FixedFeeer) unpack(enc encoder.Encoder, ht hint.Hint, rc string, am string, em string) error {
 	e := util.StringErrorFunc("failed to unmarshal FixedFeeer")
+
+	fa.BaseHinter = hint.NewBaseHinter(ht)
 
 	switch a, err := base.DecodeAddress(rc, enc); {
 	case err != nil:
@@ -34,11 +37,14 @@ func (fa *FixedFeeer) unpack(enc encoder.Encoder, rc string, am string, em strin
 
 func (fa *RatioFeeer) unpack(
 	enc encoder.Encoder,
+	ht hint.Hint,
 	rc string,
 	ratio float64,
 	min, max, em string,
 ) error {
 	e := util.StringErrorFunc("failed to unmarshal RatioFeeer")
+
+	fa.BaseHinter = hint.NewBaseHinter(ht)
 
 	switch a, err := base.DecodeAddress(rc, enc); {
 	case err != nil:

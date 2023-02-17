@@ -2,7 +2,7 @@ package digest
 
 import (
 	"github.com/pkg/errors"
-	mongodbstorage "github.com/spikeekips/mitum-currency/digest/mongodb"
+	mongodbstorage "github.com/spikeekips/mitum-currency-extension/digest/mongodb"
 	"github.com/spikeekips/mitum/base"
 	"github.com/spikeekips/mitum/util"
 	"github.com/spikeekips/mitum/util/encoder"
@@ -64,7 +64,23 @@ func LoadBalance(decoder func(interface{}) error, encs *encoder.Encoders) (base.
 	if _, hinter, err := mongodbstorage.LoadDataFromDoc(b, encs); err != nil {
 		return nil, err
 	} else if st, ok := hinter.(base.State); !ok {
-		return nil, errors.Errorf("not currency.Big: %T", hinter)
+		return nil, errors.Errorf("not base.State: %T", hinter)
+	} else {
+		return st, nil
+	}
+}
+
+func LoadCurrency(decoder func(interface{}) error, encs *encoder.Encoders) (base.State, error) {
+	var b bson.Raw
+
+	if err := decoder(&b); err != nil {
+		return nil, err
+	}
+
+	if _, hinter, err := mongodbstorage.LoadDataFromDoc(b, encs); err != nil {
+		return nil, err
+	} else if st, ok := hinter.(base.State); !ok {
+		return nil, errors.Errorf("not base.State: %T", hinter)
 	} else {
 		return st, nil
 	}
