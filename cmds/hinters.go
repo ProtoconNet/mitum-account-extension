@@ -3,6 +3,7 @@ package cmds
 import (
 	"github.com/ProtoconNet/mitum-currency-extension/currency"
 	"github.com/ProtoconNet/mitum-currency-extension/digest"
+	digestisaac "github.com/ProtoconNet/mitum-currency-extension/digest/isaac"
 	isaacoperation "github.com/ProtoconNet/mitum-currency-extension/isaac"
 	"github.com/pkg/errors"
 	mitumcurrency "github.com/spikeekips/mitum-currency/currency"
@@ -52,6 +53,7 @@ var hinters = []encoder.DecodeDetail{
 	{Hint: mitumcurrency.BalanceStateValueHint, Instance: mitumcurrency.BalanceStateValue{}},
 	{Hint: currency.ContractAccountStateValueHint, Instance: currency.ContractAccountStateValue{}},
 	{Hint: currency.CurrencyDesignStateValueHint, Instance: currency.CurrencyDesignStateValue{}},
+	{Hint: digestisaac.ManifestHint, Instance: digestisaac.Manifest{}},
 	{Hint: digest.AccountValueHint, Instance: digest.AccountValue{}},
 	{Hint: digest.OperationValueHint, Instance: digest.OperationValue{}},
 	{Hint: isaacoperation.GenesisNetworkPolicyHint, Instance: isaacoperation.GenesisNetworkPolicy{}},
