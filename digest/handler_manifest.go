@@ -7,7 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 	"github.com/spikeekips/mitum/base"
-	"github.com/spikeekips/mitum/util"
+	mitumutil "github.com/spikeekips/mitum/util"
 )
 
 func (hd *Handlers) handleManifestByHeight(w http.ResponseWriter, r *http.Request) {
@@ -57,7 +57,7 @@ func (hd *Handlers) handleManifestByHash(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	var h util.Hash
+	var h mitumutil.Hash
 	h, err := parseHashFromPath(mux.Vars(r)["hash"])
 	if err != nil {
 		HTTP2ProblemWithError(w, errors.Wrap(err, "invalid hash for manifest by hash"), http.StatusBadRequest)
@@ -74,7 +74,7 @@ func (hd *Handlers) handleManifestByHash(w http.ResponseWriter, r *http.Request)
 }
 
 func (hd *Handlers) handleManifestByHashInGroup(
-	hash util.Hash,
+	hash mitumutil.Hash,
 ) ([]byte, error) {
 	m, err := hd.database.ManifestByHash(hash)
 	if err != nil {
@@ -206,7 +206,7 @@ func (hd *Handlers) handleManifestsInGroup(
 	); err != nil {
 		return nil, false, err
 	} else if len(vas) < 1 {
-		return nil, false, util.ErrNotFound.Errorf("manifests not found")
+		return nil, false, mitumutil.ErrNotFound.Errorf("manifests not found")
 	}
 
 	i, err := hd.buildManifestsHAL(vas, offset, reverse)

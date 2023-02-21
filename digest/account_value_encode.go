@@ -3,7 +3,7 @@ package digest
 import (
 	"github.com/spikeekips/mitum-currency/currency"
 	"github.com/spikeekips/mitum/base"
-	"github.com/spikeekips/mitum/util"
+	mitumutil "github.com/spikeekips/mitum/util"
 	"github.com/spikeekips/mitum/util/encoder"
 	"github.com/spikeekips/mitum/util/hint"
 )
@@ -17,7 +17,7 @@ func (va *AccountValue) unpack(enc encoder.Encoder, ht hint.Hint, bac []byte, bl
 		return err
 	case ac != nil:
 		if v, ok := ac.(currency.Account); !ok {
-			return util.ErrWrongType.Errorf("expected Account, not %T", ac)
+			return mitumutil.ErrWrongType.Errorf("expected Account, not %T", ac)
 		} else {
 			va.ac = v
 		}
@@ -32,7 +32,7 @@ func (va *AccountValue) unpack(enc encoder.Encoder, ht hint.Hint, bac []byte, bl
 	for i := range hbl {
 		j, ok := hbl[i].(currency.Amount)
 		if !ok {
-			return util.ErrWrongType.Errorf("expected currency.Amount, not %T", hbl[i])
+			return mitumutil.ErrWrongType.Errorf("expected currency.Amount, not %T", hbl[i])
 		}
 		balance[i] = j
 	}
