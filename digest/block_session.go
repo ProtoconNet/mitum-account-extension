@@ -11,8 +11,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/ProtoconNet/mitum-currency-extension/currency"
-	"github.com/ProtoconNet/mitum-currency-extension/digest/isaac"
 	mitumcurrency "github.com/spikeekips/mitum-currency/currency"
+	"github.com/spikeekips/mitum-currency/digest/isaac"
 	"github.com/spikeekips/mitum/base"
 	mitumutil "github.com/spikeekips/mitum/util"
 	"github.com/spikeekips/mitum/util/fixedtree"

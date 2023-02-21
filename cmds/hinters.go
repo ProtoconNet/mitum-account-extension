@@ -3,10 +3,10 @@ package cmds
 import (
 	"github.com/ProtoconNet/mitum-currency-extension/currency"
 	"github.com/ProtoconNet/mitum-currency-extension/digest"
-	digestisaac "github.com/ProtoconNet/mitum-currency-extension/digest/isaac"
 	isaacoperation "github.com/ProtoconNet/mitum-currency-extension/isaac"
 	"github.com/pkg/errors"
 	mitumcurrency "github.com/spikeekips/mitum-currency/currency"
+	digestisaac "github.com/spikeekips/mitum-currency/digest/isaac"
 	"github.com/spikeekips/mitum/launch"
 	"github.com/spikeekips/mitum/util/encoder"
 )
