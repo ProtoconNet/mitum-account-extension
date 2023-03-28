@@ -3,11 +3,11 @@ package digest
 import (
 	"time"
 
-	mongodbstorage "github.com/ProtoconNet/mitum-currency-extension/digest/mongodb"
-	"github.com/spikeekips/mitum-currency/currency"
-	bsonenc "github.com/spikeekips/mitum-currency/digest/util/bson"
-	"github.com/spikeekips/mitum/base"
-	"github.com/spikeekips/mitum/util/encoder"
+	mongodbstorage "github.com/ProtoconNet/mitum-currency-extension/v2/digest/mongodb"
+	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	bsonenc "github.com/ProtoconNet/mitum-currency/v2/digest/util/bson"
+	"github.com/ProtoconNet/mitum2/base"
+	"github.com/ProtoconNet/mitum2/util/encoder"
 )
 
 type OperationDoc struct {

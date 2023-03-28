@@ -6,10 +6,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ProtoconNet/mitum-currency-extension/currency"
+	"github.com/ProtoconNet/mitum-currency-extension/v2/currency"
+	"github.com/ProtoconNet/mitum2/base"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
-	"github.com/spikeekips/mitum/base"
 )
 
 func (hd *Handlers) handleCurrencies(w http.ResponseWriter, r *http.Request) {

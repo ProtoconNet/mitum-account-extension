@@ -5,9 +5,9 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/ProtoconNet/mitum-currency-extension/currency"
-	mitumcurrency "github.com/spikeekips/mitum-currency/currency"
-	"github.com/spikeekips/mitum/base"
+	"github.com/ProtoconNet/mitum-currency-extension/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
+	"github.com/ProtoconNet/mitum2/base"
 )
 
 type CreateContractAccountCommand struct {

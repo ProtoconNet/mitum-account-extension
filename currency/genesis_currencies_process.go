@@ -3,9 +3,9 @@ package currency
 import (
 	"context"
 
-	"github.com/spikeekips/mitum-currency/currency"
-	"github.com/spikeekips/mitum/base"
-	"github.com/spikeekips/mitum/util"
+	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	"github.com/ProtoconNet/mitum2/base"
+	"github.com/ProtoconNet/mitum2/util"
 )
 
 func (GenesisCurrencies) PreProcess(

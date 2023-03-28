@@ -5,8 +5,8 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/ProtoconNet/mitum-currency-extension/currency"
-	"github.com/spikeekips/mitum/base"
+	"github.com/ProtoconNet/mitum-currency-extension/v2/currency"
+	"github.com/ProtoconNet/mitum2/base"
 )
 
 type CurrencyPolicyUpdaterCommand struct {

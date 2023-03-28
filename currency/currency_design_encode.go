@@ -1,11 +1,11 @@
 package currency
 
 import (
-	"github.com/spikeekips/mitum-currency/currency"
-	"github.com/spikeekips/mitum/base"
-	"github.com/spikeekips/mitum/util"
-	"github.com/spikeekips/mitum/util/encoder"
-	"github.com/spikeekips/mitum/util/hint"
+	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	"github.com/ProtoconNet/mitum2/base"
+	"github.com/ProtoconNet/mitum2/util"
+	"github.com/ProtoconNet/mitum2/util/encoder"
+	"github.com/ProtoconNet/mitum2/util/hint"
 )
 
 func (de *CurrencyDesign) unpack(enc encoder.Encoder, ht hint.Hint, bam []byte, ga string, bpo []byte, ag string) error {

@@ -1,12 +1,12 @@
 package digest
 
 import (
-	mongodbstorage "github.com/ProtoconNet/mitum-currency-extension/digest/mongodb"
+	mongodbstorage "github.com/ProtoconNet/mitum-currency-extension/v2/digest/mongodb"
+	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	bsonenc "github.com/ProtoconNet/mitum-currency/v2/digest/util/bson"
+	"github.com/ProtoconNet/mitum2/base"
+	"github.com/ProtoconNet/mitum2/util/encoder"
 	"github.com/pkg/errors"
-	"github.com/spikeekips/mitum-currency/currency"
-	bsonenc "github.com/spikeekips/mitum-currency/digest/util/bson"
-	"github.com/spikeekips/mitum/base"
-	"github.com/spikeekips/mitum/util/encoder"
 )
 
 type AccountDoc struct {

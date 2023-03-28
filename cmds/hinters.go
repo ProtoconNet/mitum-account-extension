@@ -1,14 +1,14 @@
 package cmds
 
 import (
-	"github.com/ProtoconNet/mitum-currency-extension/currency"
-	"github.com/ProtoconNet/mitum-currency-extension/digest"
-	isaacoperation "github.com/ProtoconNet/mitum-currency-extension/isaac"
+	"github.com/ProtoconNet/mitum-currency-extension/v2/currency"
+	"github.com/ProtoconNet/mitum-currency-extension/v2/digest"
+	isaacoperation "github.com/ProtoconNet/mitum-currency-extension/v2/isaac"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
+	digestisaac "github.com/ProtoconNet/mitum-currency/v2/digest/isaac"
+	"github.com/ProtoconNet/mitum2/launch"
+	"github.com/ProtoconNet/mitum2/util/encoder"
 	"github.com/pkg/errors"
-	mitumcurrency "github.com/spikeekips/mitum-currency/currency"
-	digestisaac "github.com/spikeekips/mitum-currency/digest/isaac"
-	"github.com/spikeekips/mitum/launch"
-	"github.com/spikeekips/mitum/util/encoder"
 )
 
 var Hinters []encoder.DecodeDetail
