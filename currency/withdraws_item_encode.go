@@ -1,7 +1,7 @@
 package currency
 
 import (
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/base"
 	"github.com/ProtoconNet/mitum2/util"
 	"github.com/ProtoconNet/mitum2/util/encoder"
@@ -25,9 +25,9 @@ func (it *BaseWithdrawsItem) unpack(enc encoder.Encoder, ht hint.Hint, tg string
 		return e(err, "")
 	}
 
-	amounts := make([]currency.Amount, len(ham))
+	amounts := make([]mitumcurrency.Amount, len(ham))
 	for i := range ham {
-		j, ok := ham[i].(currency.Amount)
+		j, ok := ham[i].(mitumcurrency.Amount)
 		if !ok {
 			return e(util.ErrWrongType.Errorf("expected Amount, not %T", ham[i]), "")
 		}

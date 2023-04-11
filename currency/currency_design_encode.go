@@ -1,7 +1,7 @@
 package currency
 
 import (
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/base"
 	"github.com/ProtoconNet/mitum2/util"
 	"github.com/ProtoconNet/mitum2/util/encoder"
@@ -13,7 +13,7 @@ func (de *CurrencyDesign) unpack(enc encoder.Encoder, ht hint.Hint, bam []byte, 
 
 	de.BaseHinter = hint.NewBaseHinter(ht)
 
-	var am currency.Amount
+	var am mitumcurrency.Amount
 	if err := encoder.Decode(enc, bam, &am); err != nil {
 		return e(err, "failed to decode amount")
 	}
@@ -35,7 +35,7 @@ func (de *CurrencyDesign) unpack(enc encoder.Encoder, ht hint.Hint, bam []byte, 
 
 	de.policy = policy
 
-	if big, err := currency.NewBigFromString(ag); err != nil {
+	if big, err := mitumcurrency.NewBigFromString(ag); err != nil {
 		return e(err, "")
 	} else {
 		de.aggregate = big

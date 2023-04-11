@@ -3,7 +3,7 @@ package currency
 import (
 	"encoding/json"
 
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/base"
 	"github.com/ProtoconNet/mitum2/util"
 	jsonenc "github.com/ProtoconNet/mitum2/util/encoder/json"
@@ -12,10 +12,10 @@ import (
 
 type CurrencyDesignJSONMarshaler struct {
 	hint.BaseHinter
-	Amount         currency.Amount `json:"amount"`
-	GenesisAccount base.Address    `json:"genesis_account"`
-	Policy         CurrencyPolicy  `json:"policy"`
-	Aggregate      string          `json:"aggregate"`
+	Amount         mitumcurrency.Amount `json:"amount"`
+	GenesisAccount base.Address         `json:"genesis_account"`
+	Policy         CurrencyPolicy       `json:"policy"`
+	Aggregate      string               `json:"aggregate"`
 }
 
 func (de CurrencyDesign) MarshalJSON() ([]byte, error) {

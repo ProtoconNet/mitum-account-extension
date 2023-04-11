@@ -3,7 +3,7 @@ package currency
 import (
 	"encoding/json"
 
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/util"
 	jsonenc "github.com/ProtoconNet/mitum2/util/encoder/json"
 	"github.com/ProtoconNet/mitum2/util/hint"
@@ -11,8 +11,9 @@ import (
 
 type CreateContractAccountsItemJSONMarshaler struct {
 	hint.BaseHinter
-	Keys    currency.AccountKeys `json:"keys"`
-	Amounts []currency.Amount    `json:"amounts"`
+	Keys     mitumcurrency.AccountKeys `json:"keys"`
+	Amounts  []mitumcurrency.Amount    `json:"amounts"`
+	AddrType hint.Type                 `json:"addrtype"`
 }
 
 func (it BaseCreateContractAccountsItem) MarshalJSON() ([]byte, error) {
@@ -20,13 +21,15 @@ func (it BaseCreateContractAccountsItem) MarshalJSON() ([]byte, error) {
 		BaseHinter: it.BaseHinter,
 		Keys:       it.keys,
 		Amounts:    it.amounts,
+		AddrType:   it.addressType,
 	})
 }
 
 type CreateContractAccountsItemJSONUnMarshaler struct {
-	Hint    hint.Hint       `json:"_hint"`
-	Keys    json.RawMessage `json:"keys"`
-	Amounts json.RawMessage `json:"amounts"`
+	Hint     hint.Hint       `json:"_hint"`
+	Keys     json.RawMessage `json:"keys"`
+	Amounts  json.RawMessage `json:"amounts"`
+	AddrType string          `json:"addrtype"`
 }
 
 func (it *BaseCreateContractAccountsItem) DecodeJSON(b []byte, enc *jsonenc.Encoder) error {
@@ -37,5 +40,5 @@ func (it *BaseCreateContractAccountsItem) DecodeJSON(b []byte, enc *jsonenc.Enco
 		return e(err, "")
 	}
 
-	return it.unpack(enc, uit.Hint, uit.Keys, uit.Amounts)
+	return it.unpack(enc, uit.Hint, uit.Keys, uit.Amounts, uit.AddrType)
 }

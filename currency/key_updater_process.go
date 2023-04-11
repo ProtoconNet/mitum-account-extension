@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/base"
 	"github.com/ProtoconNet/mitum2/util"
 	"github.com/pkg/errors"
@@ -52,12 +52,12 @@ func (opp *KeyUpdaterProcessor) PreProcess(
 ) (context.Context, base.OperationProcessReasonError, error) {
 	e := util.StringErrorFunc("failed to preprocess KeyUpdater")
 
-	fact, ok := op.Fact().(currency.KeyUpdaterFact)
+	fact, ok := op.Fact().(mitumcurrency.KeyUpdaterFact)
 	if !ok {
 		return ctx, nil, e(nil, "expected KeyUpdaterFact, not %T", op.Fact())
 	}
 
-	st, err := existsState(currency.StateKeyAccount(fact.Target()), "key of target account", getStateFunc)
+	st, err := existsState(mitumcurrency.StateKeyAccount(fact.Target()), "key of target account", getStateFunc)
 	if err != nil {
 		return ctx, base.NewBaseOperationProcessReasonError("target not found, %q: %w", fact.Target(), err), nil
 	}
@@ -66,7 +66,7 @@ func (opp *KeyUpdaterProcessor) PreProcess(
 		return ctx, base.NewBaseOperationProcessReasonError("contract account already exists, %q: %w", fact.Target(), err), nil
 	}
 
-	ks, err := currency.StateKeysValue(st)
+	ks, err := mitumcurrency.StateKeysValue(st)
 	if err != nil {
 		return ctx, base.NewBaseOperationProcessReasonError("failed to get keys value, %q: %w", fact.Keys().Hash(), err), nil
 	}
@@ -87,52 +87,52 @@ func (opp *KeyUpdaterProcessor) Process( // nolint:dupl
 ) {
 	e := util.StringErrorFunc("failed to process KeyUpdater")
 
-	fact, ok := op.Fact().(currency.KeyUpdaterFact)
+	fact, ok := op.Fact().(mitumcurrency.KeyUpdaterFact)
 	if !ok {
 		return nil, nil, e(nil, "expected KeyUpdaterFact, not %T", op.Fact())
 	}
 
-	st, err := existsState(currency.StateKeyAccount(fact.Target()), "key of target account", getStateFunc)
+	st, err := existsState(mitumcurrency.StateKeyAccount(fact.Target()), "key of target account", getStateFunc)
 	if err != nil {
 		return nil, base.NewBaseOperationProcessReasonError("target not found, %q: %w", fact.Target(), err), nil
 	}
-	sa := currency.NewAccountStateMergeValue(st.Key(), st.Value())
+	sa := mitumcurrency.NewAccountStateMergeValue(st.Key(), st.Value())
 
 	policy, err := existsCurrencyPolicy(fact.Currency(), getStateFunc)
 	if err != nil {
 		return nil, base.NewBaseOperationProcessReasonError("currency not found, %q: %w", fact.Currency(), err), nil
 	}
-	fee, err := policy.Feeer().Fee(currency.ZeroBig)
+	fee, err := policy.Feeer().Fee(mitumcurrency.ZeroBig)
 	if err != nil {
 		return nil, base.NewBaseOperationProcessReasonError("failed to check fee of currency, %q: %w", fact.Currency(), err), nil
 	}
 
-	st, err = existsState(currency.StateKeyBalance(fact.Target(), fact.Currency()), "key of target balance", getStateFunc)
+	st, err = existsState(mitumcurrency.StateKeyBalance(fact.Target(), fact.Currency()), "key of target balance", getStateFunc)
 	if err != nil {
 		return nil, base.NewBaseOperationProcessReasonError("target balance not found, %q: %w", fact.Target(), err), nil
 	}
-	sb := currency.NewBalanceStateMergeValue(st.Key(), st.Value())
+	sb := mitumcurrency.NewBalanceStateMergeValue(st.Key(), st.Value())
 
-	switch b, err := currency.StateBalanceValue(st); {
+	switch b, err := mitumcurrency.StateBalanceValue(st); {
 	case err != nil:
-		return nil, base.NewBaseOperationProcessReasonError("failed to get balance value, %q: %w", currency.StateKeyBalance(fact.Target(), fact.Currency()), err), nil
+		return nil, base.NewBaseOperationProcessReasonError("failed to get balance value, %q: %w", mitumcurrency.StateKeyBalance(fact.Target(), fact.Currency()), err), nil
 	case b.Big().Compare(fee) < 0:
 		return nil, base.NewBaseOperationProcessReasonError("not enough balance of target, %q", fact.Target()), nil
 	}
 
 	var sts []base.StateMergeValue // nolint:prealloc
 
-	v, ok := sb.Value().(currency.BalanceStateValue)
+	v, ok := sb.Value().(mitumcurrency.BalanceStateValue)
 	if !ok {
 		return nil, base.NewBaseOperationProcessReasonError("expected BalanceStateValue, not %T", sb.Value()), nil
 	}
-	sts = append(sts, currency.NewBalanceStateMergeValue(sb.Key(), currency.NewBalanceStateValue(v.Amount.WithBig(v.Amount.Big().Sub(fee)))))
+	sts = append(sts, mitumcurrency.NewBalanceStateMergeValue(sb.Key(), mitumcurrency.NewBalanceStateValue(v.Amount.WithBig(v.Amount.Big().Sub(fee)))))
 
-	a, err := currency.NewAccountFromKeys(fact.Keys())
+	a, err := mitumcurrency.NewAccountFromKeys(fact.Keys())
 	if err != nil {
 		return nil, base.NewBaseOperationProcessReasonError("failed to create new account from keys"), nil
 	}
-	sts = append(sts, currency.NewAccountStateMergeValue(sa.Key(), currency.NewAccountStateValue(a)))
+	sts = append(sts, mitumcurrency.NewAccountStateMergeValue(sa.Key(), mitumcurrency.NewAccountStateValue(a)))
 
 	return sts, nil, nil
 }

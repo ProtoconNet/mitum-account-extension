@@ -1,7 +1,7 @@
 package currency
 
 import (
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/util"
 	"github.com/ProtoconNet/mitum2/util/hint"
 )
@@ -12,11 +12,11 @@ var (
 
 type CurrencyPolicy struct {
 	hint.BaseHinter
-	newAccountMinBalance currency.Big
+	newAccountMinBalance mitumcurrency.Big
 	feeer                Feeer
 }
 
-func NewCurrencyPolicy(newAccountMinBalance currency.Big, feeer Feeer) CurrencyPolicy {
+func NewCurrencyPolicy(newAccountMinBalance mitumcurrency.Big, feeer Feeer) CurrencyPolicy {
 	return CurrencyPolicy{
 		BaseHinter:           hint.NewBaseHinter(CurrencyPolicyHint),
 		newAccountMinBalance: newAccountMinBalance, feeer: feeer,
@@ -39,7 +39,7 @@ func (po CurrencyPolicy) IsValid([]byte) error {
 	return nil
 }
 
-func (po CurrencyPolicy) NewAccountMinBalance() currency.Big {
+func (po CurrencyPolicy) NewAccountMinBalance() mitumcurrency.Big {
 	return po.newAccountMinBalance
 }
 

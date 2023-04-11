@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"sort"
 
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/base"
 	"github.com/ProtoconNet/mitum2/util"
 	"github.com/ProtoconNet/mitum2/util/hint"
@@ -17,7 +17,7 @@ var ContractAccountKeysHint = hint.MustNewHint("mitum-currency-contract-account-
 type ContractAccountKeys struct {
 	hint.BaseHinter
 	h         util.Hash
-	keys      []currency.AccountKey
+	keys      []mitumcurrency.AccountKey
 	threshold uint
 }
 
@@ -26,7 +26,7 @@ func EmptyBaseAccountKeys() ContractAccountKeys {
 }
 
 func NewContractAccountKeys() (ContractAccountKeys, error) {
-	ks := ContractAccountKeys{BaseHinter: hint.NewBaseHinter(ContractAccountKeysHint), keys: []currency.AccountKey{}, threshold: 100}
+	ks := ContractAccountKeys{BaseHinter: hint.NewBaseHinter(ContractAccountKeysHint), keys: []mitumcurrency.AccountKey{}, threshold: 100}
 
 	h, err := ks.GenerateHash()
 	if err != nil {
@@ -71,15 +71,15 @@ func (ks ContractAccountKeys) Threshold() uint {
 	return ks.threshold
 }
 
-func (ks ContractAccountKeys) Keys() []currency.AccountKey {
+func (ks ContractAccountKeys) Keys() []mitumcurrency.AccountKey {
 	return ks.keys
 }
 
-func (ks ContractAccountKeys) Key(k base.Publickey) (currency.AccountKey, bool) {
-	return currency.BaseAccountKey{}, false
+func (ks ContractAccountKeys) Key(k base.Publickey) (mitumcurrency.AccountKey, bool) {
+	return mitumcurrency.BaseAccountKey{}, false
 }
 
-func (ks ContractAccountKeys) Equal(b currency.AccountKeys) bool {
+func (ks ContractAccountKeys) Equal(b mitumcurrency.AccountKeys) bool {
 	if ks.threshold != b.Threshold() {
 		return false
 	}
@@ -106,7 +106,7 @@ func (ks ContractAccountKeys) Equal(b currency.AccountKeys) bool {
 	return true
 }
 
-func checkThreshold(fs []base.Sign, keys currency.AccountKeys) error {
+func checkThreshold(fs []base.Sign, keys mitumcurrency.AccountKeys) error {
 	var sum uint
 	for i := range fs {
 		ky, found := keys.Key(fs[i].Signer())

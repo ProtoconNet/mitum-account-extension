@@ -1,7 +1,7 @@
 package currency
 
 import (
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	bsonenc "github.com/ProtoconNet/mitum-currency/v2/digest/util/bson"
 	"github.com/ProtoconNet/mitum2/util"
 	"github.com/ProtoconNet/mitum2/util/hint"
@@ -32,7 +32,7 @@ type GenesisCurrenciesFactBSONUnMarshaler struct {
 func (fact *GenesisCurrenciesFact) DecodeBSON(b []byte, enc *bsonenc.Encoder) error {
 	e := util.StringErrorFunc("failed to decode bson of GenesisCurrenciesFact")
 
-	var ubf currency.BaseFactBSONUnmarshaler
+	var ubf mitumcurrency.BaseFactBSONUnmarshaler
 	if err := enc.Unmarshal(b, &ubf); err != nil {
 		return e(err, "")
 	}
@@ -61,7 +61,7 @@ func (op GenesisCurrencies) MarshalBSON() ([]byte, error) {
 func (op *GenesisCurrencies) DecodeBSON(b []byte, enc *bsonenc.Encoder) error {
 	e := util.StringErrorFunc("failed to decode bson of GenesisCurrencies")
 
-	var ubo currency.BaseOperation
+	var ubo mitumcurrency.BaseOperation
 	if err := ubo.DecodeBSON(b, enc); err != nil {
 		return e(err, "")
 	}

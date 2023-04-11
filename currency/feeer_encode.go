@@ -1,7 +1,7 @@
 package currency
 
 import (
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/base"
 	"github.com/ProtoconNet/mitum2/util"
 	"github.com/ProtoconNet/mitum2/util/encoder"
@@ -20,13 +20,13 @@ func (fa *FixedFeeer) unpack(enc encoder.Encoder, ht hint.Hint, rc string, am st
 		fa.receiver = a
 	}
 
-	if big, err := currency.NewBigFromString(am); err != nil {
+	if big, err := mitumcurrency.NewBigFromString(am); err != nil {
 		return e(err, "")
 	} else {
 		fa.amount = big
 	}
 
-	if exm, err := currency.NewBigFromString(em); err != nil {
+	if exm, err := mitumcurrency.NewBigFromString(em); err != nil {
 		return e(err, "")
 	} else {
 		fa.exchangeMin = exm
@@ -55,19 +55,19 @@ func (fa *RatioFeeer) unpack(
 
 	fa.ratio = ratio
 
-	if min, err := currency.NewBigFromString(min); err != nil {
+	if min, err := mitumcurrency.NewBigFromString(min); err != nil {
 		return e(err, "")
 	} else {
 		fa.min = min
 	}
 
-	if max, err := currency.NewBigFromString(max); err != nil {
+	if max, err := mitumcurrency.NewBigFromString(max); err != nil {
 		return e(err, "")
 	} else {
 		fa.max = max
 	}
 
-	if exm, err := currency.NewBigFromString(em); err != nil {
+	if exm, err := mitumcurrency.NewBigFromString(em); err != nil {
 		return e(err, "")
 	} else {
 		fa.exchangeMin = exm

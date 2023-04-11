@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/base"
 	"github.com/ProtoconNet/mitum2/util"
 	"github.com/ProtoconNet/mitum2/util/hint"
@@ -67,7 +67,7 @@ func IsStateCurrencyDesignKey(key string) bool {
 	return strings.HasPrefix(key, StateKeyCurrencyDesignPrefix)
 }
 
-func StateKeyCurrencyDesign(cid currency.CurrencyID) string {
+func StateKeyCurrencyDesign(cid mitumcurrency.CurrencyID) string {
 	return fmt.Sprintf("%s%s", StateKeyCurrencyDesignPrefix, cid)
 }
 
@@ -234,7 +234,7 @@ func notExistsState(
 	return st, nil
 }
 
-func existsCurrencyPolicy(cid currency.CurrencyID, getStateFunc base.GetStateFunc) (CurrencyPolicy, error) {
+func existsCurrencyPolicy(cid mitumcurrency.CurrencyID, getStateFunc base.GetStateFunc) (CurrencyPolicy, error) {
 	var policy CurrencyPolicy
 	switch i, found, err := getStateFunc(StateKeyCurrencyDesign(cid)); {
 	case err != nil:

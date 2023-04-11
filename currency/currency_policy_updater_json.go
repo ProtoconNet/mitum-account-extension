@@ -3,7 +3,7 @@ package currency
 import (
 	"encoding/json"
 
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/base"
 	"github.com/ProtoconNet/mitum2/util"
 	jsonenc "github.com/ProtoconNet/mitum2/util/encoder/json"
@@ -11,8 +11,8 @@ import (
 
 type CurrencyPolicyUpdaterFactJSONMarshaler struct {
 	base.BaseFactJSONMarshaler
-	Currency currency.CurrencyID `json:"currency"`
-	Policy   CurrencyPolicy      `json:"policy"`
+	Currency mitumcurrency.CurrencyID `json:"currency"`
+	Policy   CurrencyPolicy           `json:"policy"`
 }
 
 func (fact CurrencyPolicyUpdaterFact) MarshalJSON() ([]byte, error) {
@@ -43,7 +43,7 @@ func (fact *CurrencyPolicyUpdaterFact) DecodeJSON(b []byte, enc *jsonenc.Encoder
 }
 
 type currencyPolicyUpdaterMarshaler struct {
-	currency.BaseOperationJSONMarshaler
+	mitumcurrency.BaseOperationJSONMarshaler
 }
 
 func (op CurrencyPolicyUpdater) MarshalJSON() ([]byte, error) {
@@ -55,7 +55,7 @@ func (op CurrencyPolicyUpdater) MarshalJSON() ([]byte, error) {
 func (op *CurrencyPolicyUpdater) DecodeJSON(b []byte, enc *jsonenc.Encoder) error {
 	e := util.StringErrorFunc("failed to decode json of CurrencyPolicyUpdater")
 
-	var ubo currency.BaseNodeOperation
+	var ubo mitumcurrency.BaseNodeOperation
 	if err := ubo.DecodeJSON(b, enc); err != nil {
 		return e(err, "")
 	}

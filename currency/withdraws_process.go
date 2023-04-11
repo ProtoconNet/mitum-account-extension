@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/base"
 	"github.com/ProtoconNet/mitum2/util"
 	"github.com/pkg/errors"
@@ -33,13 +33,13 @@ type WithdrawsItemProcessor struct {
 	h      util.Hash
 	sender base.Address
 	item   WithdrawsItem
-	tb     map[currency.CurrencyID]base.StateMergeValue
+	tb     map[mitumcurrency.CurrencyID]base.StateMergeValue
 }
 
 func (opp *WithdrawsItemProcessor) PreProcess(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc,
 ) error {
-	if err := checkExistsState(currency.StateKeyAccount(opp.item.Target()), getStateFunc); err != nil {
+	if err := checkExistsState(mitumcurrency.StateKeyAccount(opp.item.Target()), getStateFunc); err != nil {
 		return err
 	}
 
@@ -55,7 +55,7 @@ func (opp *WithdrawsItemProcessor) PreProcess(
 		return errors.Errorf("contract account owner is not matched with %q", opp.sender)
 	}
 
-	tb := map[currency.CurrencyID]base.StateMergeValue{}
+	tb := map[mitumcurrency.CurrencyID]base.StateMergeValue{}
 	for i := range opp.item.Amounts() {
 		am := opp.item.Amounts()[i]
 
@@ -64,17 +64,17 @@ func (opp *WithdrawsItemProcessor) PreProcess(
 			return err
 		}
 
-		st, _, err := getStateFunc(currency.StateKeyBalance(opp.item.Target(), am.Currency()))
+		st, _, err := getStateFunc(mitumcurrency.StateKeyBalance(opp.item.Target(), am.Currency()))
 		if err != nil {
 			return err
 		}
 
-		balance, err := currency.StateBalanceValue(st)
+		balance, err := mitumcurrency.StateBalanceValue(st)
 		if err != nil {
 			return err
 		}
 
-		tb[am.Currency()] = currency.NewBalanceStateMergeValue(st.Key(), currency.NewBalanceStateValue(balance))
+		tb[am.Currency()] = mitumcurrency.NewBalanceStateMergeValue(st.Key(), mitumcurrency.NewBalanceStateValue(balance))
 	}
 
 	opp.tb = tb
@@ -88,12 +88,12 @@ func (opp *WithdrawsItemProcessor) Process(
 	sts := make([]base.StateMergeValue, len(opp.item.Amounts()))
 	for i := range opp.item.Amounts() {
 		am := opp.item.Amounts()[i]
-		v, ok := opp.tb[am.Currency()].Value().(currency.BalanceStateValue)
+		v, ok := opp.tb[am.Currency()].Value().(mitumcurrency.BalanceStateValue)
 		if !ok {
 			return nil, errors.Errorf("expect BalanceStateValue, not %T", opp.tb[am.Currency()].Value())
 		}
-		stv := currency.NewBalanceStateValue(v.Amount.WithBig(v.Amount.Big().Sub(am.Big())))
-		sts[i] = currency.NewBalanceStateMergeValue(opp.tb[am.Currency()].Key(), stv)
+		stv := mitumcurrency.NewBalanceStateValue(v.Amount.WithBig(v.Amount.Big().Sub(am.Big())))
+		sts[i] = mitumcurrency.NewBalanceStateMergeValue(opp.tb[am.Currency()].Key(), stv)
 	}
 
 	return sts, nil
@@ -151,7 +151,7 @@ func (opp *WithdrawsProcessor) PreProcess(
 		return ctx, nil, e(nil, "expected WithdrawsFact, not %T", op.Fact())
 	}
 
-	if err := checkExistsState(currency.StateKeyAccount(fact.sender), getStateFunc); err != nil {
+	if err := checkExistsState(mitumcurrency.StateKeyAccount(fact.sender), getStateFunc); err != nil {
 		return ctx, base.NewBaseOperationProcessReasonError("sender not found, %q: %w", fact.sender, err), nil
 	}
 
@@ -218,12 +218,12 @@ func (opp *WithdrawsProcessor) Process( // nolint:dupl
 
 	for k := range required {
 		rq := required[k]
-		v, ok := sb[k].Value().(currency.BalanceStateValue)
+		v, ok := sb[k].Value().(mitumcurrency.BalanceStateValue)
 		if !ok {
 			return nil, base.NewBaseOperationProcessReasonError("failed to process Withdraws: expected BalanceStateValue, not %T", sb[k].Value()), nil
 		}
-		stv := currency.NewBalanceStateValue(v.Amount.WithBig(v.Amount.Big().Add(rq[0]).Sub(rq[1].MulInt64(2))))
-		sts = append(sts, currency.NewBalanceStateMergeValue(sb[k].Key(), stv))
+		stv := mitumcurrency.NewBalanceStateValue(v.Amount.WithBig(v.Amount.Big().Add(rq[0]).Sub(rq[1].MulInt64(2))))
+		sts = append(sts, mitumcurrency.NewBalanceStateMergeValue(sb[k].Key(), stv))
 	}
 
 	return sts, nil, nil
@@ -235,12 +235,12 @@ func (opp *WithdrawsProcessor) Close() error {
 	return nil
 }
 
-func (opp *WithdrawsProcessor) calculateItemsFee(op base.Operation, getStateFunc base.GetStateFunc) (map[currency.CurrencyID][2]currency.Big, error) {
+func (opp *WithdrawsProcessor) calculateItemsFee(op base.Operation, getStateFunc base.GetStateFunc) (map[mitumcurrency.CurrencyID][2]mitumcurrency.Big, error) {
 	fact, ok := op.Fact().(WithdrawsFact)
 	if !ok {
 		return nil, errors.Errorf("expected WithdrawsFact, not %T", op.Fact())
 	}
-	items := make([]currency.AmountsItem, len(fact.items))
+	items := make([]mitumcurrency.AmountsItem, len(fact.items))
 	for i := range fact.items {
 		items[i] = fact.items[i]
 	}

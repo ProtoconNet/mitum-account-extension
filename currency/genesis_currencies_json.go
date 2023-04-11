@@ -3,7 +3,7 @@ package currency
 import (
 	"encoding/json"
 
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/base"
 	"github.com/ProtoconNet/mitum2/util"
 	jsonenc "github.com/ProtoconNet/mitum2/util/encoder/json"
@@ -11,9 +11,9 @@ import (
 
 type GenesisCurrenciesFactJSONMarshaler struct {
 	base.BaseFactJSONMarshaler
-	GenesisNodeKey base.Publickey       `json:"genesis_node_key"`
-	Keys           currency.AccountKeys `json:"keys"`
-	Currencies     []CurrencyDesign     `json:"currencies"`
+	GenesisNodeKey base.Publickey            `json:"genesis_node_key"`
+	Keys           mitumcurrency.AccountKeys `json:"keys"`
+	Currencies     []CurrencyDesign          `json:"currencies"`
 }
 
 func (fact GenesisCurrenciesFact) MarshalJSON() ([]byte, error) {
@@ -46,7 +46,7 @@ func (fact *GenesisCurrenciesFact) DecodeJSON(b []byte, enc *jsonenc.Encoder) er
 }
 
 type genesisCurrenciesMarshaler struct {
-	currency.BaseOperationJSONMarshaler
+	mitumcurrency.BaseOperationJSONMarshaler
 }
 
 func (op GenesisCurrencies) MarshalJSON() ([]byte, error) {
@@ -58,7 +58,7 @@ func (op GenesisCurrencies) MarshalJSON() ([]byte, error) {
 func (op *GenesisCurrencies) DecodeJSON(b []byte, enc *jsonenc.Encoder) error {
 	e := util.StringErrorFunc("failed to decode json of GenesisCurrencies")
 
-	var ubo currency.BaseOperation
+	var ubo mitumcurrency.BaseOperation
 	if err := ubo.DecodeJSON(b, enc); err != nil {
 		return e(err, "")
 	}

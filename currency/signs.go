@@ -1,7 +1,7 @@
 package currency
 
 import (
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/base"
 )
 
@@ -10,11 +10,11 @@ func checkFactSignsByState(
 	fs []base.Sign,
 	getState base.GetStateFunc,
 ) error {
-	st, err := existsState(currency.StateKeyAccount(address), "keys of account", getState)
+	st, err := existsState(mitumcurrency.StateKeyAccount(address), "keys of account", getState)
 	if err != nil {
 		return err
 	}
-	keys, err := currency.StateKeysValue(st)
+	keys, err := mitumcurrency.StateKeysValue(st)
 	switch {
 	case err != nil:
 		return base.NewBaseOperationProcessReasonError("failed to get Keys %w", err)
