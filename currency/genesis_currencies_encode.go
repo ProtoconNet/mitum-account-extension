@@ -1,7 +1,7 @@
 package currency
 
 import (
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/base"
 	"github.com/ProtoconNet/mitum2/util"
 	"github.com/ProtoconNet/mitum2/util/encoder"
@@ -22,11 +22,11 @@ func (fact *GenesisCurrenciesFact) unpack(
 		fact.genesisNodeKey = pk
 	}
 
-	var keys currency.AccountKeys
+	var keys mitumcurrency.AccountKeys
 	hinter, err := enc.Decode(bks)
 	if err != nil {
 		return e(err, "")
-	} else if k, ok := hinter.(currency.AccountKeys); !ok {
+	} else if k, ok := hinter.(mitumcurrency.AccountKeys); !ok {
 		return e(util.ErrWrongType.Errorf("expected AccountKeys, not %T", hinter), "")
 	} else {
 		keys = k

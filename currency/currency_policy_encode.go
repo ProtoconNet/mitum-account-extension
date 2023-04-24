@@ -1,7 +1,7 @@
 package currency
 
 import (
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/util"
 	"github.com/ProtoconNet/mitum2/util/encoder"
 	"github.com/ProtoconNet/mitum2/util/hint"
@@ -10,7 +10,7 @@ import (
 func (po *CurrencyPolicy) unpack(enc encoder.Encoder, ht hint.Hint, mn string, bfe []byte) error {
 	e := util.StringErrorFunc("failed to unmarshal CurrencyPolicy")
 
-	if big, err := currency.NewBigFromString(mn); err != nil {
+	if big, err := mitumcurrency.NewBigFromString(mn); err != nil {
 		return e(err, "")
 	} else {
 		po.newAccountMinBalance = big

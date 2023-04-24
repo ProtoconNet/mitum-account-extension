@@ -1,7 +1,7 @@
 package currency
 
 import (
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/base"
 	"github.com/ProtoconNet/mitum2/util"
 	"github.com/ProtoconNet/mitum2/util/hint"
@@ -15,9 +15,9 @@ type WithdrawsItemSingleAmount struct {
 	BaseWithdrawsItem
 }
 
-func NewWithdrawsItemSingleAmount(target base.Address, amount currency.Amount) WithdrawsItemSingleAmount {
+func NewWithdrawsItemSingleAmount(target base.Address, amount mitumcurrency.Amount) WithdrawsItemSingleAmount {
 	return WithdrawsItemSingleAmount{
-		BaseWithdrawsItem: NewBaseWithdrawsItem(WithdrawsItemSingleAmountHint, target, []currency.Amount{amount}),
+		BaseWithdrawsItem: NewBaseWithdrawsItem(WithdrawsItemSingleAmountHint, target, []mitumcurrency.Amount{amount}),
 	}
 }
 

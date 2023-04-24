@@ -1,7 +1,7 @@
 package currency
 
 import (
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/base"
 	"github.com/ProtoconNet/mitum2/util"
 	"github.com/ProtoconNet/mitum2/util/hint"
@@ -15,11 +15,11 @@ var (
 
 type CurrencyPolicyUpdaterFact struct {
 	base.BaseFact
-	currency currency.CurrencyID
+	currency mitumcurrency.CurrencyID
 	policy   CurrencyPolicy
 }
 
-func NewCurrencyPolicyUpdaterFact(token []byte, currency currency.CurrencyID, policy CurrencyPolicy) CurrencyPolicyUpdaterFact {
+func NewCurrencyPolicyUpdaterFact(token []byte, currency mitumcurrency.CurrencyID, policy CurrencyPolicy) CurrencyPolicyUpdaterFact {
 	fact := CurrencyPolicyUpdaterFact{
 		BaseFact: base.NewBaseFact(CurrencyPolicyUpdaterFactHint, token),
 		currency: currency,
@@ -44,7 +44,7 @@ func (fact CurrencyPolicyUpdaterFact) Bytes() []byte {
 }
 
 func (fact CurrencyPolicyUpdaterFact) IsValid(b []byte) error {
-	if err := currency.IsValidOperationFact(fact, b); err != nil {
+	if err := mitumcurrency.IsValidOperationFact(fact, b); err != nil {
 		return err
 	}
 
@@ -63,7 +63,7 @@ func (fact CurrencyPolicyUpdaterFact) Token() base.Token {
 	return fact.BaseFact.Token()
 }
 
-func (fact CurrencyPolicyUpdaterFact) Currency() currency.CurrencyID {
+func (fact CurrencyPolicyUpdaterFact) Currency() mitumcurrency.CurrencyID {
 	return fact.currency
 }
 
@@ -72,9 +72,9 @@ func (fact CurrencyPolicyUpdaterFact) Policy() CurrencyPolicy {
 }
 
 type CurrencyPolicyUpdater struct {
-	currency.BaseNodeOperation
+	mitumcurrency.BaseNodeOperation
 }
 
 func NewCurrencyPolicyUpdater(fact CurrencyPolicyUpdaterFact) (CurrencyPolicyUpdater, error) {
-	return CurrencyPolicyUpdater{BaseNodeOperation: currency.NewBaseNodeOperation(CurrencyPolicyUpdaterHint, fact)}, nil
+	return CurrencyPolicyUpdater{BaseNodeOperation: mitumcurrency.NewBaseNodeOperation(CurrencyPolicyUpdaterHint, fact)}, nil
 }

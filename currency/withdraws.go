@@ -1,7 +1,7 @@
 package currency
 
 import (
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/base"
 	"github.com/ProtoconNet/mitum2/util"
 	"github.com/ProtoconNet/mitum2/util/hint"
@@ -18,7 +18,7 @@ var MaxWithdrawsItems uint = 10
 type WithdrawsItem interface {
 	hint.Hinter
 	util.IsValider
-	currency.AmountsItem
+	mitumcurrency.AmountsItem
 	Bytes() []byte
 	Target() base.Address
 	Rebuild() WithdrawsItem
@@ -72,7 +72,7 @@ func (fact WithdrawsFact) IsValid(b []byte) error {
 		return err
 	}
 
-	if err := currency.IsValidOperationFact(fact, b); err != nil {
+	if err := mitumcurrency.IsValidOperationFact(fact, b); err != nil {
 		return err
 	}
 
@@ -140,11 +140,11 @@ func (fact WithdrawsFact) Addresses() ([]base.Address, error) {
 }
 
 type Withdraws struct {
-	currency.BaseOperation
+	mitumcurrency.BaseOperation
 }
 
 func NewWithdraws(fact WithdrawsFact) (Withdraws, error) {
-	return Withdraws{BaseOperation: currency.NewBaseOperation(WithdrawsHint, fact)}, nil
+	return Withdraws{BaseOperation: mitumcurrency.NewBaseOperation(WithdrawsHint, fact)}, nil
 }
 
 func (op *Withdraws) HashSign(priv base.Privatekey, networkID base.NetworkID) error {

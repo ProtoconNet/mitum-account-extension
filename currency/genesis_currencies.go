@@ -1,7 +1,7 @@
 package currency
 
 import (
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/base"
 	"github.com/ProtoconNet/mitum2/util"
 	"github.com/ProtoconNet/mitum2/util/hint"
@@ -17,14 +17,14 @@ var (
 type GenesisCurrenciesFact struct {
 	base.BaseFact
 	genesisNodeKey base.Publickey
-	keys           currency.AccountKeys
+	keys           mitumcurrency.AccountKeys
 	cs             []CurrencyDesign
 }
 
 func NewGenesisCurrenciesFact(
 	token []byte,
 	genesisNodeKey base.Publickey,
-	keys currency.AccountKeys,
+	keys mitumcurrency.AccountKeys,
 	cs []CurrencyDesign,
 ) GenesisCurrenciesFact {
 	fact := GenesisCurrenciesFact{
@@ -56,7 +56,7 @@ func (fact GenesisCurrenciesFact) Bytes() []byte {
 }
 
 func (fact GenesisCurrenciesFact) IsValid(b []byte) error {
-	if err := currency.IsValidOperationFact(fact, b); err != nil {
+	if err := mitumcurrency.IsValidOperationFact(fact, b); err != nil {
 		return err
 	}
 
@@ -68,7 +68,7 @@ func (fact GenesisCurrenciesFact) IsValid(b []byte) error {
 		return util.ErrInvalid.Errorf("invalid fact: %w", err)
 	}
 
-	founds := map[currency.CurrencyID]struct{}{}
+	founds := map[mitumcurrency.CurrencyID]struct{}{}
 	for i := range fact.cs {
 		c := fact.cs[i]
 		if err := c.IsValid(nil); err != nil {
@@ -95,12 +95,12 @@ func (fact GenesisCurrenciesFact) GenesisNodeKey() base.Publickey {
 	return fact.genesisNodeKey
 }
 
-func (fact GenesisCurrenciesFact) Keys() currency.AccountKeys {
+func (fact GenesisCurrenciesFact) Keys() mitumcurrency.AccountKeys {
 	return fact.keys
 }
 
 func (fact GenesisCurrenciesFact) Address() (base.Address, error) {
-	return currency.NewAddressFromKeys(fact.keys)
+	return mitumcurrency.NewAddressFromKeys(fact.keys)
 }
 
 func (fact GenesisCurrenciesFact) Currencies() []CurrencyDesign {
@@ -108,11 +108,11 @@ func (fact GenesisCurrenciesFact) Currencies() []CurrencyDesign {
 }
 
 type GenesisCurrencies struct {
-	currency.BaseOperation
+	mitumcurrency.BaseOperation
 }
 
 func NewGenesisCurrencies(fact GenesisCurrenciesFact) GenesisCurrencies {
-	return GenesisCurrencies{BaseOperation: currency.NewBaseOperation(GenesisCurrenciesHint, fact)}
+	return GenesisCurrencies{BaseOperation: mitumcurrency.NewBaseOperation(GenesisCurrenciesHint, fact)}
 }
 
 func (op GenesisCurrencies) IsValid(networkID []byte) error {

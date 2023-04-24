@@ -1,7 +1,7 @@
 package currency
 
 import (
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/base"
 	"github.com/ProtoconNet/mitum2/util"
 	"github.com/ProtoconNet/mitum2/util/hint"
@@ -14,13 +14,13 @@ var (
 
 type CurrencyDesign struct {
 	hint.BaseHinter
-	amount         currency.Amount
+	amount         mitumcurrency.Amount
 	genesisAccount base.Address
 	policy         CurrencyPolicy
-	aggregate      currency.Big
+	aggregate      mitumcurrency.Big
 }
 
-func NewCurrencyDesign(amount currency.Amount, genesisAccount base.Address, po CurrencyPolicy) CurrencyDesign {
+func NewCurrencyDesign(amount mitumcurrency.Amount, genesisAccount base.Address, po CurrencyPolicy) CurrencyDesign {
 	return CurrencyDesign{
 		BaseHinter:     hint.NewBaseHinter(CurrencyDesignHint),
 		amount:         amount,
@@ -73,11 +73,11 @@ func (de CurrencyDesign) Bytes() []byte {
 	)
 }
 
-func (de CurrencyDesign) Amount() currency.Amount {
+func (de CurrencyDesign) Amount() mitumcurrency.Amount {
 	return de.amount
 }
 
-func (de CurrencyDesign) Currency() currency.CurrencyID {
+func (de CurrencyDesign) Currency() mitumcurrency.CurrencyID {
 	return de.amount.Currency()
 }
 
@@ -95,11 +95,11 @@ func (de CurrencyDesign) SetPolicy(po CurrencyPolicy) CurrencyDesign {
 	return de
 }
 
-func (de CurrencyDesign) Aggregate() currency.Big {
+func (de CurrencyDesign) Aggregate() mitumcurrency.Big {
 	return de.aggregate
 }
 
-func (de CurrencyDesign) AddAggregate(b currency.Big) (CurrencyDesign, error) {
+func (de CurrencyDesign) AddAggregate(b mitumcurrency.Big) (CurrencyDesign, error) {
 	if !b.OverZero() {
 		return de, errors.Errorf("new aggregate not over zero")
 	}

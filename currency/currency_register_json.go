@@ -3,7 +3,7 @@ package currency
 import (
 	"encoding/json"
 
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/base"
 	"github.com/ProtoconNet/mitum2/util"
 	jsonenc "github.com/ProtoconNet/mitum2/util/encoder/json"
@@ -40,7 +40,7 @@ func (fact *CurrencyRegisterFact) DecodeJSON(b []byte, enc *jsonenc.Encoder) err
 }
 
 type currencyRegisterMarshaler struct {
-	currency.BaseOperationJSONMarshaler
+	mitumcurrency.BaseOperationJSONMarshaler
 }
 
 func (op CurrencyRegister) MarshalJSON() ([]byte, error) {
@@ -52,7 +52,7 @@ func (op CurrencyRegister) MarshalJSON() ([]byte, error) {
 func (op *CurrencyRegister) DecodeJSON(b []byte, enc *jsonenc.Encoder) error {
 	e := util.StringErrorFunc("failed to decode json of CurrencyRegister")
 
-	var ubo currency.BaseNodeOperation
+	var ubo mitumcurrency.BaseNodeOperation
 	if err := ubo.DecodeJSON(b, enc); err != nil {
 		return e(err, "")
 	}

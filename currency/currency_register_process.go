@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/base"
 	"github.com/ProtoconNet/mitum2/isaac"
 	"github.com/ProtoconNet/mitum2/util"
@@ -97,7 +97,7 @@ func (opp *CurrencyRegisterProcessor) PreProcess(
 		return ctx, base.NewBaseOperationProcessReasonError("currency design already exists, %q: %w", item.Currency(), err), nil
 	}
 
-	if err := checkExistsState(currency.StateKeyAccount(item.genesisAccount), getStateFunc); err != nil {
+	if err := checkExistsState(mitumcurrency.StateKeyAccount(item.genesisAccount), getStateFunc); err != nil {
 		return ctx, base.NewBaseOperationProcessReasonError("genesis account not found, %q: %w", item.genesisAccount, err), nil
 	}
 
@@ -106,7 +106,7 @@ func (opp *CurrencyRegisterProcessor) PreProcess(
 	}
 
 	if receiver := item.Policy().Feeer().Receiver(); receiver != nil {
-		if err := checkExistsState(currency.StateKeyAccount(receiver), getStateFunc); err != nil {
+		if err := checkExistsState(mitumcurrency.StateKeyAccount(receiver), getStateFunc); err != nil {
 			return ctx, base.NewBaseOperationProcessReasonError("feeer receiver not found, %q: %w", receiver, err), nil
 		}
 
@@ -115,8 +115,8 @@ func (opp *CurrencyRegisterProcessor) PreProcess(
 		}
 	}
 
-	if err := checkNotExistsState(currency.StateKeyBalance(item.genesisAccount, item.Currency()), getStateFunc); err != nil {
-		return ctx, base.NewBaseOperationProcessReasonError("account balance already exists, %q: %w", currency.StateKeyBalance(item.genesisAccount, item.Currency()), err), nil
+	if err := checkNotExistsState(mitumcurrency.StateKeyBalance(item.genesisAccount, item.Currency()), getStateFunc); err != nil {
+		return ctx, base.NewBaseOperationProcessReasonError("account balance already exists, %q: %w", mitumcurrency.StateKeyBalance(item.genesisAccount, item.Currency()), err), nil
 	}
 
 	return ctx, nil, nil
@@ -137,9 +137,9 @@ func (opp *CurrencyRegisterProcessor) Process(
 
 	item := fact.currency
 
-	ba := currency.NewBalanceStateValue(item.amount)
-	sts[0] = currency.NewBalanceStateMergeValue(
-		currency.StateKeyBalance(item.genesisAccount, item.Currency()),
+	ba := mitumcurrency.NewBalanceStateValue(item.amount)
+	sts[0] = mitumcurrency.NewBalanceStateMergeValue(
+		mitumcurrency.StateKeyBalance(item.genesisAccount, item.Currency()),
 		ba,
 	)
 

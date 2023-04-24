@@ -3,7 +3,7 @@ package currency // nolint: dupl
 import (
 	"go.mongodb.org/mongo-driver/bson"
 
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	bsonenc "github.com/ProtoconNet/mitum-currency/v2/digest/util/bson"
 	"github.com/ProtoconNet/mitum2/util"
 	"github.com/ProtoconNet/mitum2/util/hint"
@@ -31,7 +31,7 @@ type WithdrawsFactBSONUnmarshaler struct {
 func (fact *WithdrawsFact) DecodeBSON(b []byte, enc *bsonenc.Encoder) error {
 	e := util.StringErrorFunc("failed to decode bson of WithdrawsFact")
 
-	var ubf currency.BaseFactBSONUnmarshaler
+	var ubf mitumcurrency.BaseFactBSONUnmarshaler
 	if err := enc.Unmarshal(b, &ubf); err != nil {
 		return err
 	}
@@ -61,7 +61,7 @@ func (op Withdraws) MarshalBSON() ([]byte, error) {
 func (op *Withdraws) DecodeBSON(b []byte, enc *bsonenc.Encoder) error {
 	e := util.StringErrorFunc("failed to decode bson of Withdraw")
 
-	var ubo currency.BaseOperation
+	var ubo mitumcurrency.BaseOperation
 	if err := ubo.DecodeBSON(b, enc); err != nil {
 		return e(err, "")
 	}

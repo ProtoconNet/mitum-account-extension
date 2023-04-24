@@ -3,7 +3,7 @@ package currency
 import (
 	"encoding/json"
 
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/base"
 	"github.com/ProtoconNet/mitum2/util"
 	jsonenc "github.com/ProtoconNet/mitum2/util/encoder/json"
@@ -12,8 +12,8 @@ import (
 
 type WithdrawsItemJSONMarshaler struct {
 	hint.BaseHinter
-	Target  base.Address      `json:"target"`
-	Amounts []currency.Amount `json:"amounts"`
+	Target  base.Address           `json:"target"`
+	Amounts []mitumcurrency.Amount `json:"amounts"`
 }
 
 func (it BaseWithdrawsItem) MarshalJSON() ([]byte, error) {

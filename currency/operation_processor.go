@@ -6,7 +6,7 @@ import (
 	"io"
 	"sync"
 
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/base"
 	"github.com/ProtoconNet/mitum2/util"
 	"github.com/ProtoconNet/mitum2/util/hint"
@@ -45,7 +45,7 @@ type OperationProcessor struct {
 	*logging.Logging
 	*base.BaseOperationProcessor
 	processorHintSet     *hint.CompatibleSet
-	fee                  map[currency.CurrencyID]currency.Big
+	fee                  map[mitumcurrency.CurrencyID]mitumcurrency.Big
 	duplicated           map[string]DuplicationType
 	duplicatedNewAddress map[string]struct{}
 	processorClosers     *sync.Map
@@ -59,7 +59,7 @@ func NewOperationProcessor() *OperationProcessor {
 			return c.Str("module", "mitum-currency-operations-processor")
 		}),
 		processorHintSet:     hint.NewCompatibleSet(),
-		fee:                  map[currency.CurrencyID]currency.Big{},
+		fee:                  map[mitumcurrency.CurrencyID]mitumcurrency.Big{},
 		duplicated:           map[string]DuplicationType{},
 		duplicatedNewAddress: map[string]struct{}{},
 		processorClosers:     &m,
@@ -176,8 +176,8 @@ func (opr *OperationProcessor) checkDuplication(op base.Operation) error {
 	var newAddresses []base.Address
 
 	switch t := op.(type) {
-	case currency.CreateAccounts:
-		fact, ok := t.Fact().(currency.CreateAccountsFact)
+	case mitumcurrency.CreateAccounts:
+		fact, ok := t.Fact().(mitumcurrency.CreateAccountsFact)
 		if !ok {
 			return errors.Errorf("expected CreateAccountsFact, not %T", t.Fact())
 		}
@@ -188,8 +188,8 @@ func (opr *OperationProcessor) checkDuplication(op base.Operation) error {
 		newAddresses = as
 		did = fact.Sender().String()
 		didtype = DuplicationTypeSender
-	case currency.KeyUpdater:
-		fact, ok := t.Fact().(currency.KeyUpdaterFact)
+	case mitumcurrency.KeyUpdater:
+		fact, ok := t.Fact().(mitumcurrency.KeyUpdaterFact)
 		if !ok {
 			return errors.Errorf("expected KeyUpdaterFact, not %T", t.Fact())
 		}
@@ -200,8 +200,8 @@ func (opr *OperationProcessor) checkDuplication(op base.Operation) error {
 		newAddresses = as
 		did = fact.Target().String()
 		didtype = DuplicationTypeSender
-	case currency.Transfers:
-		fact, ok := t.Fact().(currency.TransfersFact)
+	case mitumcurrency.Transfers:
+		fact, ok := t.Fact().(mitumcurrency.TransfersFact)
 		if !ok {
 			return errors.Errorf("expected TransfersFact, not %T", t.Fact())
 		}
@@ -238,12 +238,12 @@ func (opr *OperationProcessor) checkDuplication(op base.Operation) error {
 		}
 		did = fact.currency.String()
 		didtype = DuplicationTypeCurrency
-	case currency.SuffrageInflation:
-		// fact, ok := t.Fact().(currency.SuffrageInflationFact)
+	case mitumcurrency.SuffrageInflation:
+		// fact, ok := t.Fact().(mitumcurrency.SuffrageInflationFact)
 		// if !ok {
 		// 	return errors.Errorf("expected SuffrageInflationFact, not %T", t.Fact())
 		// }
-		// did = fact.currency.String()
+		// did = fact.mitumcurrency.String()
 		// didtype = DuplicationTypeCurrency
 	default:
 		return nil
@@ -333,14 +333,14 @@ func (opr *OperationProcessor) getNewProcessor(op base.Operation) (base.Operatio
 	}
 
 	switch t := op.(type) {
-	case currency.CreateAccounts,
-		currency.KeyUpdater,
-		currency.Transfers,
+	case mitumcurrency.CreateAccounts,
+		mitumcurrency.KeyUpdater,
+		mitumcurrency.Transfers,
 		CreateContractAccounts,
 		Withdraws,
 		CurrencyRegister,
 		CurrencyPolicyUpdater,
-		currency.SuffrageInflation:
+		mitumcurrency.SuffrageInflation:
 		return nil, false, errors.Errorf("%T needs SetProcessor", t)
 	default:
 		return nil, false, nil

@@ -1,7 +1,7 @@
 package currency
 
 import (
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/util"
 	"github.com/ProtoconNet/mitum2/util/hint"
 )
@@ -14,9 +14,9 @@ type CreateContractAccountsItemSingleAmount struct {
 	BaseCreateContractAccountsItem
 }
 
-func NewCreateContractAccountsItemSingleAmount(keys currency.AccountKeys, amount currency.Amount) CreateContractAccountsItemSingleAmount {
+func NewCreateContractAccountsItemSingleAmount(keys mitumcurrency.AccountKeys, amount mitumcurrency.Amount, addrType hint.Type) CreateContractAccountsItemSingleAmount {
 	return CreateContractAccountsItemSingleAmount{
-		BaseCreateContractAccountsItem: NewBaseCreateContractAccountsItem(CreateContractAccountsItemSingleAmountHint, keys, []currency.Amount{amount}),
+		BaseCreateContractAccountsItem: NewBaseCreateContractAccountsItem(CreateContractAccountsItemSingleAmountHint, keys, []mitumcurrency.Amount{amount}, addrType),
 	}
 }
 

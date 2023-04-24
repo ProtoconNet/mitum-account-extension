@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/base"
 	"github.com/ProtoconNet/mitum2/isaac"
 	"github.com/ProtoconNet/mitum2/util"
@@ -97,7 +97,7 @@ func (opp *CurrencyPolicyUpdaterProcessor) PreProcess(
 	}
 
 	if receiver := fact.policy.Feeer().Receiver(); receiver != nil {
-		if err := checkExistsState(currency.StateKeyAccount(receiver), getStateFunc); err != nil {
+		if err := checkExistsState(mitumcurrency.StateKeyAccount(receiver), getStateFunc); err != nil {
 			return ctx, base.NewBaseOperationProcessReasonError("feeer receiver not found, %q: %w", fact.policy.Feeer().Receiver(), err), nil
 		}
 	}

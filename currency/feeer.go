@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/base"
 	"github.com/ProtoconNet/mitum2/util"
 	"github.com/ProtoconNet/mitum2/util/hint"
@@ -22,7 +22,7 @@ var (
 	RatioFeeerHint = hint.MustNewHint("mitum-currency-ratio-feeer-v0.0.1")
 )
 
-var UnlimitedMaxFeeAmount = currency.NewBig(-1)
+var UnlimitedMaxFeeAmount = mitumcurrency.NewBig(-1)
 
 type Feeer interface {
 	util.IsValider
@@ -30,9 +30,9 @@ type Feeer interface {
 	Type() string
 	Bytes() []byte
 	Receiver() base.Address
-	Min() currency.Big
-	ExchangeMin() currency.Big
-	Fee(currency.Big) (currency.Big, error)
+	Min() mitumcurrency.Big
+	ExchangeMin() mitumcurrency.Big
+	Fee(mitumcurrency.Big) (mitumcurrency.Big, error)
 }
 
 type NilFeeer struct {
@@ -55,16 +55,16 @@ func (NilFeeer) Receiver() base.Address {
 	return nil
 }
 
-func (NilFeeer) Min() currency.Big {
-	return currency.ZeroBig
+func (NilFeeer) Min() mitumcurrency.Big {
+	return mitumcurrency.ZeroBig
 }
 
-func (NilFeeer) ExchangeMin() currency.Big {
-	return currency.ZeroBig
+func (NilFeeer) ExchangeMin() mitumcurrency.Big {
+	return mitumcurrency.ZeroBig
 }
 
-func (NilFeeer) Fee(currency.Big) (currency.Big, error) {
-	return currency.ZeroBig, nil
+func (NilFeeer) Fee(mitumcurrency.Big) (mitumcurrency.Big, error) {
+	return mitumcurrency.ZeroBig, nil
 }
 
 func (fa NilFeeer) IsValid([]byte) error {
@@ -74,11 +74,11 @@ func (fa NilFeeer) IsValid([]byte) error {
 type FixedFeeer struct {
 	hint.BaseHinter
 	receiver    base.Address
-	amount      currency.Big
-	exchangeMin currency.Big
+	amount      mitumcurrency.Big
+	exchangeMin mitumcurrency.Big
 }
 
-func NewFixedFeeer(receiver base.Address, amount currency.Big, exchangeMin currency.Big) FixedFeeer {
+func NewFixedFeeer(receiver base.Address, amount mitumcurrency.Big, exchangeMin mitumcurrency.Big) FixedFeeer {
 	return FixedFeeer{
 		BaseHinter:  hint.NewBaseHinter(FixedFeeerHint),
 		receiver:    receiver,
@@ -99,17 +99,17 @@ func (fa FixedFeeer) Receiver() base.Address {
 	return fa.receiver
 }
 
-func (fa FixedFeeer) Min() currency.Big {
+func (fa FixedFeeer) Min() mitumcurrency.Big {
 	return fa.amount
 }
 
-func (fa FixedFeeer) ExchangeMin() currency.Big {
+func (fa FixedFeeer) ExchangeMin() mitumcurrency.Big {
 	return fa.exchangeMin
 }
 
-func (fa FixedFeeer) Fee(currency.Big) (currency.Big, error) {
+func (fa FixedFeeer) Fee(mitumcurrency.Big) (mitumcurrency.Big, error) {
 	if fa.isZero() {
-		return currency.ZeroBig, nil
+		return mitumcurrency.ZeroBig, nil
 	}
 
 	return fa.amount, nil
@@ -139,12 +139,12 @@ type RatioFeeer struct {
 	hint.BaseHinter
 	receiver    base.Address
 	ratio       float64 // 0 >=, or <= 1.0
-	min         currency.Big
-	max         currency.Big
-	exchangeMin currency.Big
+	min         mitumcurrency.Big
+	max         mitumcurrency.Big
+	exchangeMin mitumcurrency.Big
 }
 
-func NewRatioFeeer(receiver base.Address, ratio float64, min, max, exchangeMin currency.Big) RatioFeeer {
+func NewRatioFeeer(receiver base.Address, ratio float64, min, max, exchangeMin mitumcurrency.Big) RatioFeeer {
 	return RatioFeeer{
 		BaseHinter:  hint.NewBaseHinter(RatioFeeerHint),
 		receiver:    receiver,
@@ -170,17 +170,17 @@ func (fa RatioFeeer) Receiver() base.Address {
 	return fa.receiver
 }
 
-func (fa RatioFeeer) Min() currency.Big {
+func (fa RatioFeeer) Min() mitumcurrency.Big {
 	return fa.min
 }
 
-func (fa RatioFeeer) ExchangeMin() currency.Big {
+func (fa RatioFeeer) ExchangeMin() mitumcurrency.Big {
 	return fa.exchangeMin
 }
 
-func (fa RatioFeeer) Fee(a currency.Big) (currency.Big, error) {
+func (fa RatioFeeer) Fee(a mitumcurrency.Big) (mitumcurrency.Big, error) {
 	if fa.isZero() {
-		return currency.ZeroBig, nil
+		return mitumcurrency.ZeroBig, nil
 	} else if a.IsZero() {
 		return fa.min, nil
 	}

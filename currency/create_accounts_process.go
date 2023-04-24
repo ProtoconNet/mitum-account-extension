@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/base"
 	"github.com/ProtoconNet/mitum2/isaac"
 	"github.com/ProtoconNet/mitum2/util"
@@ -25,9 +25,9 @@ var createAccountsProcessorPool = sync.Pool{
 
 type CreateAccountsItemProcessor struct {
 	h    util.Hash
-	item currency.CreateAccountsItem
+	item mitumcurrency.CreateAccountsItem
 	ns   base.StateMergeValue
-	nb   map[currency.CurrencyID]base.StateMergeValue
+	nb   map[mitumcurrency.CurrencyID]base.StateMergeValue
 }
 
 func (opp *CreateAccountsItemProcessor) PreProcess(
@@ -51,22 +51,22 @@ func (opp *CreateAccountsItemProcessor) PreProcess(
 		return err
 	}
 
-	st, err := notExistsState(currency.StateKeyAccount(target), "key of target account", getStateFunc)
+	st, err := notExistsState(mitumcurrency.StateKeyAccount(target), "key of target account", getStateFunc)
 	if err != nil {
 		return err
 	}
-	opp.ns = currency.NewAccountStateMergeValue(st.Key(), st.Value())
+	opp.ns = mitumcurrency.NewAccountStateMergeValue(st.Key(), st.Value())
 
-	nb := map[currency.CurrencyID]base.StateMergeValue{}
+	nb := map[mitumcurrency.CurrencyID]base.StateMergeValue{}
 	for i := range opp.item.Amounts() {
 		am := opp.item.Amounts()[i]
-		switch _, found, err := getStateFunc(currency.StateKeyBalance(target, am.Currency())); {
+		switch _, found, err := getStateFunc(mitumcurrency.StateKeyBalance(target, am.Currency())); {
 		case err != nil:
 			return err
 		case found:
 			return isaac.ErrStopProcessingRetry.Errorf("target balance already exists, %q", target)
 		default:
-			nb[am.Currency()] = currency.NewBalanceStateMergeValue(currency.StateKeyBalance(target, am.Currency()), currency.NewBalanceStateValue(currency.NewZeroAmount(am.Currency())))
+			nb[am.Currency()] = mitumcurrency.NewBalanceStateMergeValue(mitumcurrency.StateKeyBalance(target, am.Currency()), mitumcurrency.NewBalanceStateValue(mitumcurrency.NewZeroAmount(am.Currency())))
 		}
 	}
 	opp.nb = nb
@@ -77,22 +77,33 @@ func (opp *CreateAccountsItemProcessor) PreProcess(
 func (opp *CreateAccountsItemProcessor) Process(
 	ctx context.Context, op base.Operation, getStateFunc base.GetStateFunc,
 ) ([]base.StateMergeValue, error) {
-	nac, err := currency.NewAccountFromKeys(opp.item.Keys())
+	e := util.StringErrorFunc("failed to preprocess for CreateAccountsItemProcessor")
+
+	var (
+		nac mitumcurrency.Account
+		err error
+	)
+
+	if opp.item.AddressType() == mitumcurrency.EthAddressHint.Type() {
+		nac, err = mitumcurrency.NewEthAccountFromKeys(opp.item.Keys())
+	} else {
+		nac, err = mitumcurrency.NewAccountFromKeys(opp.item.Keys())
+	}
 	if err != nil {
-		return nil, err
+		return nil, e(err, "")
 	}
 
 	sts := make([]base.StateMergeValue, len(opp.item.Amounts())+1)
-	sts[0] = currency.NewAccountStateMergeValue(opp.ns.Key(), currency.NewAccountStateValue(nac))
+	sts[0] = mitumcurrency.NewAccountStateMergeValue(opp.ns.Key(), mitumcurrency.NewAccountStateValue(nac))
 
 	for i := range opp.item.Amounts() {
 		am := opp.item.Amounts()[i]
-		v, ok := opp.nb[am.Currency()].Value().(currency.BalanceStateValue)
+		v, ok := opp.nb[am.Currency()].Value().(mitumcurrency.BalanceStateValue)
 		if !ok {
 			return nil, errors.Errorf("expected BalanceStateValue, not %T", opp.nb[am.Currency()].Value())
 		}
-		stv := currency.NewBalanceStateValue(v.Amount.WithBig(v.Amount.Big().Add(am.Big())))
-		sts[i+1] = currency.NewBalanceStateMergeValue(opp.nb[am.Currency()].Key(), stv)
+		stv := mitumcurrency.NewBalanceStateValue(v.Amount.WithBig(v.Amount.Big().Add(am.Big())))
+		sts[i+1] = mitumcurrency.NewBalanceStateMergeValue(opp.nb[am.Currency()].Key(), stv)
 	}
 
 	return sts, nil
@@ -145,12 +156,12 @@ func (opp *CreateAccountsProcessor) PreProcess(
 ) (context.Context, base.OperationProcessReasonError, error) {
 	e := util.StringErrorFunc("failed to preprocess CreateAccounts")
 
-	fact, ok := op.Fact().(currency.CreateAccountsFact)
+	fact, ok := op.Fact().(mitumcurrency.CreateAccountsFact)
 	if !ok {
 		return ctx, nil, e(nil, "expected CreateAccountsFact, not %T", op.Fact())
 	}
 
-	if err := checkExistsState(currency.StateKeyAccount(fact.Sender()), getStateFunc); err != nil {
+	if err := checkExistsState(mitumcurrency.StateKeyAccount(fact.Sender()), getStateFunc); err != nil {
 		return ctx, base.NewBaseOperationProcessReasonError("sender not found, %q: %w", fact.Sender(), err), nil
 	}
 
@@ -171,7 +182,7 @@ func (opp *CreateAccountsProcessor) Process( // nolint:dupl
 ) {
 	e := util.StringErrorFunc("failed to process CreateAccounts")
 
-	fact, ok := op.Fact().(currency.CreateAccountsFact)
+	fact, ok := op.Fact().(mitumcurrency.CreateAccountsFact)
 	if !ok {
 		return nil, nil, e(nil, "expected CreateAccountsFact, not %T", op.Fact())
 	}
@@ -216,12 +227,12 @@ func (opp *CreateAccountsProcessor) Process( // nolint:dupl
 	}
 
 	for i := range sb {
-		v, ok := sb[i].Value().(currency.BalanceStateValue)
+		v, ok := sb[i].Value().(mitumcurrency.BalanceStateValue)
 		if !ok {
 			return nil, nil, e(nil, "expected BalanceStateValue, not %T", sb[i].Value())
 		}
-		stv := currency.NewBalanceStateValue(v.Amount.WithBig(v.Amount.Big().Sub(required[i][0])))
-		sts = append(sts, currency.NewBalanceStateMergeValue(sb[i].Key(), stv))
+		stv := mitumcurrency.NewBalanceStateValue(v.Amount.WithBig(v.Amount.Big().Sub(required[i][0])))
+		sts = append(sts, mitumcurrency.NewBalanceStateMergeValue(sb[i].Key(), stv))
 	}
 
 	return sts, nil, nil
@@ -233,13 +244,13 @@ func (opp *CreateAccountsProcessor) Close() error {
 	return nil
 }
 
-func (opp *CreateAccountsProcessor) calculateItemsFee(op base.Operation, getStateFunc base.GetStateFunc) (map[currency.CurrencyID][2]currency.Big, error) {
-	fact, ok := op.Fact().(currency.CreateAccountsFact)
+func (opp *CreateAccountsProcessor) calculateItemsFee(op base.Operation, getStateFunc base.GetStateFunc) (map[mitumcurrency.CurrencyID][2]mitumcurrency.Big, error) {
+	fact, ok := op.Fact().(mitumcurrency.CreateAccountsFact)
 	if !ok {
 		return nil, errors.Errorf("expected CreateAccountsFact, not %T", op.Fact())
 	}
 
-	items := make([]currency.AmountsItem, len(fact.Items()))
+	items := make([]mitumcurrency.AmountsItem, len(fact.Items()))
 	for i := range fact.Items() {
 		items[i] = fact.Items()[i]
 	}
@@ -247,8 +258,8 @@ func (opp *CreateAccountsProcessor) calculateItemsFee(op base.Operation, getStat
 	return CalculateItemsFee(getStateFunc, items)
 }
 
-func CalculateItemsFee(getStateFunc base.GetStateFunc, items []currency.AmountsItem) (map[currency.CurrencyID][2]currency.Big, error) {
-	required := map[currency.CurrencyID][2]currency.Big{}
+func CalculateItemsFee(getStateFunc base.GetStateFunc, items []mitumcurrency.AmountsItem) (map[mitumcurrency.CurrencyID][2]mitumcurrency.Big, error) {
+	required := map[mitumcurrency.CurrencyID][2]mitumcurrency.Big{}
 
 	for i := range items {
 		it := items[i]
@@ -256,7 +267,7 @@ func CalculateItemsFee(getStateFunc base.GetStateFunc, items []currency.AmountsI
 		for j := range it.Amounts() {
 			am := it.Amounts()[j]
 
-			rq := [2]currency.Big{currency.ZeroBig, currency.ZeroBig}
+			rq := [2]mitumcurrency.Big{mitumcurrency.ZeroBig, mitumcurrency.ZeroBig}
 			if k, found := required[am.Currency()]; found {
 				rq = k
 			}
@@ -270,9 +281,9 @@ func CalculateItemsFee(getStateFunc base.GetStateFunc, items []currency.AmountsI
 			case err != nil:
 				return nil, err
 			case !k.OverZero():
-				required[am.Currency()] = [2]currency.Big{rq[0].Add(am.Big()), rq[1]}
+				required[am.Currency()] = [2]mitumcurrency.Big{rq[0].Add(am.Big()), rq[1]}
 			default:
-				required[am.Currency()] = [2]currency.Big{rq[0].Add(am.Big()).Add(k), rq[1].Add(k)}
+				required[am.Currency()] = [2]mitumcurrency.Big{rq[0].Add(am.Big()).Add(k), rq[1].Add(k)}
 			}
 		}
 	}
@@ -282,20 +293,20 @@ func CalculateItemsFee(getStateFunc base.GetStateFunc, items []currency.AmountsI
 
 func CheckEnoughBalance(
 	holder base.Address,
-	required map[currency.CurrencyID][2]currency.Big,
+	required map[mitumcurrency.CurrencyID][2]mitumcurrency.Big,
 	getStateFunc base.GetStateFunc,
-) (map[currency.CurrencyID]base.StateMergeValue, error) {
-	sb := map[currency.CurrencyID]base.StateMergeValue{}
+) (map[mitumcurrency.CurrencyID]base.StateMergeValue, error) {
+	sb := map[mitumcurrency.CurrencyID]base.StateMergeValue{}
 
 	for cid := range required {
 		rq := required[cid]
 
-		st, err := existsState(currency.StateKeyBalance(holder, cid), "key of holder balance", getStateFunc)
+		st, err := existsState(mitumcurrency.StateKeyBalance(holder, cid), "key of holder balance", getStateFunc)
 		if err != nil {
 			return nil, err
 		}
 
-		am, err := currency.StateBalanceValue(st)
+		am, err := mitumcurrency.StateBalanceValue(st)
 		if err != nil {
 			return nil, errors.Errorf("not enough balance of sender, %q: %w", holder, err)
 		}
@@ -303,7 +314,7 @@ func CheckEnoughBalance(
 		if am.Big().Compare(rq[0]) < 0 {
 			return nil, errors.Errorf("not enough balance of sender, %q; %v !> %v", holder, am.Big(), rq[0])
 		}
-		sb[cid] = currency.NewBalanceStateMergeValue(st.Key(), currency.NewBalanceStateValue(am))
+		sb[cid] = mitumcurrency.NewBalanceStateMergeValue(st.Key(), mitumcurrency.NewBalanceStateValue(am))
 	}
 
 	return sb, nil

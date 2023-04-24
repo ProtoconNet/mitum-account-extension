@@ -1,7 +1,7 @@
 package currency
 
 import (
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/base"
 	"github.com/ProtoconNet/mitum2/util"
 	"github.com/ProtoconNet/mitum2/util/hint"
@@ -38,7 +38,7 @@ func (fact CurrencyRegisterFact) Bytes() []byte {
 }
 
 func (fact CurrencyRegisterFact) IsValid(b []byte) error {
-	if err := currency.IsValidOperationFact(fact, b); err != nil {
+	if err := mitumcurrency.IsValidOperationFact(fact, b); err != nil {
 		return err
 	}
 
@@ -66,11 +66,11 @@ func (fact CurrencyRegisterFact) Currency() CurrencyDesign {
 }
 
 type CurrencyRegister struct {
-	currency.BaseNodeOperation
+	mitumcurrency.BaseNodeOperation
 }
 
 func NewCurrencyRegister(fact CurrencyRegisterFact) (CurrencyRegister, error) {
 	return CurrencyRegister{
-		BaseNodeOperation: currency.NewBaseNodeOperation(CurrencyRegisterHint, fact),
+		BaseNodeOperation: mitumcurrency.NewBaseNodeOperation(CurrencyRegisterHint, fact),
 	}, nil
 }

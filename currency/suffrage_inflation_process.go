@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/base"
 	"github.com/ProtoconNet/mitum2/isaac"
 	"github.com/ProtoconNet/mitum2/util"
@@ -70,12 +70,12 @@ func (opp *SuffrageInflationProcessor) PreProcess(
 ) (context.Context, base.OperationProcessReasonError, error) {
 	e := util.StringErrorFunc("failed to preprocess SuffrageInflation")
 
-	nop, ok := op.(currency.SuffrageInflation)
+	nop, ok := op.(mitumcurrency.SuffrageInflation)
 	if !ok {
 		return ctx, nil, e(nil, "expected SuffrageInflation, not %T", op)
 	}
 
-	fact, ok := op.Fact().(currency.SuffrageInflationFact)
+	fact, ok := op.Fact().(mitumcurrency.SuffrageInflationFact)
 	if !ok {
 		return ctx, nil, e(nil, "expected SuffrageInflationFact, not %T", op.Fact())
 	}
@@ -92,7 +92,7 @@ func (opp *SuffrageInflationProcessor) PreProcess(
 			return ctx, base.NewBaseOperationProcessReasonError("currency not found, %q: %w", item.Amount().Currency(), err.Error()), nil
 		}
 
-		err = checkExistsState(currency.StateKeyAccount(item.Receiver()), getStateFunc)
+		err = checkExistsState(mitumcurrency.StateKeyAccount(item.Receiver()), getStateFunc)
 		if err != nil {
 			return ctx, base.NewBaseOperationProcessReasonError("receiver not found, %q: %w", item.Receiver(), err.Error()), nil
 		}
@@ -112,35 +112,35 @@ func (opp *SuffrageInflationProcessor) Process(
 ) {
 	e := util.StringErrorFunc("failed to process SuffrageInflation")
 
-	fact, ok := op.Fact().(currency.SuffrageInflationFact)
+	fact, ok := op.Fact().(mitumcurrency.SuffrageInflationFact)
 	if !ok {
 		return nil, nil, e(nil, "expected SuffrageInflationFact, not %T", op.Fact())
 	}
 
 	sts := []base.StateMergeValue{}
 
-	aggs := map[currency.CurrencyID]currency.Big{}
+	aggs := map[mitumcurrency.CurrencyID]mitumcurrency.Big{}
 
 	for i := range fact.Items() {
 		item := fact.Items()[i]
 
-		var ab currency.Amount
+		var ab mitumcurrency.Amount
 
-		k := currency.StateKeyBalance(item.Receiver(), item.Amount().Currency())
+		k := mitumcurrency.StateKeyBalance(item.Receiver(), item.Amount().Currency())
 		switch st, found, err := getStateFunc(k); {
 		case err != nil:
 			return nil, base.NewBaseOperationProcessReasonError("failed to find receiver balance state, %q: %w", k, err), nil
 		case !found:
-			ab = currency.NewZeroAmount(item.Amount().Currency())
+			ab = mitumcurrency.NewZeroAmount(item.Amount().Currency())
 		default:
-			b, err := currency.StateBalanceValue(st)
+			b, err := mitumcurrency.StateBalanceValue(st)
 			if err != nil {
 				return nil, base.NewBaseOperationProcessReasonError("failed to get balance value, %q: %w", k, err), nil
 			}
 			ab = b
 		}
 
-		sts = append(sts, currency.NewBalanceStateMergeValue(k, currency.NewBalanceStateValue(currency.NewAmount(ab.Big().Add(item.Amount().Big()), item.Amount().Currency()))))
+		sts = append(sts, mitumcurrency.NewBalanceStateMergeValue(k, mitumcurrency.NewBalanceStateValue(mitumcurrency.NewAmount(ab.Big().Add(item.Amount().Big()), item.Amount().Currency()))))
 
 		if _, found := aggs[item.Amount().Currency()]; found {
 			aggs[item.Amount().Currency()] = aggs[item.Amount().Currency()].Add(item.Amount().Big())

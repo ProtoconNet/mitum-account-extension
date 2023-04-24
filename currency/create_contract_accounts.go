@@ -1,7 +1,7 @@
 package currency
 
 import (
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/base"
 	"github.com/ProtoconNet/mitum2/util"
 	"github.com/ProtoconNet/mitum2/util/hint"
@@ -18,11 +18,12 @@ var MaxCreateContractAccountsItems uint = 10
 type CreateContractAccountsItem interface {
 	hint.Hinter
 	util.IsValider
-	currency.AmountsItem
+	mitumcurrency.AmountsItem
 	Bytes() []byte
-	Keys() currency.AccountKeys
+	Keys() mitumcurrency.AccountKeys
 	Address() (base.Address, error)
 	Rebuild() CreateContractAccountsItem
+	AddressType() hint.Type
 }
 
 type CreateContractAccountsFact struct {
@@ -69,7 +70,7 @@ func (fact CreateContractAccountsFact) IsValid(b []byte) error {
 		return err
 	}
 
-	if err := currency.IsValidOperationFact(fact, b); err != nil {
+	if err := mitumcurrency.IsValidOperationFact(fact, b); err != nil {
 		return err
 	}
 
@@ -161,11 +162,11 @@ func (fact CreateContractAccountsFact) Rebuild() CreateContractAccountsFact {
 }
 
 type CreateContractAccounts struct {
-	currency.BaseOperation
+	mitumcurrency.BaseOperation
 }
 
 func NewCreateContractAccounts(fact CreateContractAccountsFact) (CreateContractAccounts, error) {
-	return CreateContractAccounts{BaseOperation: currency.NewBaseOperation(CreateContractAccountsHint, fact)}, nil
+	return CreateContractAccounts{BaseOperation: mitumcurrency.NewBaseOperation(CreateContractAccountsHint, fact)}, nil
 }
 
 func (op *CreateContractAccounts) HashSign(priv base.Privatekey, networkID base.NetworkID) error {

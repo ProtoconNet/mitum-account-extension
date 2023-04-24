@@ -1,7 +1,7 @@
 package currency
 
 import (
-	"github.com/ProtoconNet/mitum-currency/v2/currency"
+	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
 	"github.com/ProtoconNet/mitum2/util"
 	"github.com/ProtoconNet/mitum2/util/encoder"
 )
@@ -17,7 +17,7 @@ func (fact *CurrencyPolicyUpdaterFact) unpack(enc encoder.Encoder, cid string, b
 		fact.policy = po
 	}
 
-	fact.currency = currency.CurrencyID(cid)
+	fact.currency = mitumcurrency.CurrencyID(cid)
 
 	return nil
 }

@@ -3,7 +3,7 @@ module github.com/ProtoconNet/mitum-currency-extension/v2
 go 1.19
 
 require (
-	github.com/ProtoconNet/mitum-currency/v2 v2.0.0-alpha
+	github.com/ProtoconNet/mitum-currency/v2 v2.0.0-20230411085248-7b99414d9e9f
 	github.com/ProtoconNet/mitum2 v0.0.0-20230327234451-801228e1e81f
 	github.com/alecthomas/kong v0.7.1
 	github.com/arl/statsviz v0.5.1
@@ -19,7 +19,7 @@ require (
 	github.com/stretchr/testify v1.8.1
 	go.mongodb.org/mongo-driver v1.11.0
 	golang.org/x/crypto v0.5.0
-	golang.org/x/net v0.6.0
+	golang.org/x/net v0.7.0
 	golang.org/x/sync v0.1.0
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -67,7 +67,7 @@ require (
 	github.com/hashicorp/go-sockaddr v1.0.2 // indirect
 	github.com/hashicorp/go-uuid v1.0.3 // indirect
 	github.com/hashicorp/go-version v1.6.0 // indirect
-	github.com/hashicorp/golang-lru v0.5.4 // indirect
+	github.com/hashicorp/golang-lru v0.5.5-0.20210104140557-80c98217689d // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hashicorp/memberlist v0.5.1-0.20230206163934-e5eb6d78d6f2 // indirect
 	github.com/hashicorp/serf v0.10.1 // indirect
@@ -104,7 +104,7 @@ require (
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.1 // indirect
 	github.com/xdg-go/stringprep v1.0.3 // indirect
-	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
+	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
 	github.com/zeebo/blake3 v0.2.3 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	golang.org/x/arch v0.2.0 // indirect
