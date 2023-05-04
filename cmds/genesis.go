@@ -5,10 +5,10 @@ import (
 
 	"github.com/ProtoconNet/mitum-currency-extension/v2/currency"
 	mitumcurrency "github.com/ProtoconNet/mitum-currency/v2/currency"
+	isaacoperation "github.com/ProtoconNet/mitum-currency/v2/isaac"
 	"github.com/ProtoconNet/mitum2/base"
 	"github.com/ProtoconNet/mitum2/isaac"
 	isaacblock "github.com/ProtoconNet/mitum2/isaac/block"
-	isaacoperation "github.com/ProtoconNet/mitum2/isaac/operation"
 	"github.com/ProtoconNet/mitum2/launch"
 	"github.com/ProtoconNet/mitum2/util"
 	"github.com/ProtoconNet/mitum2/util/encoder"
